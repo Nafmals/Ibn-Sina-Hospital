@@ -264,8 +264,12 @@
                         <p class="text-muted mb-0">إدارة بيانات جميع الموظفين.</p>
                     </div>
                     <div class="d-flex gap-2">
+                        <button id="btnImport" class="btn btn-outline-secondary btn-sm">
+                            استيراد من Excel
+                        </button>
+                        <input type="file" id="importFile" accept=".csv,.xlsx" class="d-none">
                         <button id="btnExport" class="btn btn-outline-primary btn-sm">
-                            تصدير إلى CSV
+                            تصدير إلى Excel
                         </button>
                         <button id="btnAdd" class="btn btn-primary btn-sm">
                             + إضافة موظف جديد
@@ -288,7 +292,8 @@
                     </span>
                 </div>
 
-                <div class="mb-3">
+                <!-- هذه الإحصائيات مخفية حتى لا تظهر العبارة التي طلبت حذفها -->
+                <div class="mb-3 d-none">
                     <small class="text-muted d-block">
                         حالات الخدمة: <span id="statusStats">لا توجد بيانات بعد</span>
                     </small>
@@ -332,29 +337,31 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الأسم الاول</th>
-                                <th>الأسم الثاني</th>
-                                <th>الأسم الثالث</th>
-                                <th>الأسم الرابع</th>
-                                <th>العنوان الوظيفي</th>
-                                <th>الحالة الوظيفية</th>
-                                <th>الملاحظات</th>
-                                <th>أسم الدائرة / مبنى الوزارة</th>
-                                <th>الرقم الوظيفي</th>
-                                <th>الرقم الوطني</th>
-                                <th>أسم الأم الثلاثي</th>
-                                <th>الجنس</th>
-                                <th>تاريخ التولد</th>
-                                <th>تاريخ التعيين</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="employeesTableBody"></tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الأسم الاول</th>
+                                    <th>الأسم الثاني</th>
+                                    <th>الأسم الثالث</th>
+                                    <th>الأسم الرابع</th>
+                                    <th>العنوان الوظيفي</th>
+                                    <th>الحالة الوظيفية</th>
+                                    <th>الملاحظات</th>
+                                    <th>أسم الدائرة / مبنى الوزارة</th>
+                                    <th>الرقم الوظيفي</th>
+                                    <th>الرقم الوطني</th>
+                                    <th>أسم الأم الثلاثي</th>
+                                    <th>الجنس</th>
+                                    <th>تاريخ التولد</th>
+                                    <th>تاريخ التعيين</th>
+                                    <th class="text-center">إجراءات</th>
+                                </tr>
+                                </thead>
+                                <tbody id="employeesTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -621,6 +628,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- مكتبة SheetJS للتعامل مع Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script>
     // ---------------- بيانات أولية ----------------
@@ -742,6 +751,8 @@
 
     const btnAdd = document.getElementById("btnAdd");
     const btnExport = document.getElementById("btnExport");
+    const btnImport = document.getElementById("btnImport");
+    const importFileInput = document.getElementById("importFile");
 
     const dashTotalEmployees = document.getElementById("dashTotalEmployees");
     const dashActiveEmployees = document.getElementById("dashActiveEmployees");
@@ -817,6 +828,38 @@
         return parts.join(" ");
     }
 
+    function normalizeDateCell(value) {
+        if (!value) return "";
+        if (value instanceof Date) {
+            const y = value.getFullYear();
+            const m = String(value.getMonth() + 1).padStart(2, "0");
+            const d = String(value.getDate()).padStart(2, "0");
+            return `${y}-${m}-${d}`;
+        }
+        if (typeof value === "number" && typeof XLSX !== "undefined" && XLSX.SSF && XLSX.SSF.parse_date_code) {
+            const o = XLSX.SSF.parse_date_code(value);
+            if (o) {
+                const y = o.y;
+                const m = String(o.m).padStart(2, "0");
+                const d = String(o.d).padStart(2, "0");
+                return `${y}-${m}-${d}`;
+            }
+        }
+        if (typeof value === "string") {
+            const v = value.trim();
+            if (!v) return "";
+            const d = new Date(v);
+            if (!isNaN(d.getTime())) {
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const dd = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${dd}`;
+            }
+            return v;
+        }
+        return "";
+    }
+
     // ---------------- إحصائيات الموظفين ----------------
     function calculateEmployeeStats(list) {
         const stats = { total: list.length, active: 0, male: 0, female: 0, other: 0, byStatus: {}, byDept: {} };
@@ -851,8 +894,12 @@
         reportTotalEmployees.textContent = s.total;
         reportActiveEmployees.textContent = s.active;
 
-        statusStatsSpan.textContent = Object.entries(s.byStatus).map(([k, v]) => `${k}: ${v}`).join(" | ");
-        deptStatsSpan.textContent = Object.entries(s.byDept).map(([k, v]) => `${k}: ${v}`).join(" | ");
+        if (statusStatsSpan) {
+            statusStatsSpan.textContent = Object.entries(s.byStatus).map(([k, v]) => `${k}: ${v}`).join(" | ");
+        }
+        if (deptStatsSpan) {
+            deptStatsSpan.textContent = Object.entries(s.byDept).map(([k, v]) => `${k}: ${v}`).join(" | ");
+        }
 
         deptReportBody.innerHTML = "";
         Object.entries(s.byDept).forEach(([dept, count]) => {
@@ -1071,7 +1118,7 @@
         closeEmployeeForm();
     });
 
-    // ---------------- تصدير CSV بنفس ترتيب الأعمدة ----------------
+    // ---------------- تصدير إلى CSV (Excel) ----------------
     btnExport.addEventListener("click", () => {
         const list = currentView;
         if (!list.length) {
@@ -1123,19 +1170,169 @@
         });
 
         const csv = [header, ...rows]
-            .map(row => row.map(f => `"${String(f).replace(/"/g, '""')}"`).join(","))
-            .join("\n");
+            .map(row => row.map(f => `"${String(f ?? "").replace(/"/g, '""')}"`).join(","))
+            .join("\r\n");
 
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        // \uFEFF لضمان ظهور العربية بشكل صحيح في Excel
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "employees.csv";
+        a.download = "employees.csv"; // يفتح مباشرة في Excel
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
+
+    // ---------------- استيراد من ملف Excel/CSV ----------------
+    btnImport.addEventListener("click", () => {
+        importFileInput.click();
+    });
+
+    importFileInput.addEventListener("change", e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = event => {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            importEmployeesFromSheet(rows);
+            importFileInput.value = "";
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function importEmployeesFromSheet(rows) {
+        if (!rows || rows.length < 2) {
+            alert("الملف لا يحتوي بيانات موظفين.");
+            return;
+        }
+
+        const header = rows[0].map(h => (h || "").toString().trim());
+
+        const colNames = {
+            first: "الأسم الاول",
+            second: "الأسم الثاني",
+            third: "الأسم الثالث",
+            fourth: "الأسم الرابع",
+            jobTitle: "العنوان الوظيفي",
+            status: "الحالة الوظيفية",
+            notes: "الملاحظات",
+            dept: "أسم الدائرة / مبنى الوزارة",
+            jobNumber: "الرقم الوظيفي",
+            nationalId: "الرقم الوطني",
+            motherName: "أسم الأم الثلاثي",
+            gender: "الجنس",
+            birthDate: "تاريخ التولد",
+            hireDate: "تاريخ التعيين"
+        };
+
+        function idx(name) {
+            return header.indexOf(name);
+        }
+
+        const indices = {
+            first: idx(colNames.first),
+            second: idx(colNames.second),
+            third: idx(colNames.third),
+            fourth: idx(colNames.fourth),
+            jobTitle: idx(colNames.jobTitle),
+            status: idx(colNames.status),
+            notes: idx(colNames.notes),
+            dept: idx(colNames.dept),
+            jobNumber: idx(colNames.jobNumber),
+            nationalId: idx(colNames.nationalId),
+            motherName: idx(colNames.motherName),
+            gender: idx(colNames.gender),
+            birthDate: idx(colNames.birthDate),
+            hireDate: idx(colNames.hireDate)
+        };
+
+        const missing = Object.entries(indices)
+            .filter(([, i]) => i === -1)
+            .map(([key]) => colNames[key]);
+
+        if (missing.length) {
+            alert("لا يمكن قراءة الملف. الأعمدة التالية مفقودة:\n" + missing.join(" ، "));
+            return;
+        }
+
+        const newEmployees = [];
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row || row.every(cell => cell === null || cell === undefined || String(cell).trim() === "")) continue;
+
+            const firstName  = String(row[indices.first]  ?? "").trim();
+            const secondName = String(row[indices.second] ?? "").trim();
+            const thirdName  = String(row[indices.third]  ?? "").trim();
+            const fourthName = String(row[indices.fourth] ?? "").trim();
+
+            const jobTitle   = String(row[indices.jobTitle]   ?? "").trim();
+            const status     = String(row[indices.status]     ?? "").trim();
+            const notes      = String(row[indices.notes]      ?? "").trim();
+            const dept       = String(row[indices.dept]       ?? "").trim();
+            const jobNumber  = String(row[indices.jobNumber]  ?? "").trim();
+            const nationalId = String(row[indices.nationalId] ?? "").trim();
+            const motherName = String(row[indices.motherName] ?? "").trim();
+            const gender     = String(row[indices.gender]     ?? "").trim();
+
+            const birthDateRaw = row[indices.birthDate];
+            const hireDateRaw  = row[indices.hireDate];
+
+            const birthDate = normalizeDateCell(birthDateRaw);
+            const hireDate  = normalizeDateCell(hireDateRaw);
+
+            if (!firstName && !jobTitle && !jobNumber) continue;
+
+            const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
+
+            newEmployees.push({
+                id: 0,
+                fullName,
+                firstName,
+                secondName,
+                thirdName,
+                fourthName,
+                jobTitle,
+                status,
+                department: dept,
+                jobNumber,
+                nationalId,
+                motherName,
+                gender,
+                birthDate,
+                hireDate,
+                notes
+            });
+        }
+
+        if (!newEmployees.length) {
+            alert("لم يتم العثور على أي صفوف صالحة للموظفين في الملف.");
+            return;
+        }
+
+        const replace = confirm("هل تريد استبدال جميع الموظفين الحاليين بالملف المستورد؟\n(موافق = استبدال الكل، إلغاء = إضافة فوق الموجودين)");
+        if (replace) {
+            employees.length = 0;
+        }
+
+        let maxId = employees.length ? Math.max(...employees.map(e => e.id)) : 0;
+        newEmployees.forEach(emp => {
+            emp.id = ++maxId;
+            employees.push(emp);
+        });
+
+        currentView = [...employees];
+        renderEmployees(currentView);
+        alert("تم استيراد الموظفين من الملف بنجاح.");
+    }
 
     // ---------------- عرض / تعديل / حذف موظف ----------------
     window.viewEmployee = id => {
