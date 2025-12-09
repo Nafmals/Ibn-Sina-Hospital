@@ -1,591 +1,3 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>نظام إدارة الموظفين - مستشفى ابن سينا التعليمي</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS RTL -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
-
-    <style>
-        /* ========================
-           متغيرات الثيم العامة
-        ========================= */
-        :root {
-            --bg-color: #f5f6fa;
-            --bg-soft: #ffffff;
-            --text-color: #1f2933;
-            --muted-text: #6b7280;
-            --accent: #0d6efd;
-            --accent-soft: rgba(13, 110, 253, 0.08);
-            --border-color: #e5e7eb;
-            --sidebar-bg: #0d6efd;
-            --sidebar-text: #ffffff;
-            --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
-            --table-header-bg: #e9ecef;
-        }
-
-        /* ثيم 1: فاتح */
-        .theme-light {
-            --bg-color: #f5f6fa;
-            --bg-soft: #ffffff;
-            --text-color: #111827;
-            --muted-text: #6b7280;
-            --accent: #0d6efd;
-            --accent-soft: rgba(13, 110, 253, 0.08);
-            --border-color: #e5e7eb;
-            --sidebar-bg: #0d6efd;
-            --sidebar-text: #ffffff;
-            --table-header-bg: #eef2ff;
-        }
-
-        /* ثيم 2: داكن */
-        .theme-dark {
-            --bg-color: #030712;
-            --bg-soft: #020617;
-            --text-color: #e5e7eb;
-            --muted-text: #9ca3af;
-            --accent: #38bdf8;
-            --accent-soft: rgba(56, 189, 248, 0.1);
-            --border-color: #1f2937;
-            --sidebar-bg: #020617;
-            --sidebar-text: #e5e7eb;
-            --table-header-bg: #111827;
-        }
-
-        /* ثيم 3: أوشن (أزرق رمادي) */
-        .theme-ocean {
-            --bg-color: #0f172a;
-            --bg-soft: #0b1220;
-            --text-color: #e5e7eb;
-            --muted-text: #9ca3af;
-            --accent: #38bdf8;
-            --accent-soft: rgba(56, 189, 248, 0.14);
-            --border-color: #1e293b;
-            --sidebar-bg: #020617;
-            --sidebar-text: #e5e7eb;
-            --table-header-bg: #0b1120;
-        }
-
-        /* ثيم 4: سيبيا (بيج دافئ) */
-        .theme-sepia {
-            --bg-color: #f4eee2;
-            --bg-soft: #fdf7ec;
-            --text-color: #3b2f2f;
-            --muted-text: #7c6a5f;
-            --accent: #c47f3a;
-            --accent-soft: rgba(196, 127, 58, 0.1);
-            --border-color: #e0d0b8;
-            --sidebar-bg: #c47f3a;
-            --sidebar-text: #fff7ec;
-            --table-header-bg: #f3e3cf;
-        }
-
-        /* ثيم 5: Comfort (رمادي مريح) */
-        .theme-comfort {
-            --bg-color: #edf2f7;
-            --bg-soft: #ffffff;
-            --text-color: #1a202c;
-            --muted-text: #718096;
-            --accent: #4299e1;
-            --accent-soft: rgba(66, 153, 225, 0.12);
-            --border-color: #e2e8f0;
-            --sidebar-bg: #2d3748;
-            --sidebar-text: #e2e8f0;
-            --table-header-bg: #e2e8f0;
-        }
-
-        /* ========================
-           تنسيق عام مبني على المتغيرات
-        ========================= */
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-
-        .sidebar {
-            min-height: 100vh;
-            background: var(--sidebar-bg);
-            color: var(--sidebar-text);
-        }
-
-        .sidebar a {
-            color: var(--sidebar-text);
-            text-decoration: none;
-            border-radius: .6rem;
-            padding: .55rem .9rem;
-            display: block;
-        }
-
-        .sidebar a:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .sidebar a.active {
-            background: rgba(255, 255, 255, 0.16);
-        }
-
-        main {
-            background-color: var(--bg-color);
-        }
-
-        .card {
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-soft);
-            box-shadow: var(--shadow-soft);
-            border-radius: 1rem;
-        }
-
-        .page-title {
-            font-weight: 700;
-        }
-
-        .text-muted {
-            color: var(--muted-text) !important;
-        }
-
-        .table thead {
-            background-color: var(--table-header-bg);
-        }
-
-        .badge-status {
-            font-size: 0.75rem;
-        }
-
-        .btn-primary,
-        .btn-outline-primary:hover {
-            background-color: var(--accent);
-            border-color: var(--accent);
-        }
-
-        .btn-outline-primary {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-
-        .filter-chip {
-            background-color: var(--accent-soft);
-            border-radius: 999px;
-            padding: .25rem .75rem;
-            font-size: .8rem;
-        }
-
-        .theme-selector {
-            min-width: 210px;
-        }
-
-        section {
-            margin-bottom: 2.5rem;
-        }
-
-        .section-title {
-            margin-bottom: .5rem;
-        }
-    </style>
-</head>
-<body class="theme-comfort">
-
-<div class="container-fluid">
-    <div class="row">
-        <!-- الشريط الجانبي -->
-        <nav class="col-md-2 col-lg-2 d-md-block sidebar p-3">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h5 class="mb-0">نظام الموظفين</h5>
-                <span class="badge bg-light text-dark">HR</span>
-            </div>
-            <ul class="nav flex-column gap-1">
-                <li class="nav-item">
-                    <a class="nav-link" href="#dashboard">لوحة التحكم</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="#employees">الموظفون</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#leaves">الإجازات</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#reports">التقارير</a>
-                </li>
-                <li class="nav-item mt-4">
-                    <a class="nav-link" href="#logout">تسجيل الخروج</a>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- محتوى الصفحة -->
-        <main class="col-md-10 col-lg-10 ms-auto p-4">
-            <!-- شريط علوي مشترك: ثيم -->
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                <div>
-                    <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التعليمي</h2>
-                    <p class="text-muted mb-0">لوحة تحكم، موظفون، إجازات، وتقارير كاملة في منصة واحدة.</p>
-                </div>
-
-                <div class="d-flex align-items-center gap-2">
-                    <span class="text-muted small">ثيم الواجهة:</span>
-                    <select id="themeSelect" class="form-select form-select-sm theme-selector">
-                        <option value="theme-comfort">مريح (افتراضي)</option>
-                        <option value="theme-light">فاتح</option>
-                        <option value="theme-dark">داكن</option>
-                        <option value="theme-ocean">أوشن (أزرق رمادي)</option>
-                        <option value="theme-sepia">سيبيا (بيج دافئ)</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- =======================
-                 لوحة التحكم
-            ======================== -->
-            <section id="dashboard">
-                <h4 class="section-title">لوحة التحكم</h4>
-                <p class="text-muted">نظرة سريعة على أعداد الموظفين، توزيعهم، والإجازات.</p>
-
-                <div class="row g-3 mb-3">
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجمالي الموظفين</p>
-                            <h3 id="dashTotalEmployees" class="mb-0">0</h3>
-                            <small class="text-muted">جميع الموظفين المسجلين في النظام</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">مستمرون بالخدمة</p>
-                            <h3 id="dashActiveEmployees" class="mb-0">0</h3>
-                            <small class="text-muted">موظفون على رأس الخدمة</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">الذكور</p>
-                            <h3 id="dashMaleEmployees" class="mb-0">0</h3>
-                            <small class="text-muted">عدد الموظفين الذكور</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">الإناث</p>
-                            <h3 id="dashFemaleEmployees" class="mb-0">0</h3>
-                            <small class="text-muted">عدد الموظفات الإناث</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">عدد الإجازات الكلي</p>
-                            <h4 id="dashTotalLeaves" class="mb-0">0</h4>
-                            <small class="text-muted">جميع طلبات الإجازة المسجلة</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات مقبولة</p>
-                            <h4 id="dashAcceptedLeaves" class="mb-0">0</h4>
-                            <small class="text-muted">طلبات إجازة معتمدة</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات قيد الانتظار</p>
-                            <h4 id="dashPendingLeaves" class="mb-0">0</h4>
-                            <small class="text-muted">طلبات بانتظار الموافقة</small>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- =======================
-                 قسم الموظفين
-            ======================== -->
-            <section id="employees">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h4 class="section-title mb-1">قائمة الموظفين</h4>
-                        <p class="text-muted mb-0">إدارة بيانات جميع موظفي المستشفى من مكان واحد.</p>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button id="btnExport" class="btn btn-outline-primary btn-sm">
-                            تصدير إلى Excel (CSV)
-                        </button>
-                        <button id="btnAdd" class="btn btn-primary btn-sm">
-                            + إضافة موظف جديد
-                        </button>
-                    </div>
-                </div>
-
-                <!-- شِبّات إحصائية سريعة -->
-                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
-                    <span class="filter-chip">
-                        المجموع: <span id="totalCount">0</span> موظف
-                    </span>
-                    <span class="filter-chip">
-                        مستمر بالخدمة: <span id="activeCount">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        الذكور: <span id="maleCount">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        الإناث: <span id="femaleCount">0</span>
-                    </span>
-                </div>
-
-                <div class="mb-3">
-                    <small class="text-muted d-block">
-                        حالات الخدمة: <span id="statusStats">لا توجد بيانات بعد</span>
-                    </small>
-                    <small class="text-muted d-block">
-                        توزيع حسب الدائرة: <span id="deptStats">لا توجد بيانات بعد</span>
-                    </small>
-                </div>
-
-                <!-- فلاتر البحث -->
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <form id="filterForm" class="row g-2">
-                            <div class="col-md-3">
-                                <label class="form-label">الاسم</label>
-                                <input type="text" id="filterName" class="form-control" placeholder="بحث بالاسم">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الدائرة</label>
-                                <select id="filterDept" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مكتب الوزير / الملاك">مكتب الوزير / الملاك</option>
-                                    <option value="دائرة الموارد البشرية">دائرة الموارد البشرية</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الحالة الوظيفية</label>
-                                <select id="filterStatus" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مستمر بالخدمة">مستمر بالخدمة</option>
-                                    <option value="إجازة">إجازة</option>
-                                    <option value="متقاعد">متقاعد</option>
-                                    <option value="متدرب">متدرب</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-end gap-2">
-                                <button type="submit" class="btn btn-secondary w-100">بحث</button>
-                                <button type="button" id="btnReset" class="btn btn-outline-secondary">مسح</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- جدول الموظفين -->
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الاسم الكامل</th>
-                                <th>الرقم الوظيفي</th>
-                                <th>العنوان الوظيفي</th>
-                                <th>الدائرة</th>
-                                <th>تاريخ التعيين</th>
-                                <th>الحالة</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="employeesTableBody">
-                            <!-- تُملأ ديناميكياً -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- =======================
-                 الإجازات
-            ======================== -->
-            <section id="leaves">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h4 class="section-title mb-1">الإجازات</h4>
-                        <p class="text-muted mb-0">متابعة طلبات الإجازة، حالة الطلب، ونوع الإجازة.</p>
-                    </div>
-                    <button id="btnAddLeave" class="btn btn-primary btn-sm">
-                        + طلب إجازة جديد
-                    </button>
-                </div>
-
-                <!-- شِبّات إحصائية للإجازات -->
-                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
-                    <span class="filter-chip">
-                        إجمالي الإجازات: <span id="totalLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        قيد الانتظار: <span id="pendingLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مقبولة: <span id="acceptedLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مرفوضة: <span id="rejectedLeaves">0</span>
-                    </span>
-                </div>
-
-                <!-- فلاتر الإجازات -->
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <form id="filterLeaveForm" class="row g-2">
-                            <div class="col-md-4">
-                                <label class="form-label">اسم الموظف</label>
-                                <input type="text" id="filterLeaveName" class="form-control" placeholder="بحث بالاسم">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">نوع الإجازة</label>
-                                <select id="filterLeaveType" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="اعتيادية">اعتيادية</option>
-                                    <option value="مرضية">مرضية</option>
-                                    <option value="طارئة">طارئة</option>
-                                    <option value="دراسية">دراسية</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">حالة الطلب</label>
-                                <select id="filterLeaveStatus" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مقدمة">مقدمة</option>
-                                    <option value="مقبولة">مقبولة</option>
-                                    <option value="مرفوضة">مرفوضة</option>
-                                    <option value="منتهية">منتهية</option>
-                                </select>
-                            </div>
-                            <div class="col-12 d-flex justify-content-end align-items-end pt-2 gap-2">
-                                <button type="submit" class="btn btn-secondary">بحث</button>
-                                <button type="button" id="btnResetLeaves" class="btn btn-outline-secondary">مسح</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- جدول الإجازات -->
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الموظف</th>
-                                <th>نوع الإجازة</th>
-                                <th>من تاريخ</th>
-                                <th>إلى تاريخ</th>
-                                <th>الحالة</th>
-                                <th>المعتمد</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="leavesTableBody">
-                            <!-- تُملأ ديناميكياً -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- =======================
-                 التقارير
-            ======================== -->
-            <section id="reports">
-                <h4 class="section-title">التقارير والإحصائيات</h4>
-                <p class="text-muted">عرض موجز لتوزيع الموظفين حسب الدائرة، الحالة الوظيفية، والجنس.</p>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الدائرة</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الدائرة</th>
-                                    <th>عدد الموظفين</th>
-                                </tr>
-                                </thead>
-                                <tbody id="deptReportBody">
-                                <!-- تعبئة من السكربت -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الحالة الوظيفية</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الحالة الوظيفية</th>
-                                    <th>العدد</th>
-                                </tr>
-                                </thead>
-                                <tbody id="statusReportBody">
-                                <!-- تعبئة من السكربت -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-3 mt-1">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الجنس</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الجنس</th>
-                                    <th>العدد</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>ذكر</td>
-                                    <td id="genderMaleReport">0</td>
-                                </tr>
-                                <tr>
-                                    <td>أنثى</td>
-                                    <td id="genderFemaleReport">0</td>
-                                </tr>
-                                <tr>
-                                    <td>غير محدد</td>
-                                    <td id="genderOtherReport">0</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">ملخص سريع</h6>
-                            <ul class="mb-0 small">
-                                <li>إجمالي الموظفين: <span id="reportTotalEmployees">0</span></li>
-                                <li>الموظفون على رأس الخدمة: <span id="reportActiveEmployees">0</span></li>
-                                <li>إجمالي الإجازات: <span id="reportTotalLeaves">0</span></li>
-                                <li>إجازات مقبولة: <span id="reportAcceptedLeaves">0</span></li>
-                                <li>إجازات قيد الانتظار: <span id="reportPendingLeaves">0</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-    </div>
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- سكربت المنصة بالكامل -->
 <script>
     // ===========================
     // بيانات الموظفين (مثال) - عدلها حسب بياناتك الحقيقية
@@ -831,13 +243,13 @@
             deptStatsSpan.textContent = parts.join(" | ");
         }
 
-        // تحديث لوحة التحكم
+        // لوحة التحكم
         if (dashTotalEmployees) dashTotalEmployees.textContent = stats.total.toString();
         if (dashActiveEmployees) dashActiveEmployees.textContent = stats.active.toString();
         if (dashMaleEmployees) dashMaleEmployees.textContent = stats.male.toString();
         if (dashFemaleEmployees) dashFemaleEmployees.textContent = stats.female.toString();
 
-        // تحديث التقارير
+        // التقارير
         if (reportTotalEmployees) reportTotalEmployees.textContent = stats.total.toString();
         if (reportActiveEmployees) reportActiveEmployees.textContent = stats.active.toString();
 
@@ -1036,7 +448,7 @@
             .map(r => r.map(field => `"${String(field).replace(/"/g, '""')}"`).join(","))
             .join("\n");
 
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const blob = new Blob([csvContent, ], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement("a");
@@ -1128,12 +540,12 @@
         if (acceptedLeavesSpan) acceptedLeavesSpan.textContent = stats.accepted.toString();
         if (rejectedLeavesSpan) rejectedLeavesSpan.textContent = stats.rejected.toString();
 
-        // تحديث لوحة التحكم
+        // لوحة التحكم
         if (dashTotalLeaves) dashTotalLeaves.textContent = stats.total.toString();
         if (dashAcceptedLeaves) dashAcceptedLeaves.textContent = stats.accepted.toString();
         if (dashPendingLeaves) dashPendingLeaves.textContent = stats.pending.toString();
 
-        // تحديث التقارير
+        // التقارير
         if (reportTotalLeaves) reportTotalLeaves.textContent = stats.total.toString();
         if (reportAcceptedLeaves) reportAcceptedLeaves.textContent = stats.accepted.toString();
         if (reportPendingLeaves) reportPendingLeaves.textContent = stats.pending.toString();
@@ -1292,13 +704,66 @@
     };
 
     // ===========================
-    // أول تحميل
+    // التنقل بين الأقسام (لوحة التحكم / الموظفون / الإجازات / التقارير)
+    // ===========================
+    const navLinks = document.querySelectorAll('.sidebar .nav-link');
+
+    function showSection(sectionId) {
+        const sectionIds = ['dashboard', 'employees', 'leaves', 'reports'];
+
+        sectionIds.forEach(id => {
+            const sec = document.getElementById(id);
+            if (!sec) return;
+
+            if (id === sectionId) {
+                sec.classList.remove('d-none');
+            } else {
+                sec.classList.add('d-none');
+            }
+        });
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href') || '';
+            if (!href.startsWith('#')) return;
+            const targetId = href.substring(1);
+            link.classList.toggle('active', targetId === sectionId);
+        });
+
+        window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href') || '';
+        if (!href.startsWith('#')) return;
+        const targetId = href.substring(1);
+
+        if (['dashboard', 'employees', 'leaves', 'reports'].includes(targetId)) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection(targetId);
+            });
+        }
+    });
+
+    // تفعيل قسم افتراضي عند التحميل (لوحة التحكم)
+    showSection('dashboard');
+
+    // تسجيل الخروج (مؤقت)
+    const logoutLink = Array.from(navLinks).find(l =>
+        (l.textContent || '').trim() === 'تسجيل الخروج'
+    );
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('تم تسجيل الخروج (تجريبيًا). يمكن ربطه لاحقاً بصفحة تسجيل الدخول.');
+        });
+    }
+
+    // ===========================
+    // أول تحميل للبيانات
     // ===========================
     currentView = [...employees];
     currentLeavesView = [...leaves];
     renderEmployees(currentView);
     renderLeaves(currentLeavesView);
 </script>
-
-</body>
-</html>
