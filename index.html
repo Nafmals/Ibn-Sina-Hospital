@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>منصة إدارة ملف الموظفين</title>
+
+  <!-- Tailwind CSS عبر CDN لتنسيق عصري وسريع -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- مكتبة Excel (SheetJS) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js"></script>
+
+  <style>
+    /* متغيرات الألوان العامة (يتم تغييرها حسب الثيم) */
+    :root {
+      --bg: #020617;
+      --fg: #e5e7eb;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.1);
+      --border-subtle: rgba(148,163,184,0.4);
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .glass-card {
+      background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(18px);
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.7),
+        0 0 40px rgba(56,189,248,0.25);
+    }
+
+    .accent-pill {
+      background: var(--accent-soft);
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    .btn-main {
+      border-radius: 9999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background-image: linear-gradient(to right, var(--accent), #6366f1);
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(56,189,248,0.4);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .btn-main:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 18px 35px rgba(56,189,248,0.55);
+      filter: brightness(1.05);
+    }
+
+    .btn-ghost {
+      border-radius: 9999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: radial-gradient(circle at top left, rgba(15,23,42,0.9), rgba(15,23,42,0.5));
+      color: var(--fg);
+      transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+    }
+
+    .btn-ghost:hover {
+      background: radial-gradient(circle at top right, rgba(30,64,175,0.9), rgba(15,23,42,0.9));
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .badge {
+      border-radius: 9999px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(148,163,184,0.5);
+      padding-inline: 0.75rem;
+      padding-block: 0.25rem;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.85rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(15,23,42,0.96), rgba(15,23,42,0.92));
+      z-index: 10;
+    }
+
+    th {
+      padding: 0.6rem 0.75rem;
+      text-align: right;
+      border-bottom: 1px solid rgba(148,163,184,0.7);
+      font-weight: 600;
+      white-space: nowrap;
+      color: #e5e7eb;
+    }
+
+    td {
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid rgba(148,163,184,0.2);
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(15,23,42,0.7);
+    }
+
+    tbody tr:nth-child(odd) {
+      background: rgba(15,23,42,0.4);
+    }
+
+    tbody tr:hover {
+      background: rgba(30,64,175,0.55);
+    }
+
+    /* ------ الثيمات (10 ثيمات) ------ */
+
+    body.theme-1 {
+      --bg: #020617;
+      --fg: #e5e7eb;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.13);
+      --border-subtle: rgba(148,163,184,0.45);
+    }
+
+    body.theme-2 {
+      --bg: #020617;
+      --fg: #f9fafb;
+      --card-bg: #0b1120;
+      --accent: #f97316;
+      --accent-soft: rgba(249,115,22,0.18);
+      --border-subtle: rgba(248,250,252,0.25);
+    }
+
+    body.theme-3 {
+      --bg: #020617;
+      --fg: #ecfeff;
+      --card-bg: #022c22;
+      --accent: #22c55e;
+      --accent-soft: rgba(34,197,94,0.18);
+      --border-subtle: rgba(45,212,191,0.44);
+    }
+
+    body.theme-4 {
+      --bg: #020617;
+      --fg: #fdf2f8;
+      --card-bg: #4c1d95;
+      --accent: #ec4899;
+      --accent-soft: rgba(236,72,153,0.18);
+      --border-subtle: rgba(233,213,255,0.6);
+    }
+
+    body.theme-5 {
+      --bg: #020617;
+      --fg: #e5e7eb;
+      --card-bg: #111827;
+      --accent: #eab308;
+      --accent-soft: rgba(234,179,8,0.16);
+      --border-subtle: rgba(148,163,184,0.6);
+    }
+
+    body.theme-6 {
+      --bg: #020617;
+      --fg: #eff6ff;
+      --card-bg: #0f172a;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59,130,246,0.18);
+      --border-subtle: rgba(191,219,254,0.55);
+    }
+
+    body.theme-7 {
+      --bg: #020617;
+      --fg: #f1f5f9;
+      --card-bg: #0f172a;
+      --accent: #8b5cf6;
+      --accent-soft: rgba(139,92,246,0.19);
+      --border-subtle: rgba(148,163,184,0.7);
+    }
+
+    body.theme-8 {
+      --bg: #020617;
+      --fg: #f4f4f5;
+      --card-bg: #111827;
+      --accent: #f97316;
+      --accent-soft: rgba(248,250,252,0.1);
+      --border-subtle: rgba(82,82,91,0.7);
+    }
+
+    body.theme-9 {
+      --bg: #020617;
+      --fg: #e5e7eb;
+      --card-bg: #0b1120;
+      --accent: #22c55e;
+      --accent-soft: rgba(21,128,61,0.22);
+      --border-subtle: rgba(148,163,184,0.55);
+    }
+
+    body.theme-10 {
+      --bg: #020617;
+      --fg: #f9fafb;
+      --card-bg: #020617;
+      --accent: #14b8a6;
+      --accent-soft: rgba(45,212,191,0.2);
+      --border-subtle: rgba(148,163,184,0.55);
+    }
+  </style>
+</head>
+<body class="theme-1 min-h-screen">
+  <div class="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <!-- الهيدر -->
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 accent-pill px-3 py-1 rounded-full text-xs sm:text-[11px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>منصة محلية لإدارة ملف الموظفين – لا تحتاج إلى سيرفر</span>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-50">
+            منصة ملف الموظفين
+          </h1>
+          <p class="mt-1 text-sm text-slate-400 max-w-xl">
+            استيراد ملف Excel، حفظ البيانات في المتصفح، تصدير JSON وإصدار تقرير Excel، مع 10 ثيمات مختلفة.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 items-stretch sm:items-end">
+        <label class="text-xs text-slate-400 flex flex-col gap-1">
+          <span class="flex items-center gap-1">
+            <span>الثيم</span>
+          </span>
+          <select id="themeSelect"
+                  class="bg-slate-950/60 border border-slate-600/60 rounded-full px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/70">
+            <option value="theme-1">أزرق نيوني (افتراضي)</option>
+            <option value="theme-2">برتقالي داكن</option>
+            <option value="theme-3">أخضر هادئ</option>
+            <option value="theme-4">بنفسجي / وردي</option>
+            <option value="theme-5">ذهبي كلاسيكي</option>
+            <option value="theme-6">أزرق رسمي</option>
+            <option value="theme-7">بنفسجي نيون</option>
+            <option value="theme-8">رمادي دافئ</option>
+            <option value="theme-9">أخضر غامق</option>
+            <option value="theme-10">تركوازي</option>
+          </select>
+        </label>
+
+        <div class="flex flex-wrap gap-2 justify-end">
+          <label class="relative inline-flex">
+            <input id="fileInput" type="file" accept=".xlsx,.xls"
+                   class="absolute inset-0 opacity-0 cursor-pointer" />
+            <span class="btn-main text-xs px-4 py-2 flex items-center gap-1.5">
+              📥 استيراد ملف Excel
+            </span>
+          </label>
+
+          <button id="exportJsonBtn" class="btn-ghost text-xs px-4 py-2">
+            🧾 تصدير JSON
+          </button>
+
+          <button id="exportExcelBtn" class="btn-ghost text-xs px-4 py-2">
+            📊 إصدار تقرير Excel
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- شريط المعلومات والبحث -->
+    <section class="glass-card rounded-3xl p-4 sm:p-5 mb-5">
+      <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+        <div class="flex flex-wrap gap-2">
+          <span class="badge">
+            عدد السجلات: <span id="recordsCount" class="font-semibold text-sky-400 ml-1">0</span>
+          </span>
+          <span class="badge">
+            حالة التخزين: <span id="storageStatus" class="font-semibold text-emerald-400 ml-1">لا يوجد بيانات</span>
+          </span>
+        </div>
+
+        <div class="flex flex-1 gap-3 items-center">
+          <div class="relative flex-1">
+            <input id="searchInput"
+                   class="w-full rounded-full bg-slate-900/70 border border-slate-600/70 text-xs sm:text-sm text-slate-100 placeholder-slate-500 px-3 sm:px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+                   placeholder="ابحث باسم الموظف، العنوان الوظيفي، الرقم الوظيفي ..." />
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
+          </div>
+          <button id="clearSearchBtn" class="btn-ghost text-xs px-3 py-1.5">
+            مسح
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- جدول البيانات -->
+    <section class="glass-card rounded-3xl p-4 sm:p-5">
+      <div class="overflow-x-auto rounded-2xl border border-slate-700/60">
+        <div class="max-h-[65vh] overflow-auto">
+          <table id="dataTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="mt-3 text-xs text-slate-500">
+        ملاحظة: يتم حفظ البيانات تلقائيًا في المتصفح (LocalStorage) بعد استيراد الملف أو تحديثه.
+      </p>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "hr_employees_data_v1";
+    const THEME_KEY = "hr_employees_theme_v1";
+
+    let allRows = [];      // كل البيانات من Excel
+    let filteredRows = []; // البيانات بعد البحث
+
+    function setStorageStatus(text, type = "ok") {
+      const el = document.getElementById("storageStatus");
+      el.textContent = text;
+      if (type === "ok") {
+        el.classList.remove("text-red-400");
+        el.classList.add("text-emerald-400");
+      } else {
+        el.classList.remove("text-emerald-400");
+        el.classList.add("text-red-400");
+      }
+    }
+
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allRows));
+        setStorageStatus("تم الحفظ في التخزين المحلي ✓", "ok");
+      } catch (e) {
+        console.error(e);
+        setStorageStatus("خطأ في الحفظ إلى LocalStorage", "error");
+      }
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          allRows = parsed;
+          filteredRows = [...allRows];
+          renderTable();
+          updateStats();
+          setStorageStatus("تم تحميل البيانات من LocalStorage ✓", "ok");
+        }
+      } catch (e) {
+        console.error(e);
+        setStorageStatus("تعذر قراءة البيانات من LocalStorage", "error");
+      }
+    }
+
+    function renderTable() {
+      const thead = document.getElementById("tableHead");
+      const tbody = document.getElementById("tableBody");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
+      if (!filteredRows || filteredRows.length === 0) {
+        tbody.innerHTML = `
+          <tr><td class="px-4 py-3 text-center text-slate-400" colspan="100">
+            لا توجد بيانات لعرضها. قم باستيراد ملف Excel أولاً.
+          </td></tr>`;
+        return;
+      }
+
+      const keys = Object.keys(filteredRows[0]);
+
+      const headerRow = document.createElement("tr");
+      keys.forEach((k) => {
+        const th = document.createElement("th");
+        th.textContent = k;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+
+      filteredRows.forEach((row) => {
+        const tr = document.createElement("tr");
+        keys.forEach((k) => {
+          const td = document.createElement("td");
+          const value = row[k] != null ? row[k] : "";
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateStats() {
+      const countEl = document.getElementById("recordsCount");
+      countEl.textContent = allRows.length.toString();
+    }
+
+    function handleFileSelect(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+          const firstSheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[firstSheetName];
+
+          const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+          allRows = json;
+          filteredRows = [...allRows];
+          renderTable();
+          updateStats();
+          saveToLocalStorage();
+        } catch (err) {
+          console.error(err);
+          alert("حدث خطأ أثناء قراءة ملف Excel. تأكد أن الملف صحيح.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function applySearch(term) {
+      term = term.trim();
+      if (!term) {
+        filteredRows = [...allRows];
+      } else {
+        const lower = term.toLowerCase();
+        filteredRows = allRows.filter((row) => {
+          const joined = Object.values(row).join(" ").toLowerCase();
+          return joined.includes(lower);
+        });
+      }
+      renderTable();
+      const countEl = document.getElementById("recordsCount");
+      countEl.textContent = filteredRows.length.toString();
+    }
+
+    function exportJson() {
+      if (!allRows || allRows.length === 0) {
+        alert("لا توجد بيانات لتصديرها. قم باستيراد ملف أولاً.");
+        return;
+      }
+      const jsonStr = JSON.stringify(allRows, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "employees-data.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportExcel() {
+      if (!allRows || allRows.length === 0) {
+        alert("لا توجد بيانات لتصديرها. قم باستيراد ملف أولاً.");
+        return;
+      }
+      const worksheet = XLSX.utils.json_to_sheet(allRows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "تقرير الموظفين");
+      XLSX.writeFile(workbook, "تقرير_الموظفين.xlsx");
+    }
+
+    function applyTheme(themeName) {
+      const body = document.body;
+      for (let i = 1; i <= 10; i++) {
+        body.classList.remove(`theme-${i}`);
+      }
+      body.classList.add(themeName);
+      localStorage.setItem(THEME_KEY, themeName);
+    }
+
+    function loadTheme() {
+      const saved = localStorage.getItem(THEME_KEY) || "theme-1";
+      const select = document.getElementById("themeSelect");
+      select.value = saved;
+      applyTheme(saved);
+    }
+
+    function init() {
+      loadTheme();
+      loadFromLocalStorage();
+
+      document.getElementById("fileInput").addEventListener("change", handleFileSelect);
+      document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
+      document.getElementById("exportExcelBtn").addEventListener("click", exportExcel);
+
+      const searchInput = document.getElementById("searchInput");
+      searchInput.addEventListener("input", (e) => applySearch(e.target.value));
+
+      document.getElementById("clearSearchBtn").addEventListener("click", () => {
+        searchInput.value = "";
+        applySearch("");
+      });
+
+      document.getElementById("themeSelect").addEventListener("change", (e) => {
+        applyTheme(e.target.value);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
