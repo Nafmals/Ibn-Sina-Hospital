@@ -152,6 +152,36 @@
         .section-title {
             margin-bottom: .5rem;
         }
+
+        /* جدول الموظفين: تمرير عمودي وهيدر ثابت */
+        .employee-table-wrapper {
+            max-height: 480px;
+            overflow-y: auto;
+        }
+        .employee-table-wrapper thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background-color: var(--table-header-bg);
+        }
+
+        /* صفحة/طبقة نموذج الموظف */
+        .employee-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem 1rem;
+            z-index: 1050;
+        }
+        .employee-overlay .card {
+            width: 100%;
+            max-width: 1200px;
+            max-height: 100%;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="theme-comfort">
@@ -340,7 +370,8 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <!-- جدول الموظفين مع سكرول -->
+                        <div class="table-responsive employee-table-wrapper">
                             <table class="table table-sm table-hover align-middle mb-0">
                                 <thead>
                                 <tr>
@@ -367,101 +398,101 @@
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- نموذج إضافة / تعديل موظف -->
-                <section id="employeeFormSection" class="mt-4 d-none">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 id="employeeFormTitle" class="mb-0">إضافة موظف جديد</h5>
-                                <button type="button" id="employeeFormClose" class="btn btn-sm btn-outline-secondary">
-                                    إغلاق النموذج
-                                </button>
+            <!-- طبقة / صفحة نموذج إضافة/تعديل موظف -->
+            <div id="employeeFormSection" class="employee-overlay d-none">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 id="employeeFormTitle" class="mb-0">إضافة موظف جديد</h5>
+                            <button type="button" id="employeeFormClose" class="btn btn-sm btn-outline-secondary">
+                                إغلاق النموذج
+                            </button>
+                        </div>
+
+                        <form id="employeeForm" class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">الأسم الاول</label>
+                                <input type="text" id="empFirstName" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">الأسم الثاني</label>
+                                <input type="text" id="empSecondName" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">الأسم الثالث</label>
+                                <input type="text" id="empThirdName" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">الأسم الرابع</label>
+                                <input type="text" id="empFourthName" class="form-control">
                             </div>
 
-                            <form id="employeeForm" class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label">الأسم الاول</label>
-                                    <input type="text" id="empFirstName" class="form-control" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">الأسم الثاني</label>
-                                    <input type="text" id="empSecondName" class="form-control">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">الأسم الثالث</label>
-                                    <input type="text" id="empThirdName" class="form-control">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">الأسم الرابع</label>
-                                    <input type="text" id="empFourthName" class="form-control">
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">العنوان الوظيفي</label>
+                                <input type="text" id="empJobTitle" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الحالة الوظيفية</label>
+                                <select id="empStatus" class="form-select" required>
+                                    <option value="مستمر بالخدمة">مستمر بالخدمة</option>
+                                    <option value="إجازة">إجازة</option>
+                                    <option value="متقاعد">متقاعد</option>
+                                    <option value="متدرب">متدرب</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">أسم الدائرة / مبنى الوزارة</label>
+                                <input type="text" id="empDept" class="form-control" required>
+                            </div>
 
-                                <div class="col-md-4">
-                                    <label class="form-label">العنوان الوظيفي</label>
-                                    <input type="text" id="empJobTitle" class="form-control" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">الحالة الوظيفية</label>
-                                    <select id="empStatus" class="form-select" required>
-                                        <option value="مستمر بالخدمة">مستمر بالخدمة</option>
-                                        <option value="إجازة">إجازة</option>
-                                        <option value="متقاعد">متقاعد</option>
-                                        <option value="متدرب">متدرب</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">أسم الدائرة / مبنى الوزارة</label>
-                                    <input type="text" id="empDept" class="form-control" required>
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الرقم الوظيفي</label>
+                                <input type="text" id="empJobNumber" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الرقم الوطني</label>
+                                <input type="text" id="empNationalId" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">أسم الأم الثلاثي</label>
+                                <input type="text" id="empMotherName" class="form-control">
+                            </div>
 
-                                <div class="col-md-4">
-                                    <label class="form-label">الرقم الوظيفي</label>
-                                    <input type="text" id="empJobNumber" class="form-control" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">الرقم الوطني</label>
-                                    <input type="text" id="empNationalId" class="form-control">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">أسم الأم الثلاثي</label>
-                                    <input type="text" id="empMotherName" class="form-control">
-                                </div>
+                            <div class="col-md-3">
+                                <label class="form-label">الجنس</label>
+                                <select id="empGender" class="form-select">
+                                    <option value="">غير محدد</option>
+                                    <option value="ذكر">ذكر</option>
+                                    <option value="أنثى">أنثى</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">تاريخ التولد</label>
+                                <input type="date" id="empBirthDate" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">تاريخ التعيين</label>
+                                <input type="date" id="empHireDate" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">الملاحظات</label>
+                                <input type="text" id="empNotes" class="form-control">
+                            </div>
 
-                                <div class="col-md-3">
-                                    <label class="form-label">الجنس</label>
-                                    <select id="empGender" class="form-select">
-                                        <option value="">غير محدد</option>
-                                        <option value="ذكر">ذكر</option>
-                                        <option value="أنثى">أنثى</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">تاريخ التولد</label>
-                                    <input type="date" id="empBirthDate" class="form-control">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">تاريخ التعيين</label>
-                                    <input type="date" id="empHireDate" class="form-control">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">الملاحظات</label>
-                                    <input type="text" id="empNotes" class="form-control">
-                                </div>
-
-                                <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-                                    <button type="button" id="employeeFormCancel" class="btn btn-outline-secondary">
-                                        إلغاء
-                                    </button>
-                                    <button type="submit" class="btn btn-primary">
-                                        حفظ البيانات
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                                <button type="button" id="employeeFormCancel" class="btn btn-outline-secondary">
+                                    إلغاء
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    حفظ البيانات
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </section>
-            </section>
+                </div>
+            </div>
 
             <!-- الإجازات -->
             <section id="leaves">
@@ -635,14 +666,13 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script>
-    // مفاتيح التخزين المحلي
     const STORAGE_KEYS = {
         employees: "hr_employees_v1",
         leaves: "hr_leaves_v1",
         section: "hr_current_section_v1"
     };
 
-    // ---------------- بيانات أولية (تُستخدم فقط أول مرة إذا لم يوجد حفظ سابق) ----------------
+    // بيانات أولية (تستعمل أول مرة فقط)
     const employees = [
         {
             id: 1,
@@ -737,7 +767,7 @@
         { id: 4, employeeId: 6, employeeName: "مها معاذ عباس",    type: "طارئة",    startDate: "2025-03-15", endDate: "2025-03-18", status: "مرفوضة", approvedBy: "رئيس الموارد البشرية" }
     ];
 
-    // ---------------- التخزين المحلي ----------------
+    // --- تخزين محلي ---
     function saveDataToStorage() {
         try {
             localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees));
@@ -770,14 +800,14 @@
         }
     }
 
-    // تحميل البيانات المحفوظة (إن وجدت)
+    // تحميل من التخزين إن وجد
     loadDataFromStorage();
 
     let currentView = [...employees];
     let currentLeavesView = [...leaves];
     let editingEmployeeId = null;
 
-    // ---------------- عناصر DOM ----------------
+    // ---- DOM ----
     const bodyEl = document.body;
     const themeSelect = document.getElementById("themeSelect");
 
@@ -853,7 +883,18 @@
     const empHireDateInput = document.getElementById("empHireDate");
     const empNotesInput = document.getElementById("empNotes");
 
-    // ---------------- توابع مساعدة ----------------
+    // ---- ثيم ----
+    function applyTheme(themeClass) {
+        bodyEl.classList.remove("theme-light", "theme-dark", "theme-ocean", "theme-sepia", "theme-comfort");
+        bodyEl.classList.add(themeClass);
+        localStorage.setItem("hr_theme", themeClass);
+    }
+    themeSelect.addEventListener("change", e => applyTheme(e.target.value));
+    const savedTheme = localStorage.getItem("hr_theme") || "theme-comfort";
+    applyTheme(savedTheme);
+    themeSelect.value = savedTheme;
+
+    // ---- توابع مساعدة ----
     function formatDate(dateStr) {
         if (!dateStr) return "";
         const d = new Date(dateStr);
@@ -907,7 +948,7 @@
         return "";
     }
 
-    // ---------------- إحصائيات الموظفين ----------------
+    // ---- إحصائيات الموظفين ----
     function calculateEmployeeStats(list) {
         const stats = { total: list.length, active: 0, male: 0, female: 0, other: 0, byStatus: {}, byDept: {} };
         list.forEach(emp => {
@@ -967,7 +1008,7 @@
         genderOtherReport.textContent = s.other;
     }
 
-    // ---------------- عرض جدول الموظفين ----------------
+    // ---- عرض جدول الموظفين ----
     function renderEmployees(list) {
         tableBody.innerHTML = "";
 
@@ -1016,18 +1057,7 @@
         renderEmployeeStats(list);
     }
 
-    // ---------------- الثيم ----------------
-    function applyTheme(themeClass) {
-        bodyEl.classList.remove("theme-light", "theme-dark", "theme-ocean", "theme-sepia", "theme-comfort");
-        bodyEl.classList.add(themeClass);
-        localStorage.setItem("hr_theme", themeClass);
-    }
-    themeSelect.addEventListener("change", e => applyTheme(e.target.value));
-    const savedTheme = localStorage.getItem("hr_theme") || "theme-comfort";
-    applyTheme(savedTheme);
-    themeSelect.value = savedTheme;
-
-    // ---------------- فلاتر الموظفين ----------------
+    // ---- فلاتر الموظفين ----
     function applyEmployeeFilters() {
         const nameVal = filterName.value.trim();
         const deptVal = filterDept.value;
@@ -1050,7 +1080,7 @@
         renderEmployees(currentView);
     });
 
-    // ---------------- نموذج الموظف ----------------
+    // ---- نموذج الموظف (صفحة/Overlay) ----
     function clearEmployeeForm() {
         empFirstNameInput.value = "";
         empSecondNameInput.value = "";
@@ -1098,7 +1128,6 @@
             fillEmployeeForm(emp);
         }
         employeeFormSection.classList.remove("d-none");
-        employeeFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     function closeEmployeeForm() {
         employeeFormSection.classList.add("d-none");
@@ -1172,7 +1201,7 @@
         alert("تم حفظ بيانات الموظفين والإجازات في هذا الجهاز.");
     });
 
-    // ---------------- تصدير إلى CSV (Excel) ----------------
+    // ---- تصدير CSV ----
     btnExport.addEventListener("click", () => {
         const list = currentView;
         if (!list.length) {
@@ -1238,7 +1267,7 @@
         URL.revokeObjectURL(url);
     });
 
-    // ---------------- استيراد من ملف Excel/CSV ----------------
+    // ---- استيراد من Excel/CSV ----
     btnImport.addEventListener("click", () => {
         importFileInput.click();
     });
@@ -1309,7 +1338,6 @@
 
         const foundCount = Object.values(indices).filter(i => i !== -1).length;
 
-        // إذا لم نجد أي عمود بالاسم -> نستخدم ترتيب الأعمدة كما في الجدول
         if (foundCount === 0) {
             importByFixedOrder(rows);
             return;
@@ -1382,11 +1410,9 @@
         mergeImportedEmployees(newEmployees);
     }
 
-    // استيراد عندما لا توجد عناوين أعمدة معروفة (نعتمد على ترتيب الأعمدة)
     function importByFixedOrder(rows) {
         const newEmployees = [];
 
-        // نفترض أن الصف الأول هو عناوين (حتى لو كانت مختلفة) ونبدأ من الصف الثاني
         for (let i = 1; i < rows.length; i++) {
             const row = rows[i];
             if (!row || row.every(cell => cell === null || cell === undefined || String(cell).trim() === "")) continue;
@@ -1460,7 +1486,7 @@
         alert("تم استيراد الموظفين من الملف بنجاح.");
     }
 
-    // ---------------- عرض / تعديل / حذف موظف ----------------
+    // ---- عرض / تعديل / حذف موظف ----
     window.viewEmployee = id => {
         const emp = employees.find(e => e.id === id);
         if (!emp) {
@@ -1507,7 +1533,7 @@
         alert("تم حذف الموظف.");
     };
 
-    // ---------------- إجازات ----------------
+    // ---- إجازات ----
     function calculateLeaveStats(list) {
         const s = { total: list.length, pending: 0, accepted: 0, rejected: 0 };
         list.forEach(l => {
@@ -1646,7 +1672,7 @@
         alert("تم حذف الإجازة.");
     };
 
-    // ---------------- التنقل بين الأقسام مع حفظ آخر قسم ----------------
+    // ---- التنقل بين الأقسام مع تذكّر آخر قسم ----
     const navLinks = document.querySelectorAll(".sidebar .nav-link");
     function showSection(sectionId) {
         const ids = ["dashboard","employees","leaves","reports"];
@@ -1684,13 +1710,13 @@
         });
     }
 
-    // ---------------- أول تحميل ----------------
+    // ---- أول تحميل ----
     currentView = [...employees];
     currentLeavesView = [...leaves];
     renderEmployees(currentView);
     renderLeaves(currentLeavesView);
 
-    // عند أول مرة نحفظ البيانات الافتراضية إذا لم يكن هناك شيء في التخزين
+    // حفظ أولي إن لم يكن مسبقاً
     saveDataToStorage();
 
     const savedSectionId = localStorage.getItem(STORAGE_KEYS.section) || "dashboard";
