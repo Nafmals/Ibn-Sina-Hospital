@@ -336,12 +336,20 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>الاسم الكامل</th>
-                                <th>الرقم الوظيفي</th>
+                                <th>الأسم الاول</th>
+                                <th>الأسم الثاني</th>
+                                <th>الأسم الثالث</th>
+                                <th>الأسم الرابع</th>
                                 <th>العنوان الوظيفي</th>
-                                <th>الدائرة</th>
+                                <th>الحالة الوظيفية</th>
+                                <th>الملاحظات</th>
+                                <th>أسم الدائرة / مبنى الوزارة</th>
+                                <th>الرقم الوظيفي</th>
+                                <th>الرقم الوطني</th>
+                                <th>أسم الأم الثلاثي</th>
+                                <th>الجنس</th>
+                                <th>تاريخ التولد</th>
                                 <th>تاريخ التعيين</th>
-                                <th>الحالة</th>
                                 <th class="text-center">إجراءات</th>
                             </tr>
                             </thead>
@@ -865,32 +873,52 @@
         genderOtherReport.textContent = s.other;
     }
 
-    // ---------------- عرض جدول الموظفين ----------------
+    // ---------------- عرض جدول الموظفين (كل الأعمدة) ----------------
     function renderEmployees(list) {
         tableBody.innerHTML = "";
+
         list.forEach((emp, i) => {
             const tr = document.createElement("tr");
-            const fullName = getEmployeeFullName(emp);
+
+            const fullName = getEmployeeFullName(emp) || "";
+            const parts = fullName.split(/\s+/);
+            const firstName  = emp.firstName  || parts[0] || "";
+            const secondName = emp.secondName || parts[1] || "";
+            const thirdName  = emp.thirdName  || parts[2] || "";
+            const fourthName = emp.fourthName || parts[3] || "";
+
             const statusClass =
                 emp.status === "مستمر بالخدمة" ? "bg-success" :
-                emp.status === "إجازة" ? "bg-warning" :
-                emp.status === "متقاعد" ? "bg-secondary" : "bg-info";
+                emp.status === "إجازة"          ? "bg-warning" :
+                emp.status === "متقاعد"         ? "bg-secondary" :
+                                                  "bg-info";
 
             tr.innerHTML = `
               <td>${i + 1}</td>
-              <td>${fullName}</td>
-              <td>${emp.jobNumber || ""}</td>
+              <td>${firstName}</td>
+              <td>${secondName}</td>
+              <td>${thirdName}</td>
+              <td>${fourthName}</td>
               <td>${emp.jobTitle || ""}</td>
-              <td>${emp.department || ""}</td>
-              <td>${formatDate(emp.hireDate)}</td>
               <td><span class="badge ${statusClass} badge-status">${emp.status || ""}</span></td>
+              <td>${emp.notes || ""}</td>
+              <td>${emp.department || ""}</td>
+              <td>${emp.jobNumber || ""}</td>
+              <td>${emp.nationalId || ""}</td>
+              <td>${emp.motherName || ""}</td>
+              <td>${emp.gender || ""}</td>
+              <td>${formatDate(emp.birthDate)}</td>
+              <td>${formatDate(emp.hireDate)}</td>
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEmployee(${emp.id})">عرض</button>
                 <button class="btn btn-sm btn-outline-secondary me-1" onclick="editEmployee(${emp.id})">تعديل</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee(${emp.id})">حذف</button>
-              </td>`;
+              </td>
+            `;
+
             tableBody.appendChild(tr);
         });
+
         renderEmployeeStats(list);
     }
 
@@ -1043,7 +1071,7 @@
         closeEmployeeForm();
     });
 
-    // ---------------- تصدير CSV بنفس الأعمدة المطلوبة ----------------
+    // ---------------- تصدير CSV بنفس ترتيب الأعمدة ----------------
     btnExport.addEventListener("click", () => {
         const list = currentView;
         if (!list.length) {
@@ -1069,11 +1097,13 @@
         ];
 
         const rows = list.map(emp => {
-            const parts = (getEmployeeFullName(emp) || "").split(/\s+/);
-            const firstName = emp.firstName || parts[0] || "";
+            const fullName = getEmployeeFullName(emp) || "";
+            const parts = fullName.split(/\s+/);
+            const firstName  = emp.firstName  || parts[0] || "";
             const secondName = emp.secondName || parts[1] || "";
-            const thirdName = emp.thirdName || parts[2] || "";
+            const thirdName  = emp.thirdName  || parts[2] || "";
             const fourthName = emp.fourthName || parts[3] || "";
+
             return [
                 firstName,
                 secondName,
