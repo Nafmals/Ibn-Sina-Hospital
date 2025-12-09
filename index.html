@@ -1,553 +1,109 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>نظام إدارة الموظفين - مستشفى ابن سينا التعليمي</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS RTL -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
-
-    <style>
-        :root {
-            --bg-color: #f5f6fa;
-            --bg-soft: #ffffff;
-            --text-color: #1f2933;
-            --muted-text: #6b7280;
-            --accent: #0d6efd;
-            --accent-soft: rgba(13, 110, 253, 0.08);
-            --border-color: #e5e7eb;
-            --sidebar-bg: #0d6efd;
-            --sidebar-text: #ffffff;
-            --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
-            --table-header-bg: #e9ecef;
-        }
-        .theme-light {
-            --bg-color: #f5f6fa;
-            --bg-soft: #ffffff;
-            --text-color: #111827;
-            --muted-text: #6b7280;
-            --accent: #0d6efd;
-            --accent-soft: rgba(13, 110, 253, 0.08);
-            --border-color: #e5e7eb;
-            --sidebar-bg: #0d6efd;
-            --sidebar-text: #ffffff;
-            --table-header-bg: #eef2ff;
-        }
-        .theme-dark {
-            --bg-color: #030712;
-            --bg-soft: #020617;
-            --text-color: #e5e7eb;
-            --muted-text: #9ca3af;
-            --accent: #38bdf8;
-            --accent-soft: rgba(56, 189, 248, 0.1);
-            --border-color: #1f2937;
-            --sidebar-bg: #020617;
-            --sidebar-text: #e5e7eb;
-            --table-header-bg: #111827;
-        }
-        .theme-ocean {
-            --bg-color: #0f172a;
-            --bg-soft: #0b1220;
-            --text-color: #e5e7eb;
-            --muted-text: #9ca3af;
-            --accent: #38bdf8;
-            --accent-soft: rgba(56, 189, 248, 0.14);
-            --border-color: #1e293b;
-            --sidebar-bg: #020617;
-            --sidebar-text: #e5e7eb;
-            --table-header-bg: #0b1120;
-        }
-        .theme-sepia {
-            --bg-color: #f4eee2;
-            --bg-soft: #fdf7ec;
-            --text-color: #3b2f2f;
-            --muted-text: #7c6a5f;
-            --accent: #c47f3a;
-            --accent-soft: rgba(196, 127, 58, 0.1);
-            --border-color: #e0d0b8;
-            --sidebar-bg: #c47f3a;
-            --sidebar-text: #fff7ec;
-            --table-header-bg: #f3e3cf;
-        }
-        .theme-comfort {
-            --bg-color: #edf2f7;
-            --bg-soft: #ffffff;
-            --text-color: #1a202c;
-            --muted-text: #718096;
-            --accent: #4299e1;
-            --accent-soft: rgba(66, 153, 225, 0.12);
-            --border-color: #e2e8f0;
-            --sidebar-bg: #2d3748;
-            --sidebar-text: #e2e8f0;
-            --table-header-bg: #e2e8f0;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-        .sidebar {
-            min-height: 100vh;
-            background: var(--sidebar-bg);
-            color: var(--sidebar-text);
-        }
-        .sidebar a {
-            color: var(--sidebar-text);
-            text-decoration: none;
-            border-radius: .6rem;
-            padding: .55rem .9rem;
-            display: block;
-        }
-        .sidebar a:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-        .sidebar a.active {
-            background: rgba(255, 255, 255, 0.16);
-        }
-        main {
-            background-color: var(--bg-color);
-        }
-        .card {
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-soft);
-            box-shadow: var(--shadow-soft);
-            border-radius: 1rem;
-        }
-        .page-title {
-            font-weight: 700;
-        }
-        .text-muted {
-            color: var(--muted-text) !important;
-        }
-        .table thead {
-            background-color: var(--table-header-bg);
-        }
-        .badge-status {
-            font-size: 0.75rem;
-        }
-        .btn-primary,
-        .btn-outline-primary:hover {
-            background-color: var(--accent);
-            border-color: var(--accent);
-        }
-        .btn-outline-primary {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-        .filter-chip {
-            background-color: var(--accent-soft);
-            border-radius: 999px;
-            padding: .25rem .75rem;
-            font-size: .8rem;
-        }
-        .theme-selector {
-            min-width: 210px;
-        }
-        section {
-            margin-bottom: 2.5rem;
-        }
-        .section-title {
-            margin-bottom: .5rem;
-        }
-    </style>
-</head>
-<body class="theme-comfort">
-<div class="container-fluid">
-    <div class="row">
-        <!-- الشريط الجانبي -->
-        <nav class="col-md-2 col-lg-2 d-md-block sidebar p-3">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h5 class="mb-0">نظام الموظفين</h5>
-                <span class="badge bg-light text-dark">HR</span>
-            </div>
-            <ul class="nav flex-column gap-1">
-                <li class="nav-item">
-                    <a class="nav-link" href="#dashboard">لوحة التحكم</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="#employees">الموظفون</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#leaves">الإجازات</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#reports">التقارير</a>
-                </li>
-                <li class="nav-item mt-4">
-                    <a class="nav-link" href="#logout">تسجيل الخروج</a>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- المحتوى -->
-        <main class="col-md-10 col-lg-10 ms-auto p-4">
-            <!-- شريط علوي -->
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                <div>
-                    <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التعليمي</h2>
-                    <p class="text-muted mb-0">لوحة تحكم، موظفون، إجازات، وتقارير في منصة واحدة.</p>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="text-muted small">ثيم الواجهة:</span>
-                    <select id="themeSelect" class="form-select form-select-sm theme-selector">
-                        <option value="theme-comfort">مريح (افتراضي)</option>
-                        <option value="theme-light">فاتح</option>
-                        <option value="theme-dark">داكن</option>
-                        <option value="theme-ocean">أوشن</option>
-                        <option value="theme-sepia">سيبيا</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- لوحة التحكم -->
-            <section id="dashboard">
-                <h4 class="section-title">لوحة التحكم</h4>
-                <p class="text-muted">نظرة سريعة على أعداد الموظفين، توزيعهم، والإجازات.</p>
-
-                <div class="row g-3 mb-3">
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجمالي الموظفين</p>
-                            <h3 id="dashTotalEmployees" class="mb-0">0</h3>
-                            <small class="text-muted">جميع الموظفين المسجلين</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">مستمرون بالخدمة</p>
-                            <h3 id="dashActiveEmployees" class="mb-0">0</h3>
-                            <small class="text-muted">على رأس العمل</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">الذكور</p>
-                            <h3 id="dashMaleEmployees" class="mb-0">0</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">الإناث</p>
-                            <h3 id="dashFemaleEmployees" class="mb-0">0</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">عدد الإجازات الكلي</p>
-                            <h4 id="dashTotalLeaves" class="mb-0">0</h4>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات مقبولة</p>
-                            <h4 id="dashAcceptedLeaves" class="mb-0">0</h4>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات قيد الانتظار</p>
-                            <h4 id="dashPendingLeaves" class="mb-0">0</h4>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- الموظفون -->
-            <section id="employees">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h4 class="section-title mb-1">قائمة الموظفين</h4>
-                        <p class="text-muted mb-0">إدارة بيانات جميع الموظفين.</p>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button id="btnExport" class="btn btn-outline-primary btn-sm">
-                            تصدير إلى CSV
-                        </button>
-                        <button id="btnAdd" class="btn btn-primary btn-sm">
-                            + إضافة موظف جديد
-                        </button>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
-                    <span class="filter-chip">
-                        المجموع: <span id="totalCount">0</span> موظف
-                    </span>
-                    <span class="filter-chip">
-                        مستمر بالخدمة: <span id="activeCount">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        الذكور: <span id="maleCount">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        الإناث: <span id="femaleCount">0</span>
-                    </span>
-                </div>
-
-                <div class="mb-3">
-                    <small class="text-muted d-block">
-                        حالات الخدمة: <span id="statusStats">لا توجد بيانات بعد</span>
-                    </small>
-                    <small class="text-muted d-block">
-                        توزيع حسب الدائرة: <span id="deptStats">لا توجد بيانات بعد</span>
-                    </small>
-                </div>
-
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <form id="filterForm" class="row g-2">
-                            <div class="col-md-3">
-                                <label class="form-label">الاسم</label>
-                                <input type="text" id="filterName" class="form-control" placeholder="بحث بالاسم">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الدائرة</label>
-                                <select id="filterDept" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مكتب الوزير / الملاك">مكتب الوزير / الملاك</option>
-                                    <option value="دائرة الموارد البشرية">دائرة الموارد البشرية</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الحالة الوظيفية</label>
-                                <select id="filterStatus" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مستمر بالخدمة">مستمر بالخدمة</option>
-                                    <option value="إجازة">إجازة</option>
-                                    <option value="متقاعد">متقاعد</option>
-                                    <option value="متدرب">متدرب</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-end gap-2">
-                                <button type="submit" class="btn btn-secondary w-100">بحث</button>
-                                <button type="button" id="btnReset" class="btn btn-outline-secondary">مسح</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الاسم الكامل</th>
-                                <th>الرقم الوظيفي</th>
-                                <th>العنوان الوظيفي</th>
-                                <th>الدائرة</th>
-                                <th>تاريخ التعيين</th>
-                                <th>الحالة</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="employeesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- الإجازات -->
-            <section id="leaves">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h4 class="section-title mb-1">الإجازات</h4>
-                        <p class="text-muted mb-0">متابعة طلبات الإجازة وحالتها.</p>
-                    </div>
-                    <button id="btnAddLeave" class="btn btn-primary btn-sm">
-                        + طلب إجازة جديد
-                    </button>
-                </div>
-
-                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
-                    <span class="filter-chip">
-                        إجمالي الإجازات: <span id="totalLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        قيد الانتظار: <span id="pendingLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مقبولة: <span id="acceptedLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مرفوضة: <span id="rejectedLeaves">0</span>
-                    </span>
-                </div>
-
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <form id="filterLeaveForm" class="row g-2">
-                            <div class="col-md-4">
-                                <label class="form-label">اسم الموظف</label>
-                                <input type="text" id="filterLeaveName" class="form-control" placeholder="بحث بالاسم">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">نوع الإجازة</label>
-                                <select id="filterLeaveType" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="اعتيادية">اعتيادية</option>
-                                    <option value="مرضية">مرضية</option>
-                                    <option value="طارئة">طارئة</option>
-                                    <option value="دراسية">دراسية</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">حالة الطلب</label>
-                                <select id="filterLeaveStatus" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مقدمة">مقدمة</option>
-                                    <option value="مقبولة">مقبولة</option>
-                                    <option value="مرفوضة">مرفوضة</option>
-                                    <option value="منتهية">منتهية</option>
-                                </select>
-                            </div>
-                            <div class="col-12 d-flex justify-content-end align-items-end pt-2 gap-2">
-                                <button type="submit" class="btn btn-secondary">بحث</button>
-                                <button type="button" id="btnResetLeaves" class="btn btn-outline-secondary">مسح</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الموظف</th>
-                                <th>نوع الإجازة</th>
-                                <th>من تاريخ</th>
-                                <th>إلى تاريخ</th>
-                                <th>الحالة</th>
-                                <th>المعتمد</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="leavesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- التقارير -->
-            <section id="reports">
-                <h4 class="section-title">التقارير والإحصائيات</h4>
-                <p class="text-muted">توزيع الموظفين حسب الدائرة والحالة والجنس، مع ملخص عام.</p>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الدائرة</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الدائرة</th>
-                                    <th>عدد الموظفين</th>
-                                </tr>
-                                </thead>
-                                <tbody id="deptReportBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الحالة الوظيفية</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الحالة الوظيفية</th>
-                                    <th>العدد</th>
-                                </tr>
-                                </thead>
-                                <tbody id="statusReportBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-3 mt-1">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الجنس</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الجنس</th>
-                                    <th>العدد</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>ذكر</td>
-                                    <td id="genderMaleReport">0</td>
-                                </tr>
-                                <tr>
-                                    <td>أنثى</td>
-                                    <td id="genderFemaleReport">0</td>
-                                </tr>
-                                <tr>
-                                    <td>غير محدد</td>
-                                    <td id="genderOtherReport">0</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">ملخص سريع</h6>
-                            <ul class="mb-0 small">
-                                <li>إجمالي الموظفين: <span id="reportTotalEmployees">0</span></li>
-                                <li>الموظفون على رأس الخدمة: <span id="reportActiveEmployees">0</span></li>
-                                <li>إجمالي الإجازات: <span id="reportTotalLeaves">0</span></li>
-                                <li>إجازات مقبولة: <span id="reportAcceptedLeaves">0</span></li>
-                                <li>إجازات قيد الانتظار: <span id="reportPendingLeaves">0</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    // بيانات الموظفين
+    // ============ بيانات الموظفين ============
     const employees = [
-        { id: 1, fullName: "توفيق سالم ابتهال", jobNumber: "196758925337", jobTitle: "رئيس أطباء اختصاص", department: "مكتب الوزير / الملاك", hireDate: "1991-11-01", status: "مستمر بالخدمة", gender: "ذكر" },
-        { id: 2, fullName: "احمد ابراهيم سلمان", jobNumber: "200065880073", jobTitle: "تقني أشعة وسونار", department: "مكتب الوزير / الملاك", hireDate: "2023-11-19", status: "مستمر بالخدمة", gender: "ذكر" },
-        { id: 3, fullName: "سعاد محمد مبارك", jobNumber: "113023332", jobTitle: "رئيس ممرضين", department: "دائرة الموارد البشرية", hireDate: "2005-07-31", status: "إجازة", gender: "أنثى" },
-        { id: 4, fullName: "حسن فليح إسماعيل", jobNumber: "115714223", jobTitle: "طبيب اختصاص أشعة", department: "مكتب الوزير / الملاك", hireDate: "2010-01-18", status: "مستمر بالخدمة", gender: "ذكر" },
-        { id: 5, fullName: "هند كامل محمد", jobNumber: "113056239", jobTitle: "رئيس مصوري أشعة", department: "مكتب الوزير / الملاك", hireDate: "2014-03-20", status: "متقاعد", gender: "أنثى" },
-        { id: 6, fullName: "مها معاذ عباس", jobNumber: "153434619", jobTitle: "تقنية تمريض", department: "دائرة الموارد البشرية", hireDate: "2023-09-24", status: "متدرب", gender: "أنثى" }
+        {
+            id: 1,
+            fullName: "توفيق سالم ابتهال",
+            jobNumber: "196758925337",
+            jobTitle: "رئيس أطباء اختصاص",
+            department: "مكتب الوزير / الملاك",
+            hireDate: "1991-11-01",
+            status: "مستمر بالخدمة",
+            gender: "ذكر",
+            nationalId: "",
+            motherName: "",
+            birthDate: "",
+            notes: ""
+        },
+        {
+            id: 2,
+            fullName: "احمد ابراهيم سلمان",
+            jobNumber: "200065880073",
+            jobTitle: "تقني أشعة وسونار",
+            department: "مكتب الوزير / الملاك",
+            hireDate: "2023-11-19",
+            status: "مستمر بالخدمة",
+            gender: "ذكر",
+            nationalId: "",
+            motherName: "",
+            birthDate: "",
+            notes: ""
+        },
+        {
+            id: 3,
+            fullName: "سعاد محمد مبارك",
+            jobNumber: "113023332",
+            jobTitle: "رئيس ممرضين",
+            department: "دائرة الموارد البشرية",
+            hireDate: "2005-07-31",
+            status: "إجازة",
+            gender: "أنثى",
+            nationalId: "",
+            motherName: "",
+            birthDate: "",
+            notes: ""
+        },
+        {
+            id: 4,
+            fullName: "حسن فليح إسماعيل",
+            jobNumber: "115714223",
+            jobTitle: "طبيب اختصاص أشعة",
+            department: "مكتب الوزير / الملاك",
+            hireDate: "2010-01-18",
+            status: "مستمر بالخدمة",
+            gender: "ذكر",
+            nationalId: "",
+            motherName: "",
+            birthDate: "",
+            notes: ""
+        },
+        {
+            id: 5,
+            fullName: "هند كامل محمد",
+            jobNumber: "113056239",
+            jobTitle: "رئيس مصوري أشعة",
+            department: "مكتب الوزير / الملاك",
+            hireDate: "2014-03-20",
+            status: "متقاعد",
+            gender: "أنثى",
+            nationalId: "",
+            motherName: "",
+            birthDate: "",
+            notes: ""
+        },
+        {
+            id: 6,
+            fullName: "مها معاذ عباس",
+            jobNumber: "153434619",
+            jobTitle: "تقنية تمريض",
+            department: "دائرة الموارد البشرية",
+            hireDate: "2023-09-24",
+            status: "متدرب",
+            gender: "أنثى",
+            nationalId: "",
+            motherName: "",
+            birthDate: "",
+            notes: ""
+        }
     ];
 
-    // بيانات الإجازات
+    // ============ بيانات الإجازات ============
     const leaves = [
-        { id: 1, employeeId: 3, employeeName: "سعاد محمد مبارك", type: "مرضية", startDate: "2025-01-05", endDate: "2025-01-10", status: "مقبولة", approvedBy: "رئيس قسم التمريض" },
+        { id: 1, employeeId: 3, employeeName: "سعاد محمد مبارك", type: "مرضية",   startDate: "2025-01-05", endDate: "2025-01-10", status: "مقبولة", approvedBy: "رئيس قسم التمريض" },
         { id: 2, employeeId: 4, employeeName: "حسن فليح إسماعيل", type: "اعتيادية", startDate: "2025-02-01", endDate: "2025-02-07", status: "مقدمة", approvedBy: "" },
-        { id: 3, employeeId: 5, employeeName: "هند كامل محمد", type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" },
-        { id: 4, employeeId: 6, employeeName: "مها معاذ عباس", type: "طارئة", startDate: "2025-03-15", endDate: "2025-03-18", status: "مرفوضة", approvedBy: "رئيس الموارد البشرية" }
+        { id: 3, employeeId: 5, employeeName: "هند كامل محمد",    type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" },
+        { id: 4, employeeId: 6, employeeName: "مها معاذ عباس",    type: "طارئة",    startDate: "2025-03-15", endDate: "2025-03-18", status: "مرفوضة", approvedBy: "رئيس الموارد البشرية" }
     ];
 
     let currentView = [...employees];
     let currentLeavesView = [...leaves];
+    let editingEmployeeId = null;
 
-    // عناصر DOM
+    // ============ عناصر DOM ============
     const bodyEl = document.body;
     const themeSelect = document.getElementById("themeSelect");
 
+    // موظفون
     const tableBody = document.getElementById("employeesTableBody");
     const totalCountSpan = document.getElementById("totalCount");
     const activeCountSpan = document.getElementById("activeCount");
@@ -565,6 +121,7 @@
     const btnAdd = document.getElementById("btnAdd");
     const btnExport = document.getElementById("btnExport");
 
+    // لوحة التحكم
     const dashTotalEmployees = document.getElementById("dashTotalEmployees");
     const dashActiveEmployees = document.getElementById("dashActiveEmployees");
     const dashMaleEmployees = document.getElementById("dashMaleEmployees");
@@ -573,6 +130,7 @@
     const dashAcceptedLeaves = document.getElementById("dashAcceptedLeaves");
     const dashPendingLeaves = document.getElementById("dashPendingLeaves");
 
+    // إجازات
     const leavesTableBody = document.getElementById("leavesTableBody");
     const totalLeavesSpan = document.getElementById("totalLeaves");
     const pendingLeavesSpan = document.getElementById("pendingLeaves");
@@ -585,6 +143,7 @@
     const filterLeaveStatus = document.getElementById("filterLeaveStatus");
     const btnResetLeaves = document.getElementById("btnResetLeaves");
 
+    // تقارير
     const deptReportBody = document.getElementById("deptReportBody");
     const statusReportBody = document.getElementById("statusReportBody");
     const genderMaleReport = document.getElementById("genderMaleReport");
@@ -596,6 +155,29 @@
     const reportAcceptedLeaves = document.getElementById("reportAcceptedLeaves");
     const reportPendingLeaves = document.getElementById("reportPendingLeaves");
 
+    // نموذج الموظف
+    const employeeFormSection = document.getElementById("employeeFormSection");
+    const employeeFormTitle = document.getElementById("employeeFormTitle");
+    const employeeForm = document.getElementById("employeeForm");
+    const employeeFormClose = document.getElementById("employeeFormClose");
+    const employeeFormCancel = document.getElementById("employeeFormCancel");
+
+    const empFirstNameInput = document.getElementById("empFirstName");
+    const empSecondNameInput = document.getElementById("empSecondName");
+    const empThirdNameInput = document.getElementById("empThirdName");
+    const empFourthNameInput = document.getElementById("empFourthName");
+    const empJobTitleInput = document.getElementById("empJobTitle");
+    const empStatusInput = document.getElementById("empStatus");
+    const empDeptInput = document.getElementById("empDept");
+    const empJobNumberInput = document.getElementById("empJobNumber");
+    const empNationalIdInput = document.getElementById("empNationalId");
+    const empMotherNameInput = document.getElementById("empMotherName");
+    const empGenderInput = document.getElementById("empGender");
+    const empBirthDateInput = document.getElementById("empBirthDate");
+    const empHireDateInput = document.getElementById("empHireDate");
+    const empNotesInput = document.getElementById("empNotes");
+
+    // ============ توابع مساعدة ============
     function formatDate(dateStr) {
         if (!dateStr) return "";
         const d = new Date(dateStr);
@@ -604,6 +186,17 @@
         const month = String(d.getMonth() + 1).padStart(2, "0");
         const year = d.getFullYear();
         return `${day}/${month}/${year}`;
+    }
+
+    function getEmployeeFullName(emp) {
+        if (emp.fullName) return emp.fullName;
+        const parts = [
+            emp.firstName || "",
+            emp.secondName || "",
+            emp.thirdName || "",
+            emp.fourthName || ""
+        ].filter(Boolean);
+        return parts.join(" ");
     }
 
     // ============ إحصائيات الموظفين ============
@@ -615,9 +208,10 @@
             const dept = emp.department || "غير محدد";
             stats.byStatus[st] = (stats.byStatus[st] || 0) + 1;
             stats.byDept[dept] = (stats.byDept[dept] || 0) + 1;
-            if (!emp.gender) stats.other++;
-            else if (emp.gender === "ذكر") stats.male++;
-            else if (emp.gender === "أنثى") stats.female++;
+
+            const g = emp.gender || "";
+            if (g === "ذكر") stats.male++;
+            else if (g === "أنثى") stats.female++;
             else stats.other++;
         });
         return stats;
@@ -625,6 +219,7 @@
 
     function renderEmployeeStats(list) {
         const s = calculateEmployeeStats(list);
+
         totalCountSpan.textContent = s.total;
         activeCountSpan.textContent = s.active;
         maleCountSpan.textContent = s.male;
@@ -660,22 +255,25 @@
         genderOtherReport.textContent = s.other;
     }
 
+    // ============ عرض جدول الموظفين ============
     function renderEmployees(list) {
         tableBody.innerHTML = "";
         list.forEach((emp, i) => {
             const tr = document.createElement("tr");
+            const fullName = getEmployeeFullName(emp);
             const statusClass =
                 emp.status === "مستمر بالخدمة" ? "bg-success" :
                 emp.status === "إجازة" ? "bg-warning" :
                 emp.status === "متقاعد" ? "bg-secondary" : "bg-info";
+
             tr.innerHTML = `
               <td>${i + 1}</td>
-              <td>${emp.fullName}</td>
-              <td>${emp.jobNumber}</td>
-              <td>${emp.jobTitle}</td>
-              <td>${emp.department}</td>
+              <td>${fullName}</td>
+              <td>${emp.jobNumber || ""}</td>
+              <td>${emp.jobTitle || ""}</td>
+              <td>${emp.department || ""}</td>
               <td>${formatDate(emp.hireDate)}</td>
-              <td><span class="badge ${statusClass} badge-status">${emp.status}</span></td>
+              <td><span class="badge ${statusClass} badge-status">${emp.status || ""}</span></td>
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEmployee(${emp.id})">عرض</button>
                 <button class="btn btn-sm btn-outline-secondary" onclick="editEmployee(${emp.id})">تعديل</button>
@@ -691,6 +289,7 @@
         bodyEl.classList.add(themeClass);
         localStorage.setItem("hr_theme", themeClass);
     }
+
     themeSelect.addEventListener("change", e => applyTheme(e.target.value));
     const savedTheme = localStorage.getItem("hr_theme") || "theme-comfort";
     applyTheme(savedTheme);
@@ -701,15 +300,22 @@
         const nameVal = filterName.value.trim();
         const deptVal = filterDept.value;
         const statusVal = filterStatus.value;
+
         currentView = employees.filter(emp => {
-            const mName = !nameVal || emp.fullName.includes(nameVal);
+            const mName = !nameVal || getEmployeeFullName(emp).includes(nameVal);
             const mDept = !deptVal || emp.department === deptVal;
             const mStatus = !statusVal || emp.status === statusVal;
             return mName && mDept && mStatus;
         });
+
         renderEmployees(currentView);
     }
-    filterForm.addEventListener("submit", e => { e.preventDefault(); applyEmployeeFilters(); });
+
+    filterForm.addEventListener("submit", e => {
+        e.preventDefault();
+        applyEmployeeFilters();
+    });
+
     btnReset.addEventListener("click", () => {
         filterName.value = "";
         filterDept.value = "";
@@ -718,84 +324,220 @@
         renderEmployees(currentView);
     });
 
-    // ============ إضافة / تصدير موظفين ============
-    btnAdd.addEventListener("click", () => {
-        const fullName = prompt("أدخل الاسم الكامل للموظف:"); if (!fullName) return;
-        const jobNumber = prompt("أدخل الرقم الوظيفي:", Date.now().toString());
-        const jobTitle = prompt("أدخل العنوان الوظيفي:", "موظف");
-        const department = prompt("أدخل الدائرة:", "مكتب الوزير / الملاك");
-        const hireDate = prompt("أدخل تاريخ التعيين (YYYY-MM-DD):", "2025-01-01");
-        const status = prompt("أدخل الحالة الوظيفية:", "مستمر بالخدمة");
-        const gender = prompt("أدخل الجنس (ذكر / أنثى):", "ذكر");
-        const newId = employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1;
-        employees.push({
-            id: newId,
+    // ============ نموذج الموظف (فتح/إغلاق) ============
+    function clearEmployeeForm() {
+        empFirstNameInput.value = "";
+        empSecondNameInput.value = "";
+        empThirdNameInput.value = "";
+        empFourthNameInput.value = "";
+        empJobTitleInput.value = "";
+        empStatusInput.value = "مستمر بالخدمة";
+        empDeptInput.value = "";
+        empJobNumberInput.value = "";
+        empNationalIdInput.value = "";
+        empMotherNameInput.value = "";
+        empGenderInput.value = "";
+        empBirthDateInput.value = "";
+        empHireDateInput.value = "";
+        empNotesInput.value = "";
+    }
+
+    function fillEmployeeForm(emp) {
+        const parts = (getEmployeeFullName(emp) || "").split(/\s+/);
+        empFirstNameInput.value = emp.firstName || parts[0] || "";
+        empSecondNameInput.value = emp.secondName || parts[1] || "";
+        empThirdNameInput.value = emp.thirdName || parts[2] || "";
+        empFourthNameInput.value = emp.fourthName || parts[3] || "";
+
+        empJobTitleInput.value = emp.jobTitle || "";
+        empStatusInput.value = emp.status || "مستمر بالخدمة";
+        empDeptInput.value = emp.department || "";
+        empJobNumberInput.value = emp.jobNumber || "";
+        empNationalIdInput.value = emp.nationalId || "";
+        empMotherNameInput.value = emp.motherName || "";
+        empGenderInput.value = emp.gender || "";
+        empBirthDateInput.value = emp.birthDate || "";
+        empHireDateInput.value = emp.hireDate || "";
+        empNotesInput.value = emp.notes || "";
+    }
+
+    function openEmployeeForm(mode, emp) {
+        if (mode === "add") {
+            editingEmployeeId = null;
+            employeeFormTitle.textContent = "إضافة موظف جديد";
+            clearEmployeeForm();
+        } else if (mode === "edit" && emp) {
+            editingEmployeeId = emp.id;
+            employeeFormTitle.textContent = "تعديل بيانات الموظف";
+            fillEmployeeForm(emp);
+        }
+        employeeFormSection.classList.remove("d-none");
+        employeeFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeEmployeeForm() {
+        employeeFormSection.classList.add("d-none");
+    }
+
+    employeeFormClose.addEventListener("click", closeEmployeeForm);
+    employeeFormCancel.addEventListener("click", closeEmployeeForm);
+
+    // زر إضافة موظف => فتح النموذج
+    btnAdd.addEventListener("click", () => openEmployeeForm("add", null));
+
+    // حفظ بيانات النموذج
+    employeeForm.addEventListener("submit", e => {
+        e.preventDefault();
+
+        const firstName = empFirstNameInput.value.trim();
+        const secondName = empSecondNameInput.value.trim();
+        const thirdName = empThirdNameInput.value.trim();
+        const fourthName = empFourthNameInput.value.trim();
+        const jobTitle = empJobTitleInput.value.trim();
+        const status = empStatusInput.value;
+        const dept = empDeptInput.value.trim();
+        const jobNumber = empJobNumberInput.value.trim();
+
+        if (!firstName || !jobTitle || !dept || !jobNumber) {
+            alert("الرجاء تعبئة الحقول الأساسية (الاسم الأول، العنوان الوظيفي، الدائرة، الرقم الوظيفي).");
+            return;
+        }
+
+        const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
+
+        const commonData = {
             fullName,
-            jobNumber: jobNumber || "",
-            jobTitle: jobTitle || "",
-            department: department || "",
-            hireDate: hireDate || "",
-            status: status || "مستمر بالخدمة",
-            gender: gender || ""
-        });
+            firstName,
+            secondName,
+            thirdName,
+            fourthName,
+            jobTitle,
+            status,
+            department: dept,
+            jobNumber,
+            nationalId: empNationalIdInput.value.trim(),
+            motherName: empMotherNameInput.value.trim(),
+            gender: empGenderInput.value,
+            birthDate: empBirthDateInput.value,
+            hireDate: empHireDateInput.value,
+            notes: empNotesInput.value.trim()
+        };
+
+        if (editingEmployeeId === null) {
+            const newId = employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1;
+            const newEmp = { id: newId, ...commonData };
+            employees.push(newEmp);
+            alert("تمت إضافة الموظف بنجاح.");
+        } else {
+            const emp = employees.find(e => e.id === editingEmployeeId);
+            if (!emp) {
+                alert("لم يتم العثور على الموظف.");
+                return;
+            }
+            Object.assign(emp, commonData);
+            alert("تم تحديث بيانات الموظف.");
+        }
+
         currentView = [...employees];
         renderEmployees(currentView);
-        alert("تمت إضافة الموظف.");
+        closeEmployeeForm();
     });
 
+    // ============ تصدير الموظفين ============
     btnExport.addEventListener("click", () => {
         const list = currentView;
-        if (!list.length) { alert("لا توجد بيانات لتصديرها."); return; }
-        const header = ["id","fullName","jobNumber","jobTitle","department","hireDate","status","gender"];
-        const rows = list.map(emp => [
-            emp.id, emp.fullName, emp.jobNumber, emp.jobTitle,
-            emp.department, emp.hireDate, emp.status, emp.gender || ""
-        ]);
+        if (!list.length) {
+            alert("لا توجد بيانات لتصديرها.");
+            return;
+        }
+
+        // العناوين حسب الجدول الذي أرسلته
+        const header = [
+            "الأسم الاول",
+            "الأسم الثاني",
+            "الأسم الثالث",
+            "الأسم الرابع",
+            "العنوان الوظيفي",
+            "الحالة الوظيفية",
+            "الملاحظات",
+            "أسم الدائرة / مبنى الوزارة",
+            "الرقم الوظيفي",
+            "الرقم الوطني",
+            "أسم الأم الثلاثي",
+            "الجنس",
+            "تاريخ التولد",
+            "تاريخ التعيين"
+        ];
+
+        const rows = list.map(emp => {
+            const parts = (getEmployeeFullName(emp) || "").split(/\s+/);
+            const firstName = emp.firstName || parts[0] || "";
+            const secondName = emp.secondName || parts[1] || "";
+            const thirdName = emp.thirdName || parts[2] || "";
+            const fourthName = emp.fourthName || parts[3] || "";
+            return [
+                firstName,
+                secondName,
+                thirdName,
+                fourthName,
+                emp.jobTitle || "",
+                emp.status || "",
+                emp.notes || "",
+                emp.department || "",
+                emp.jobNumber || "",
+                emp.nationalId || "",
+                emp.motherName || "",
+                emp.gender || "",
+                emp.birthDate || "",
+                emp.hireDate || ""
+            ];
+        });
+
         const csv = [header, ...rows]
-            .map(r => r.map(f => `"${String(f).replace(/"/g,'""')}"`).join(","))
+            .map(row => row.map(f => `"${String(f).replace(/"/g, '""')}"`).join(","))
             .join("\n");
-        const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = url; a.download = "employees.csv";
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        a.href = url;
+        a.download = "employees.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
 
-    // ============ عرض / تعديل موظف ============
+    // ============ عرض / تعديل موظف (باستخدام النموذج) ============
     window.viewEmployee = id => {
         const emp = employees.find(e => e.id === id);
-        if (!emp) return alert("لم يتم العثور على الموظف.");
-        alert(
+        if (!emp) {
+            alert("لم يتم العثور على الموظف.");
+            return;
+        }
+        const info =
             "معلومات الموظف:\n\n" +
-            `الاسم الكامل: ${emp.fullName}\n` +
-            `الرقم الوظيفي: ${emp.jobNumber}\n` +
-            `العنوان الوظيفي: ${emp.jobTitle}\n` +
-            `الدائرة: ${emp.department}\n` +
-            `تاريخ التعيين: ${formatDate(emp.hireDate)}\n` +
-            `الحالة الوظيفية: ${emp.status}\n` +
-            `الجنس: ${emp.gender || "غير محدد"}`
-        );
+            `الاسم الكامل: ${getEmployeeFullName(emp)}\n` +
+            `الرقم الوظيفي: ${emp.jobNumber || ""}\n` +
+            `الرقم الوطني: ${emp.nationalId || ""}\n` +
+            `العنوان الوظيفي: ${emp.jobTitle || ""}\n` +
+            `الدائرة: ${emp.department || ""}\n` +
+            `الحالة الوظيفية: ${emp.status || ""}\n` +
+            `الجنس: ${emp.gender || "غير محدد"}\n` +
+            `أسم الأم الثلاثي: ${emp.motherName || ""}\n` +
+            `تاريخ التولد: ${emp.birthDate || ""}\n` +
+            `تاريخ التعيين: ${emp.hireDate || ""}\n` +
+            `الملاحظات: ${emp.notes || ""}`;
+        alert(info);
     };
+
     window.editEmployee = id => {
         const emp = employees.find(e => e.id === id);
-        if (!emp) return alert("لم يتم العثور على الموظف.");
-        const fullName = prompt("تعديل الاسم الكامل:", emp.fullName); if (!fullName) return;
-        const jobNumber = prompt("تعديل الرقم الوظيفي:", emp.jobNumber);
-        const jobTitle = prompt("تعديل العنوان الوظيفي:", emp.jobTitle);
-        const department = prompt("تعديل الدائرة:", emp.department);
-        const hireDate = prompt("تعديل تاريخ التعيين:", emp.hireDate);
-        const status = prompt("تعديل الحالة الوظيفية:", emp.status);
-        const gender = prompt("تعديل الجنس:", emp.gender || "");
-        emp.fullName = fullName;
-        emp.jobNumber = jobNumber || "";
-        emp.jobTitle = jobTitle || "";
-        emp.department = department || "";
-        emp.hireDate = hireDate || "";
-        emp.status = status || emp.status;
-        emp.gender = gender || emp.gender;
-        renderEmployees(currentView);
-        alert("تم تحديث بيانات الموظف.");
+        if (!emp) {
+            alert("لم يتم العثور على الموظف.");
+            return;
+        }
+        openEmployeeForm("edit", emp);
     };
 
     // ============ إجازات ============
@@ -811,6 +553,7 @@
 
     function renderLeaveStats(list) {
         const s = calculateLeaveStats(list);
+
         totalLeavesSpan.textContent = s.total;
         pendingLeavesSpan.textContent = s.pending;
         acceptedLeavesSpan.textContent = s.accepted;
@@ -832,6 +575,7 @@
                 lv.status === "مقبولة" ? "bg-success" :
                 lv.status === "مقدمة" ? "bg-warning" :
                 lv.status === "مرفوضة" ? "bg-danger" : "bg-secondary";
+
             const tr = document.createElement("tr");
             tr.innerHTML = `
               <td>${i + 1}</td>
@@ -848,6 +592,7 @@
               </td>`;
             leavesTableBody.appendChild(tr);
         });
+
         renderLeaveStats(list);
     }
 
@@ -856,6 +601,7 @@
         const nameVal = filterLeaveName.value.trim();
         const typeVal = filterLeaveType.value;
         const statusVal = filterLeaveStatus.value;
+
         currentLeavesView = leaves.filter(lv => {
             const mName = !nameVal || lv.employeeName.includes(nameVal);
             const mType = !typeVal || lv.type === typeVal;
@@ -864,6 +610,7 @@
         });
         renderLeaves(currentLeavesView);
     });
+
     btnResetLeaves.addEventListener("click", () => {
         filterLeaveName.value = "";
         filterLeaveType.value = "";
@@ -897,7 +644,7 @@
 
     window.viewLeave = id => {
         const lv = leaves.find(l => l.id === id);
-        if (!lv) return alert("لم يتم العثور على الإجازة.");
+        if (!lv) { alert("لم يتم العثور على الإجازة."); return; }
         alert(
             "معلومات الإجازة:\n\n" +
             `الموظف: ${lv.employeeName}\n` +
@@ -907,9 +654,10 @@
             `الحالة: ${lv.status}\n` +
             `المعتمد: ${lv.approvedBy || "-"}` );
     };
+
     window.editLeaveStatus = id => {
         const lv = leaves.find(l => l.id === id);
-        if (!lv) return alert("لم يتم العثور على الإجازة.");
+        if (!lv) { alert("لم يتم العثور على الإجازة."); return; }
         const status = prompt("تحديث حالة الإجازة:", lv.status); if (!status) return;
         const approvedBy = prompt("اسم المعتمد:", lv.approvedBy || "");
         lv.status = status;
@@ -917,60 +665,63 @@
         renderLeaves(currentLeavesView);
         alert("تم تحديث حالة الإجازة.");
     };
+
     window.deleteLeave = id => {
         if (!confirm("هل أنت متأكد من حذف هذه الإجازة؟")) return;
         const idx = leaves.findIndex(l => l.id === id);
-        if (idx === -1) return alert("لم يتم العثور على الإجازة.");
+        if (idx === -1) { alert("لم يتم العثور على الإجازة."); return; }
         leaves.splice(idx, 1);
         currentLeavesView = [...leaves];
         renderLeaves(currentLeavesView);
         alert("تم حذف الإجازة.");
     };
 
-    // ============ التنقل بين الأقسام ============
+    // ============ التنقل بين لوحة التحكم / الموظفين / الإجازات / التقارير ============
     const navLinks = document.querySelectorAll(".sidebar .nav-link");
+
     function showSection(sectionId) {
-        const ids = ["dashboard","employees","leaves","reports"];
+        const ids = ["dashboard", "employees", "leaves", "reports"];
         ids.forEach(id => {
             const sec = document.getElementById(id);
             if (!sec) return;
             if (id === sectionId) sec.classList.remove("d-none");
             else sec.classList.add("d-none");
         });
+
         navLinks.forEach(link => {
             const href = link.getAttribute("href") || "";
             if (!href.startsWith("#")) return;
             const targetId = href.substring(1);
             link.classList.toggle("active", targetId === sectionId);
         });
-        window.scrollTo({top:0, behavior:"auto"});
+
+        window.scrollTo({ top: 0, behavior: "auto" });
     }
+
     navLinks.forEach(link => {
         const href = link.getAttribute("href") || "";
         if (!href.startsWith("#")) return;
         const targetId = href.substring(1);
-        if (["dashboard","employees","leaves","reports"].includes(targetId)) {
+        if (["dashboard", "employees", "leaves", "reports"].includes(targetId)) {
             link.addEventListener("click", e => {
                 e.preventDefault();
                 showSection(targetId);
             });
         }
     });
-    // تسجيل الخروج
+
     const logoutLink = Array.from(navLinks).find(l => (l.textContent || "").trim() === "تسجيل الخروج");
     if (logoutLink) {
         logoutLink.addEventListener("click", e => {
             e.preventDefault();
-            alert("تم تسجيل الخروج (تجريبيًا، يمكن ربطه بصفحة دخول لاحقًا).");
+            alert("تم تسجيل الخروج (تجريبيًا، يمكن ربطه لاحقًا بصفحة دخول).");
         });
     }
 
-    // تحميل أولي
+    // ============ أول تحميل ============
     currentView = [...employees];
     currentLeavesView = [...leaves];
     renderEmployees(currentView);
     renderLeaves(currentLeavesView);
     showSection("dashboard");
 </script>
-</body>
-</html>
