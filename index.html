@@ -1,1358 +1,157 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="navy-dark">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>Nafithat – Advanced Invoice Manager (Local)</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    /* ========= THEME VARIABLES ========= */
-    :root {
-      --bg: #050816;
-      --text: #f9fafb;
-      --subtext: #9ca3af;
-      --topbar-bg: #050816;
-      --card-bg: radial-gradient(circle at top, #111827 0%, #020617 60%);
-      --card-border: rgba(148,163,184,0.25);
-      --shadow: 0 12px 25px rgba(15,23,42,0.7);
-
-      --surface-soft: rgba(15,23,42,0.7);
-      --surface-alt: rgba(15,23,42,0.9);
-      --border-soft: rgba(148,163,184,0.25);
-      --border-strong: rgba(55,65,81,0.9);
-
-      --input-bg: rgba(15,23,42,0.9);
-      --input-border: rgba(148,163,184,0.7);
-
-      --accent: #4f46e5;
-      --accent-soft: rgba(79,70,229,0.2);
-      --accent-ghost: rgba(249,250,251,0.05);
-
-      --danger: #b91c1c;
-      --danger-soft: #fee2e2;
-
-      --table-header-bg: rgba(15,23,42,0.9);
-      --table-row-hover: rgba(15,23,42,0.7);
-
-      --badge-paid-bg: #dcfce7;
-      --badge-paid-text: #166534;
-      --badge-unpaid-bg: #ffedd5;
-      --badge-unpaid-text: #9a3412;
-      --badge-overdue-bg: #fee2e2;
-      --badge-overdue-text: #b91c1c;
-      --badge-draft-bg: #e5e7eb;
-      --badge-draft-text: #374151;
-    }
-
-    /* Navy Dark (default) */
-    :root[data-theme="navy-dark"] {
-      --bg: #050816;
-      --text: #f9fafb;
-      --subtext: #9ca3af;
-      --topbar-bg: #050816;
-      --card-bg: radial-gradient(circle at top, #111827 0%, #020617 60%);
-      --card-border: rgba(148,163,184,0.25);
-      --shadow: 0 12px 25px rgba(15,23,42,0.7);
-      --surface-soft: rgba(15,23,42,0.7);
-      --surface-alt: rgba(15,23,42,0.9);
-      --border-soft: rgba(148,163,184,0.25);
-      --border-strong: rgba(55,65,81,0.9);
-      --input-bg: rgba(15,23,42,0.9);
-      --input-border: rgba(148,163,184,0.7);
-      --accent: #4f46e5;
-      --accent-soft: rgba(79,70,229,0.2);
-      --accent-ghost: rgba(249,250,251,0.05);
-      --danger: #b91c1c;
-      --danger-soft: #fee2e2;
-      --table-header-bg: rgba(15,23,42,0.9);
-      --table-row-hover: rgba(15,23,42,0.7);
-    }
-
-    /* Midnight Teal */
-    :root[data-theme="midnight-teal"] {
-      --bg: #020617;
-      --text: #e5f9ff;
-      --subtext: #7dd3fc;
-      --topbar-bg: #020617;
-      --card-bg: radial-gradient(circle at top, #022c22 0%, #020617 60%);
-      --card-border: rgba(45,212,191,0.35);
-      --shadow: 0 12px 24px rgba(15,23,42,0.8);
-      --surface-soft: rgba(15,23,42,0.7);
-      --surface-alt: rgba(15,23,42,0.95);
-      --border-soft: rgba(45,212,191,0.35);
-      --border-strong: rgba(15,118,110,0.9);
-      --input-bg: rgba(15,23,42,0.95);
-      --input-border: rgba(45,212,191,0.4);
-      --accent: #06b6d4;
-      --accent-soft: rgba(6,182,212,0.25);
-      --accent-ghost: rgba(8,47,73,0.7);
-      --danger: #f97373;
-      --danger-soft: #fee2e2;
-      --table-header-bg: rgba(8,47,73,0.95);
-      --table-row-hover: rgba(15,23,42,0.75);
-      --badge-paid-bg: #bbf7d0;
-      --badge-paid-text: #166534;
-      --badge-unpaid-bg: #fed7aa;
-      --badge-unpaid-text: #9a3412;
-      --badge-overdue-bg: #fecaca;
-      --badge-overdue-text: #b91c1c;
-      --badge-draft-bg: #e5e7eb;
-      --badge-draft-text: #374151;
-    }
-
-    /* Soft Light */
-    :root[data-theme="soft-light"] {
-      --bg: #f3f4f6;
-      --text: #111827;
-      --subtext: #6b7280;
-      --topbar-bg: #ffffff;
-      --card-bg: linear-gradient(135deg,#ffffff,#f9fafb);
-      --card-border: rgba(209,213,219,0.9);
-      --shadow: 0 6px 16px rgba(15,23,42,0.12);
-      --surface-soft: #f3f4f6;
-      --surface-alt: #ffffff;
-      --border-soft: rgba(209,213,219,0.9);
-      --border-strong: rgba(156,163,175,0.9);
-      --input-bg: #ffffff;
-      --input-border: rgba(209,213,219,0.9);
-      --accent: #2563eb;
-      --accent-soft: rgba(37,99,235,0.12);
-      --accent-ghost: rgba(229,231,235,0.7);
-      --danger: #b91c1c;
-      --danger-soft: #fee2e2;
-      --table-header-bg: #e5e7eb;
-      --table-row-hover: #f3f4f6;
-      --badge-paid-bg: #dcfce7;
-      --badge-paid-text: #166534;
-      --badge-unpaid-bg: #ffedd5;
-      --badge-unpaid-text: #9a3412;
-      --badge-overdue-bg: #fee2e2;
-      --badge-overdue-text: #b91c1c;
-      --badge-draft-bg: #e5e7eb;
-      --badge-draft-text: #374151;
-    }
-
-    /* Warm Sand */
-    :root[data-theme="warm-sand"] {
-      --bg: #fdf6e3;
-      --text: #1f2933;
-      --subtext: #7b6f52;
-      --topbar-bg: #f5e6c8;
-      --card-bg: linear-gradient(135deg,#fff7e6,#f5e6c8);
-      --card-border: rgba(226,191,139,0.9);
-      --shadow: 0 6px 16px rgba(120,53,15,0.2);
-      --surface-soft: #faecd8;
-      --surface-alt: #fffaf0;
-      --border-soft: rgba(226,191,139,0.9);
-      --border-strong: rgba(148,81,33,0.9);
-      --input-bg: #fffaf0;
-      --input-border: rgba(226,191,139,0.9);
-      --accent: #d97706;
-      --accent-soft: rgba(217,119,6,0.12);
-      --accent-ghost: rgba(254,243,199,0.9);
-      --danger: #b91c1c;
-      --danger-soft: #fee2e2;
-      --table-header-bg: #f5e6c8;
-      --table-row-hover: #faecd8;
-      --badge-paid-bg: #bbf7d0;
-      --badge-paid-text: #166534;
-      --badge-unpaid-bg: #fed7aa;
-      --badge-unpaid-text: #9a3412;
-      --badge-overdue-bg: #fecaca;
-      --badge-overdue-text: #b91c1c;
-      --badge-draft-bg: #e5e7eb;
-      --badge-draft-text: #374151;
-    }
-
-    /* Graphite */
-    :root[data-theme="graphite"] {
-      --bg: #0b0f19;
-      --text: #e5e7eb;
-      --subtext: #9ca3af;
-      --topbar-bg: #020617;
-      --card-bg: linear-gradient(135deg,#020617,#111827);
-      --card-border: rgba(55,65,81,0.9);
-      --shadow: 0 10px 24px rgba(0,0,0,0.8);
-      --surface-soft: #111827;
-      --surface-alt: #020617;
-      --border-soft: rgba(55,65,81,0.9);
-      --border-strong: rgba(31,41,55,0.9);
-      --input-bg: #020617;
-      --input-border: rgba(75,85,99,0.9);
-      --accent: #f97316;
-      --accent-soft: rgba(249,115,22,0.25);
-      --accent-ghost: rgba(31,41,55,0.8);
-      --danger: #f87171;
-      --danger-soft: #4b1113;
-      --table-header-bg: #020617;
-      --table-row-hover: #111827;
-      --badge-paid-bg: #bbf7d0;
-      --badge-paid-text: #166534;
-      --badge-unpaid-bg: #fed7aa;
-      --badge-unpaid-text: #9a3412;
-      --badge-overdue-bg: #fecaca;
-      --badge-overdue-text: #b91c1c;
-      --badge-draft-bg: #e5e7eb;
-      --badge-draft-text: #374151;
-    }
-
-    /* Forest */
-    :root[data-theme="forest"] {
-      --bg: #02130a;
-      --text: #ecfdf5;
-      --subtext: #6ee7b7;
-      --topbar-bg: #022c22;
-      --card-bg: radial-gradient(circle at top,#064e3b 0%,#02130a 60%);
-      --card-border: rgba(34,197,94,0.35);
-      --shadow: 0 10px 24px rgba(5,46,22,0.9);
-      --surface-soft: rgba(6,78,59,0.8);
-      --surface-alt: rgba(6,78,59,0.95);
-      --border-soft: rgba(34,197,94,0.4);
-      --border-strong: rgba(4,120,87,0.9);
-      --input-bg: rgba(6,78,59,0.95);
-      --input-border: rgba(34,197,94,0.45);
-      --accent: #22c55e;
-      --accent-soft: rgba(34,197,94,0.3);
-      --accent-ghost: rgba(22,101,52,0.8);
-      --danger: #f97373;
-      --danger-soft: #fee2e2;
-      --table-header-bg: rgba(6,95,70,0.95);
-      --table-row-hover: rgba(6,78,59,0.85);
-      --badge-paid-bg: #bbf7d0;
-      --badge-paid-text: #166534;
-      --badge-unpaid-bg: #fed7aa;
-      --badge-unpaid-text: #9a3412;
-      --badge-overdue-bg: #fecaca;
-      --badge-overdue-text: #b91c1c;
-      --badge-draft-bg: #e5e7eb;
-      --badge-draft-text: #374151;
-    }
-
-    /* ========= BASE STYLES ========= */
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .topbar {
-      background: var(--topbar-bg);
-      border-bottom: 1px solid var(--border-soft);
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .brand { display:flex; flex-direction:column; gap:3px; }
-    .brand-title { font-weight:700; font-size:18px; }
-    .brand-sub { font-size:11px; color:var(--subtext); }
-    .topbar-middle {
-      display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
-    }
-    .pill-btn {
-      border:none;
-      border-radius:999px;
-      padding:6px 14px;
-      font-size:12px;
-      cursor:pointer;
-      background:var(--surface-alt);
-      color:var(--text);
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-    }
-    .pill-btn.active { background:var(--accent); color:#fff; }
-    .pill-btn.ghost { background:var(--accent-ghost); }
-    .topbar-right {
-      display:flex; gap:8px; flex-wrap:wrap;
-      justify-content:flex-end; align-items:center;
-    }
-    .pill-btn.danger { background:var(--danger-soft); color:var(--danger); }
-
-    main {
-      padding:16px 20px 40px;
-      max-width:1200px;
-      margin:0 auto;
-    }
-    .card {
-      background:var(--card-bg);
-      border-radius:16px;
-      padding:16px 18px;
-      border:1px solid var(--card-border);
-      box-shadow:var(--shadow);
-      margin-bottom:16px;
-    }
-    .card-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:10px;
-      gap:8px;
-    }
-    .card-title { font-size:18px; font-weight:600; }
-    .card-sub { font-size:12px; color:var(--subtext); }
-
-    .filters-row {
-      display:flex; flex-wrap:wrap; gap:10px;
-      align-items:center; margin-bottom:12px;
-      justify-content:space-between;
-    }
-    .status-group { display:flex; gap:6px; flex-wrap:wrap; font-size:12px; }
-    .status-pill {
-      border-radius:999px;
-      padding:4px 10px;
-      border:1px solid var(--border-soft);
-      background:var(--surface-soft);
-      cursor:pointer;
-      color:var(--text);
-    }
-    .status-pill.active {
-      background:var(--accent);
-      border-color:var(--accent);
-    }
-    .right-filters {
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-    }
-
-    select, input[type="text"], input[type="number"], input[type="date"], textarea {
-      border-radius:999px;
-      border:1px solid var(--input-border);
-      background:var(--input-bg);
-      color:var(--text);
-      padding:5px 10px;
-      font-size:12px;
-    }
-    textarea { border-radius:12px; }
-    .search-input {
-      display:flex; align-items:center; gap:6px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid var(--input-border);
-      background:var(--input-bg);
-      font-size:12px;
-    }
-    .search-input input {
-      border:none; outline:none; background:transparent;
-      color:inherit; width:180px;
-    }
-
-    .stats-row {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .stat-card {
-      border-radius:16px;
-      padding:10px 12px;
-      background:linear-gradient(135deg,var(--surface-alt),var(--accent-soft));
-      border:1px solid var(--border-soft);
-      font-size:12px;
-      cursor:pointer;
-      transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
-    }
-    .stat-card:hover {
-      transform: translateY(-1px);
-    }
-    .stat-card.active {
-      box-shadow:0 0 0 2px var(--accent-soft);
-      border-color:var(--accent);
-    }
-    .stat-label { color:var(--subtext); margin-bottom:4px; }
-    .stat-main { font-size:16px; font-weight:600; }
-    .stat-sub { font-size:11px; color:var(--subtext); }
-
-    table { width:100%; border-collapse:collapse; font-size:12px; }
-    thead { background:var(--table-header-bg); }
-    th, td {
-      padding:6px 8px;
-      border-bottom:1px solid var(--border-strong);
-      text-align:left;
-      white-space:nowrap;
-    }
-    th {
-      color:var(--subtext);
-      font-weight:500;
-      font-size:11px;
-    }
-    tbody tr:hover { background:var(--table-row-hover); }
-    .text-muted { color:var(--subtext); }
-
-    th.sortable { cursor:pointer; }
-    .sort-ind {
-      font-size:10px;
-      margin-left:4px;
-      opacity:0.7;
-    }
-
-    .badge {
-      border-radius:999px;
-      padding:2px 8px;
-      font-size:11px;
-      font-weight:500;
-    }
-    .badge-paid {
-      background:var(--badge-paid-bg);
-      color:var(--badge-paid-text);
-    }
-    .badge-unpaid {
-      background:var(--badge-unpaid-bg);
-      color:var(--badge-unpaid-text);
-    }
-    .badge-overdue {
-      background:var(--badge-overdue-bg);
-      color:var(--badge-overdue-text);
-    }
-    .badge-draft {
-      background:var(--badge-draft-bg);
-      color:var(--badge-draft-text);
-    }
-
-    .table-btn {
-      border-radius:999px;
-      border:none;
-      padding:2px 8px;
-      font-size:11px;
-      cursor:pointer;
-    }
-    .table-btn.edit { background:#dbeafe; color:#1d4ed8; }
-    .table-btn.del  { background:var(--danger-soft); color:var(--danger); }
-
-    .hidden { display:none; }
-
-    .form-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .form-group { display:flex; flex-direction:column; gap:3px; font-size:12px; }
-    .form-group label { color:var(--text); }
-    .form-group textarea { min-height:60px; resize:vertical; }
-
-    .items-table {
-      margin-top:10px;
-      border-radius:12px;
-      overflow:hidden;
-      border:1px solid var(--border-strong);
-    }
-    .items-table th, .items-table td { background:var(--surface-alt); }
-    .items-table textarea,
-    .items-table input {
-      width:100%;
-      border-radius:6px;
-      border:1px solid var(--border-strong);
-      background:var(--input-bg);
-      color:var(--text);
-      font-size:11px;
-      padding:3px 5px;
-    }
-
-    .footer-buttons {
-      margin-top:14px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .btn {
-      border-radius:999px;
-      border:none;
-      padding:6px 12px;
-      font-size:12px;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-    }
-    .btn-primary { background:var(--accent); color:#fff; }
-    .btn-secondary { background:var(--accent-ghost); color:var(--text); }
-    .btn-danger { background:var(--danger-soft); color:var(--danger); }
-
-    @media (max-width:640px){
-      .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-      .topbar-middle,.topbar-right{
-        justify-content:flex-start;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>نظام إدارة الموظفين - قائمة الموظفين</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS من CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <style>
+        body {
+            background-color: #f5f6fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: #0d6efd;
+            color: #fff;
+        }
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .sidebar a.active {
+            background: rgba(255,255,255,0.15);
+            border-radius: .5rem;
+        }
+        .page-title {
+            font-weight: 700;
+        }
+        .table thead {
+            background-color: #e9ecef;
+        }
+        .badge-status {
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-title">Nafithat Al-Amal Co.</div>
-    <div class="brand-sub">Advanced Invoice Management (Local)</div>
-  </div>
-  <div class="topbar-middle">
-    <button class="pill-btn active" id="tab-dashboard">Invoices Dashboard</button>
-    <button class="pill-btn" id="tab-report">Invoices Report</button>
-  </div>
-  <div class="topbar-right">
-    <select id="theme-select">
-      <option value="navy-dark">Navy Dark</option>
-      <option value="midnight-teal">Midnight Teal</option>
-      <option value="soft-light">Soft Light</option>
-      <option value="warm-sand">Warm Sand</option>
-      <option value="graphite">Graphite</option>
-      <option value="forest">Forest</option>
-    </select>
+<div class="container-fluid">
+    <div class="row">
+        <!-- الشريط الجانبي -->
+        <nav class="col-md-2 col-lg-2 d-md-block sidebar p-3">
+            <h5 class="mb-4">نظام إدارة الموظفين</h5>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">لوحة التحكم</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active px-2 py-2" href="/employees">الموظفون</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/leaves">الإجازات</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reports">التقارير</a>
+                </li>
+                <li class="nav-item mt-4">
+                    <a class="nav-link" href="/logout">تسجيل الخروج</a>
+                </li>
+            </ul>
+        </nav>
 
-    <button class="pill-btn ghost" id="btn-new">+ New Invoice</button>
-    <button class="pill-btn ghost" id="btn-export">⬇ Excel Report (CSV)</button>
-    <button class="pill-btn ghost" id="btn-save-json">💾 Save JSON</button>
-    <button class="pill-btn ghost" id="btn-load-json">📂 Load JSON</button>
-    <button class="pill-btn danger" id="btn-reset">⟳ Reset</button>
-  </div>
+        <!-- محتوى الصفحة -->
+        <main class="col-md-10 col-lg-10 ms-auto p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="page-title mb-1">قائمة الموظفين</h2>
+                    <p class="text-muted mb-0">إدارة بيانات جميع موظفي الوزارة من مكان واحد.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="/employees/import" class="btn btn-outline-primary">
+                        استيراد من ملف Excel
+                    </a>
+                    <a href="/employees/create" class="btn btn-primary">
+                        + إضافة موظف جديد
+                    </a>
+                </div>
+            </div>
+
+            <!-- فلاتر البحث -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <form class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label">الاسم</label>
+                            <input type="text" name="name" class="form-control" placeholder="بحث بالاسم">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">الدائرة</label>
+                            <select name="department" class="form-select">
+                                <option value="">الكل</option>
+                                <option value="1">مكتب الوزير / الملاك</option>
+                                <option value="2">دائرة الموارد البشرية</option>
+                                <!-- تُملأ من قاعدة البيانات -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">الحالة الوظيفية</label>
+                            <select name="status" class="form-select">
+                                <option value="">الكل</option>
+                                <option value="active">مستمر بالخدمة</option>
+                                <option value="leave">إجازة</option>
+                                <option value="retired">متقاعد</option>
+                                <option value="trainee">متدرب</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-secondary w-100">بحث</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- جدول الموظفين -->
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم الكامل</th>
+                            <th>الرقم الوظيفي</th>
+                            <th>العنوان الوظيفي</th>
+                            <th>الدائرة</th>
+                            <th>تاريخ التعيين</th>
+                            <th>الحالة</th>
+                            <th class="text-center">إجراءات</th>
+                        </tr>
+                        </thead>
+                        <tbody id="employees-table-body">
+                        <!-- مثال لصف واحد (في التطبيق الحقيقي يُولد من الباك-إند) -->
+                        <tr>
+                            <td>1</td>
+                            <td>توفيق سالم ابتهال</td>
+                            <td>196758925337</td>
+                            <td>رئيس أطباء اختصاص</td>
+                            <td>مكتب الوزير / الملاك</td>
+                            <td>01/11/1991</td>
+                            <td>
+                                <span class="badge bg-success badge-status">مستمر بالخدمة</span>
+                            </td>
+                            <td class="text-center">
+                                <a href="/employees/1" class="btn btn-sm btn-outline-primary">عرض</a>
+                                <a href="/employees/1/edit" class="btn btn-sm btn-outline-secondary">تعديل</a>
+                            </td>
+                        </tr>
+                        <!-- تكرار الصفوف حسب البيانات -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
-
-<main>
-  <!-- Dashboard -->
-  <section id="dashboard" class="card">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Invoices</div>
-        <div class="card-sub">Manage by status</div>
-      </div>
-    </div>
-
-    <div class="filters-row">
-      <div class="status-group">
-        <span class="status-pill active" data-filter="all">All</span>
-        <span class="status-pill" data-filter="paid">Paid</span>
-        <span class="status-pill" data-filter="unpaid">Unpaid</span>
-        <span class="status-pill" data-filter="draft">Draft</span>
-      </div>
-      <div class="right-filters">
-        <div>
-          <select id="po-filter">
-            <option value="all">All Contracts</option>
-          </select>
-        </div>
-        <div class="search-input">
-          🔍
-          <input id="search-input" type="text" placeholder="Search invoices (customer, number, contract)...">
-        </div>
-      </div>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-card active" data-type="total">
-        <div class="stat-label">Total Invoices</div>
-        <div class="stat-main" id="dash-total-amount">IQD 0</div>
-        <div class="stat-sub"><span id="dash-total-count">0</span> invoice(s)</div>
-      </div>
-      <div class="stat-card" data-type="due-soon">
-        <div class="stat-label">Due within 30 days</div>
-        <div class="stat-main" id="dash-due-amount">IQD 0</div>
-        <div class="stat-sub"><span id="dash-due-count">0</span> invoice(s)</div>
-      </div>
-      <div class="stat-card" data-type="paid">
-        <div class="stat-label">Paid</div>
-        <div class="stat-main" id="dash-paid-amount">IQD 0</div>
-        <div class="stat-sub"><span id="dash-paid-count">0</span> invoice(s)</div>
-      </div>
-      <div class="stat-card" data-type="unpaid">
-        <div class="stat-label">Unpaid</div>
-        <div class="stat-main" id="dash-unpaid-amount">IQD 0</div>
-        <div class="stat-sub"><span id="dash-unpaid-count">0</span> invoice(s)</div>
-      </div>
-    </div>
-
-    <table>
-      <thead>
-      <tr>
-        <th class="sortable" data-sort="issueDate">Date <span class="sort-ind"></span></th>
-        <th class="sortable" data-sort="dueDate">Due Date <span class="sort-ind"></span></th>
-        <th class="sortable" data-sort="number">Invoice No <span class="sort-ind"></span></th>
-        <th class="sortable" data-sort="contract">Contract (PO) <span class="sort-ind"></span></th>
-        <th class="sortable" data-sort="customerName">Customer <span class="sort-ind"></span></th>
-        <th>Short Description</th>
-        <th class="sortable" data-sort="status">Status <span class="sort-ind"></span></th>
-        <th class="sortable" data-sort="balance">Amount (Balance) <span class="sort-ind"></span></th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody id="invoice-table-body"></tbody>
-    </table>
-  </section>
-
-  <!-- Report -->
-  <section id="report" class="card hidden">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Invoices Report</div>
-        <div class="card-sub">Simple list of all invoices</div>
-      </div>
-    </div>
-
-    <table>
-      <thead>
-      <tr>
-        <th>Invoice No</th>
-        <th>PO</th>
-        <th>Issue Date</th>
-        <th>Due Date</th>
-        <th>Status</th>
-        <th>Balance</th>
-      </tr>
-      </thead>
-      <tbody id="report-body"></tbody>
-    </table>
-  </section>
-
-  <!-- Editor -->
-  <section id="editor" class="card hidden">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Invoice Editor</div>
-        <div class="card-sub" id="editor-subtitle"></div>
-      </div>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="f-number">Invoice Number</label>
-        <input id="f-number" type="text">
-      </div>
-      <div class="form-group">
-        <label for="f-date">Issue Date</label>
-        <input id="f-date" type="date">
-      </div>
-      <div class="form-group">
-        <label for="f-due">Due Date</label>
-        <input id="f-due" type="date">
-      </div>
-      <div class="form-group">
-        <label for="f-contract">Contract (PO)</label>
-        <input id="f-contract" type="text">
-      </div>
-      <div class="form-group">
-        <label for="status-select">Status</label>
-        <select id="status-select">
-          <option value="draft">Draft</option>
-          <option value="unpaid">Unpaid</option>
-          <option value="paid">Paid</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="f-billto">Bill To</label>
-        <textarea id="f-billto"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="f-scope">Scope / Description</label>
-        <textarea id="f-scope"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="f-note">Notes</label>
-        <textarea id="f-note"></textarea>
-      </div>
-    </div>
-
-    <h4 style="margin-top:12px;margin-bottom:6px;font-size:13px;">Items</h4>
-    <table class="items-table">
-      <thead>
-      <tr>
-        <th>#</th>
-        <th>Description</th>
-        <th>Location</th>
-        <th>Date</th>
-        <th>Unit</th>
-        <th>Qty</th>
-        <th>Price</th>
-        <th>Total</th>
-        <th>Del</th>
-      </tr>
-      </thead>
-      <tbody id="items-body"></tbody>
-    </table>
-    <button class="btn btn-secondary" id="btn-add-row" type="button" style="margin-top:6px;">+ Add row</button>
-
-    <div class="form-grid" style="margin-top:12px;">
-      <div class="form-group">
-        <label for="f-subtotal">Subtotal</label>
-        <input id="f-subtotal" type="text" readonly>
-      </div>
-      <div class="form-group">
-        <label for="f-discount">Discount</label>
-        <input id="f-discount" type="number" value="0">
-      </div>
-      <div class="form-group">
-        <label for="f-tax">Tax %</label>
-        <input id="f-tax" type="number" value="0">
-      </div>
-      <div class="form-group">
-        <label for="f-shipping">Shipping / Extra</label>
-        <input id="f-shipping" type="number" value="0">
-      </div>
-      <div class="form-group">
-        <label for="f-balance">Final Balance</label>
-        <input id="f-balance" type="text" readonly>
-      </div>
-    </div>
-
-    <div class="footer-buttons">
-      <button class="btn btn-primary" id="btn-save" type="button">💾 Save</button>
-      <button class="btn btn-secondary" id="btn-back" type="button">← Back</button>
-      <button class="btn btn-secondary" id="btn-print" type="button">🖨 Print</button>
-      <button class="btn btn-danger" id="btn-delete" type="button">Delete invoice</button>
-    </div>
-  </section>
-</main>
-
-<input type="file" id="json-file-input" accept="application/json" style="display:none;">
-
-<script>
-  const STORAGE_KEY = "naf_advanced_invoice_local";
-  const THEME_KEY   = "naf_invoice_theme";
-
-  /*
-    🔹 هنا تربط المنصة ببيانات التقرير المرفق
-    ضع بياناتك بصيغة JSON داخل REPORT_DATA.
-    كل عنصر يمثل فاتورة/سجل واحد من التقرير.
-
-    مثال (عدّل الحقول حسب أعمدة التقرير لديك):
-
-    {
-      "id": "inv-1",
-      "number": "140969520",               // رقم من التقرير (مثلاً رقم وظيفي أو متسلسل)
-      "issueDate": "2020-02-06",           // تاريخ (مثلاً تاريخ التعيين)
-      "dueDate": "1995-08-07",             // تاريخ آخر (مثلاً تاريخ الميلاد)
-      "contract": "مكتب الوزير/الملاك",   // جهة/قسم
-      "billTo": "الاسم: فلان الفلاني",    // نص حر
-      "scope": "مستمر بالخدمة - تقني",    // وصف / حالة وظيفية
-      "note": "",
-      "status": "paid",                    // paid / unpaid / draft / overdue (استعملها كفلاتر)
-      "items": [],
-      "subtotal": 0,
-      "discount": 0,
-      "taxPerc": 0,
-      "shipping": 0,
-      "balance": 0
-    }
-  */
-
-  const REPORT_DATA = [
-    // 👇 مثال واحد فقط من التقرير – احذف المثال وأضف بقية السجلات بنفس النمط
-    /*
-    {
-      "id": "inv-sample-1",
-      "number": "140969520",
-      "issueDate": "2020-02-06",
-      "dueDate": "1995-08-07",
-      "contract": "مكتب الوزير/الملاك",
-      "billTo": "الاسم: (من التقرير)\nالقسم: مكتب الوزير/الملاك",
-      "scope": "مستمر بالخدمة / استثناء من التدرج (عدّل من النص الأصلي للتقرير)",
-      "note": "",
-      "status": "paid",
-      "items": [],
-      "subtotal": 0,
-      "discount": 0,
-      "taxPerc": 0,
-      "shipping": 0,
-      "balance": 0
-    }
-    */
-  ];
-
-  let invoices = [];
-  let currentId = null;
-  let currentFilter = "all";
-  let currentPoFilter = "all";
-  let searchTerm = "";
-  let specialFilter = "none";
-  let sortField = "issueDate";
-  let sortDir   = "asc";
-
-  function $(id){ return document.getElementById(id); }
-  function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
-  function generateId(){ return "inv-"+Math.random().toString(36).slice(2)+"-"+Date.now().toString(36); }
-  function formatIQD(num){ if(isNaN(num)) num=0; return "IQD "+Number(num).toLocaleString("en-US",{maximumFractionDigits:0}); }
-  function parseNumber(v){ if(typeof v!=="string") v=String(v||""); return Number(v.replace(/[^\d.-]/g,""))||0; }
-
-  function normalizeInvoice(inv){
-    if(!inv) return inv;
-    if(!inv.id) inv.id = generateId();
-    let raw = (inv.status==null?"draft":String(inv.status)).toLowerCase().trim();
-    if(!["paid","unpaid","overdue","draft"].includes(raw)) raw="draft";
-    inv.status = raw;
-    if(!Array.isArray(inv.items)) inv.items = [];
-    return inv;
-  }
-
-  function createItemRow(data={}){
-    const tr=document.createElement("tr");
-    tr.className="item-row";
-    tr.innerHTML=`
-      <td class="no-cell"></td>
-      <td><textarea class="cell-desc">${data.desc || ""}</textarea></td>
-      <td><input class="cell-loc" value="${data.location || ""}"></td>
-      <td><input class="cell-date" value="${data.date || ""}"></td>
-      <td><input class="cell-unit" value="${data.unit || ""}"></td>
-      <td><input class="cell-qty" type="number" min="0" step="0.01" value="${data.qty!=null?data.qty:1}"></td>
-      <td><input class="cell-price" type="number" min="0" step="0.01" value="${data.price!=null?data.price:0}"></td>
-      <td><input class="cell-total" type="text" readonly></td>
-      <td><button type="button" class="table-btn del btn-remove-row">✕</button></td>`;
-    tr.querySelector(".cell-qty").addEventListener("input",recalcTotals);
-    tr.querySelector(".cell-price").addEventListener("input",recalcTotals);
-    tr.querySelector(".btn-remove-row").addEventListener("click",()=>{
-      tr.remove(); updateRowNumbers(); recalcTotals();
-    });
-    return tr;
-  }
-
-  function updateRowNumbers(){
-    const rows=document.querySelectorAll("#items-body .item-row");
-    rows.forEach((tr,idx)=>{ const cell=tr.querySelector(".no-cell"); if(cell) cell.textContent=idx+1; });
-  }
-
-  function recalcTotals(){
-    const rows=document.querySelectorAll("#items-body .item-row");
-    let subtotal=0;
-    rows.forEach(tr=>{
-      const qty=parseNumber(tr.querySelector(".cell-qty").value);
-      const price=parseNumber(tr.querySelector(".cell-price").value);
-      const total=qty*price;
-      tr.querySelector(".cell-total").value=formatIQD(total);
-      subtotal+=total;
-    });
-    const discount=parseNumber($("f-discount").value);
-    const taxPerc=parseNumber($("f-tax").value);
-    const shipping=parseNumber($("f-shipping").value);
-    const subLess=subtotal-discount;
-    const taxVal=subLess*(taxPerc/100);
-    const balance=subLess+taxVal+shipping;
-    $("f-subtotal").value=formatIQD(subtotal);
-    $("f-balance").value=formatIQD(balance);
-  }
-
-  function readForm(inv){
-    inv.number=$("f-number").value.trim();
-    inv.issueDate=$("f-date").value.trim();
-    inv.dueDate=$("f-due").value.trim();
-    inv.contract=$("f-contract").value.trim();
-    inv.billTo=$("f-billto").value.trim();
-    inv.scope=$("f-scope").value.trim();
-    inv.note=$("f-note").value.trim();
-    inv.status=$("status-select").value;
-    inv.customerName=(inv.billTo.split("\n")[0]||"").trim();
-    const rows=document.querySelectorAll("#items-body .item-row");
-    inv.items=Array.from(rows).map(tr=>({
-      desc:tr.querySelector(".cell-desc").value.trim(),
-      location:tr.querySelector(".cell-loc").value.trim(),
-      date:tr.querySelector(".cell-date").value.trim(),
-      unit:tr.querySelector(".cell-unit").value.trim(),
-      qty:parseNumber(tr.querySelector(".cell-qty").value),
-      price:parseNumber(tr.querySelector(".cell-price").value)
-    }));
-    inv.discount=parseNumber($("f-discount").value);
-    inv.taxPerc=parseNumber($("f-tax").value);
-    inv.shipping=parseNumber($("f-shipping").value);
-    inv.subtotal=parseNumber($("f-subtotal").value);
-    inv.balance=parseNumber($("f-balance").value);
-    normalizeInvoice(inv);
-  }
-
-  function fillForm(inv){
-    $("f-number").value=inv.number||"";
-    $("f-date").value=inv.issueDate||todayStr();
-    $("f-due").value=inv.dueDate||"";
-    $("f-contract").value=inv.contract||"";
-    $("f-billto").value=inv.billTo||"";
-    $("f-scope").value=inv.scope||"";
-    $("f-note").value=inv.note||"";
-    $("status-select").value=inv.status||"draft";
-    const body=$("items-body");
-    body.innerHTML="";
-    const items=inv.items&&inv.items.length?inv.items:[{},{},{},{}];
-    items.forEach(it=>{ const row=createItemRow(it); body.appendChild(row); });
-    updateRowNumbers();
-    $("f-discount").value=inv.discount!=null?inv.discount:0;
-    $("f-tax").value=inv.taxPerc!=null?inv.taxPerc:0;
-    $("f-shipping").value=inv.shipping!=null?inv.shipping:0;
-    recalcTotals();
-    $("editor-subtitle").textContent=inv.number?`Editing ${inv.number}`:"New invoice";
-  }
-
-  function loadInvoices(){
-    try{
-      const raw=localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        const arr=JSON.parse(raw);
-        if(Array.isArray(arr) && arr.length){
-          invoices=arr.map(normalizeInvoice);
-          return;
-        }
-      }
-    }catch(e){
-      console.error("Error loading invoices from localStorage:",e);
-    }
-
-    // إذا لم توجد بيانات محفوظة محلياً، يتم استخدام بيانات التقرير المضمّنة REPORT_DATA
-    if(Array.isArray(REPORT_DATA) && REPORT_DATA.length){
-      invoices = REPORT_DATA.map(normalizeInvoice);
-      return;
-    }
-
-    // إذا لا يوجد شيء، تبدأ القائمة فارغة
-    invoices=[];
-  }
-
-  function saveInvoices(){
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(invoices));
-    renderPoFilterOptions();
-    renderDashboard();
-    renderReport();
-  }
-
-  function isOverdue(inv){
-    if(inv.status==="paid") return false;
-    if(!inv.dueDate) return false;
-    const d=new Date(inv.dueDate);
-    const today=new Date(todayStr());
-    return d<today;
-  }
-
-  function isDueSoon(inv){
-    if(inv.status==="paid") return false;
-    if(!inv.dueDate) return false;
-    const d=new Date(inv.dueDate);
-    const today=new Date(todayStr());
-    const diff=(d-today)/(1000*60*60*24);
-    return diff>=0 && diff<=30;
-  }
-
-  function getStatusBadge(status,inv){
-    let cls="badge-draft",txt="Draft";
-    if(status==="paid"){cls="badge-paid";txt="Paid";}
-    else if(status==="unpaid"){
-      cls=isOverdue(inv)?"badge-overdue":"badge-unpaid";
-      txt=isOverdue(inv)?"Overdue":"Unpaid";
-    }
-    return `<span class="badge ${cls}">${txt}</span>`;
-  }
-
-  function renderPoFilterOptions(){
-    const select=$("po-filter");
-    if(!select) return;
-    const contracts=Array.from(new Set(invoices.map(inv=>inv.contract).filter(Boolean)));
-    select.innerHTML=`<option value="all">All Contracts</option>`+
-      contracts.map(po=>`<option value="${po}">${po}</option>`).join("");
-  }
-
-  function matchesFilters(inv){
-    if(currentPoFilter!=="all" && inv.contract!==currentPoFilter) return false;
-
-    if(currentFilter==="paid"   && inv.status!=="paid")   return false;
-    if(currentFilter==="unpaid" && inv.status!=="unpaid") return false;
-    if(currentFilter==="draft"  && inv.status!=="draft")  return false;
-    if(currentFilter==="overdue" && !isOverdue(inv))      return false;
-
-    if(specialFilter==="due-soon" && !isDueSoon(inv)) return false;
-
-    if(searchTerm){
-      const term=searchTerm.toLowerCase();
-      const hay=[inv.number,inv.contract,inv.customerName,inv.billTo,inv.scope]
-        .join(" ").toLowerCase();
-      if(!hay.includes(term)) return false;
-    }
-    return true;
-  }
-
-  function compareForSort(a, b, field) {
-    let va, vb;
-    switch(field){
-      case "issueDate":  va=a.issueDate||"";  vb=b.issueDate||""; break;
-      case "dueDate":    va=a.dueDate||"";    vb=b.dueDate||"";   break;
-      case "number":     va=a.number||"";     vb=b.number||"";    break;
-      case "contract":   va=a.contract||"";   vb=b.contract||"";  break;
-      case "customerName": va=a.customerName||""; vb=b.customerName||""; break;
-      case "status":     va=a.status||"";     vb=b.status||"";    break;
-      case "balance":
-        va=a.balance||0; vb=b.balance||0; return va - vb;
-      default:
-        va=""; vb="";
-    }
-    if(va>vb) return 1;
-    if(va<vb) return -1;
-    return 0;
-  }
-
-  function updateSortIndicators(){
-    document.querySelectorAll("th.sortable").forEach(th=>{
-      const span=th.querySelector(".sort-ind");
-      if(!span) return;
-      const field=th.dataset.sort;
-      if(field===sortField){
-        span.textContent = sortDir === "asc" ? "▲" : "▼";
-      }else{
-        span.textContent = "";
-      }
-    });
-  }
-
-  function renderDashboard(){
-    const tbody=$("invoice-table-body");
-    if(!tbody) return;
-    tbody.innerHTML="";
-
-    const filtered=invoices.filter(matchesFilters);
-
-    filtered.sort((a,b)=>{
-      const res = compareForSort(a,b,sortField);
-      return sortDir === "asc" ? res : -res;
-    });
-
-    let totalAmount=0,paidAmount=0,unpaidAmount=0;
-    let totalCount=filtered.length,paidCount=0,unpaidCount=0;
-    let dueSoonAmount=0,dueSoonCount=0;
-
-    filtered.forEach(inv=>{
-      const balance=inv.balance||0;
-      totalAmount+=balance;
-      if(inv.status==="paid"){paidAmount+=balance;paidCount++;}
-      if(inv.status==="unpaid"){unpaidAmount+=balance;unpaidCount++;}
-      if(isDueSoon(inv)){dueSoonAmount+=balance;dueSoonCount++;}
-
-      const tr=document.createElement("tr");
-      tr.innerHTML=`
-        <td>${inv.issueDate||""}</td>
-        <td>${inv.dueDate||""}</td>
-        <td>${inv.number||""}</td>
-        <td>${inv.contract||""}</td>
-        <td>${inv.customerName||""}</td>
-        <td class="text-muted">${inv.scope ? (inv.scope.length>35 ? inv.scope.slice(0,35)+"..." : inv.scope) : "-"}</td>
-        <td>${getStatusBadge(inv.status,inv)}</td>
-        <td>${formatIQD(balance)}</td>
-        <td>
-          <button class="table-btn edit" onclick="editInvoice('${inv.id}')">Edit</button>
-          <button class="table-btn del" onclick="deleteInvoiceById('${inv.id}')">Delete</button>
-        </td>`;
-      tbody.appendChild(tr);
-    });
-
-    $("dash-total-amount").textContent=formatIQD(totalAmount);
-    $("dash-total-count").textContent=totalCount;
-    $("dash-paid-amount").textContent=formatIQD(paidAmount);
-    $("dash-paid-count").textContent=paidCount;
-    $("dash-unpaid-amount").textContent=formatIQD(unpaidAmount);
-    $("dash-unpaid-count").textContent=unpaidCount;
-    $("dash-due-amount").textContent=formatIQD(dueSoonAmount);
-    $("dash-due-count").textContent=dueSoonCount;
-
-    updateSortIndicators();
-  }
-
-  function renderReport(){
-    const tbody=$("report-body");
-    if(!tbody) return;
-    tbody.innerHTML="";
-    invoices.forEach(inv=>{
-      const row=document.createElement("tr");
-      row.innerHTML=`
-        <td>${inv.number||""}</td>
-        <td>${inv.contract||""}</td>
-        <td>${inv.issueDate||""}</td>
-        <td>${inv.dueDate||""}</td>
-        <td>${inv.status}</td>
-        <td>${formatIQD(inv.balance||0)}</td>`;
-      tbody.appendChild(row);
-    });
-  }
-
-  function showDashboard(){
-    $("dashboard").classList.remove("hidden");
-    $("report").classList.add("hidden");
-    $("editor").classList.add("hidden");
-    $("tab-dashboard").classList.add("active");
-    $("tab-report").classList.remove("active");
-  }
-  function showReport(){
-    $("dashboard").classList.add("hidden");
-    $("report").classList.remove("hidden");
-    $("editor").classList.add("hidden");
-    $("tab-dashboard").classList.remove("active");
-    $("tab-report").classList.add("active");
-  }
-  function showEditor(){
-    $("dashboard").classList.add("hidden");
-    $("report").classList.add("hidden");
-    $("editor").classList.remove("hidden");
-  }
-
-  function createNewInvoice(){
-    currentId=null;
-    const empty=normalizeInvoice({
-      id:generateId(),
-      number:"",
-      issueDate:todayStr(),
-      dueDate:"",
-      contract:"",
-      billTo:"",
-      customerName:"",
-      scope:"",
-      note:"",
-      items:[],
-      subtotal:0,
-      discount:0,
-      taxPerc:0,
-      shipping:0,
-      balance:0,
-      status:"draft",
-      createdAt:new Date().toISOString(),
-      updatedAt:new Date().toISOString()
-    });
-    fillForm(empty);
-    showEditor();
-  }
-
-  function editInvoice(id){
-    const inv=invoices.find(i=>i.id===id);
-    if(!inv) return;
-    currentId=id;
-    fillForm(inv);
-    showEditor();
-  }
-
-  // showAlert: show "saved" message, goBack: navigate to dashboard
-  function saveCurrentInvoice(showAlert = true, goBack = true){
-    let inv=currentId?invoices.find(i=>i.id===currentId):null;
-    if(!inv){
-      inv={id:generateId(),createdAt:new Date().toISOString()};
-      invoices.push(inv);
-      currentId=inv.id;
-    }
-    readForm(inv);
-    inv.updatedAt=new Date().toISOString();
-    saveInvoices();
-    if(showAlert){
-      alert("Invoice saved ✅");
-    }
-    if(goBack){
-      showDashboard();
-    }
-  }
-
-  function deleteInvoiceById(id){
-    if(!confirm("Delete this invoice?")) return;
-    invoices=invoices.filter(i=>i.id!==id);
-    if(currentId===id) currentId=null;
-    saveInvoices();
-  }
-
-  function deleteCurrentInvoice(){
-    if(!currentId){ alert("No invoice selected."); return; }
-    deleteInvoiceById(currentId);
-    showDashboard();
-  }
-
-  function importJsonFromFile(file){
-    const reader=new FileReader();
-    reader.onload=e=>{
-      try{
-        const data=JSON.parse(e.target.result);
-        if(!Array.isArray(data)){alert("Invalid JSON (must be array of invoices).");return;}
-        invoices=data.map(normalizeInvoice);
-        currentId=null;
-        saveInvoices();
-        alert("JSON data loaded ✅");
-        showDashboard();
-      }catch(err){
-        console.error(err);
-        alert("Failed to read JSON file.");
-      }
-    };
-    reader.readAsText(file);
-  }
-
-  function exportJson(){
-    const blob=new Blob([JSON.stringify(invoices,null,2)],{type:"application/json"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");
-    a.href=url;
-    a.download="invoices-backup.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  function exportCsv(){
-    if(!invoices.length){alert("No invoices to export.");return;}
-    const headers=["Number","PO","IssueDate","DueDate","Status","Balance"];
-    const rows=invoices.map(inv=>[
-      inv.number||"",
-      inv.contract||"",
-      inv.issueDate||"",
-      inv.dueDate||"",
-      inv.status||"",
-      inv.balance!=null?inv.balance:""
-    ]);
-    const csv=[headers.join(","),...rows.map(r=>r.join(","))].join("\n");
-    const blob=new Blob([csv],{type:"text/csv"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");
-    a.href=url;
-    a.download="invoices-report.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  function resetSystem(){
-    if(!confirm("Reset all invoices (local only)?")) return;
-    invoices=[];
-    currentId=null;
-    saveInvoices();
-  }
-
-  function applyTheme(name){
-    document.documentElement.setAttribute("data-theme", name);
-    localStorage.setItem(THEME_KEY, name);
-    const sel = $("theme-select");
-    if(sel) sel.value = name;
-  }
-
-  function initTheme(){
-    const stored = localStorage.getItem(THEME_KEY) || "navy-dark";
-    applyTheme(stored);
-  }
-
-  function setupEvents(){
-    $("tab-dashboard").addEventListener("click",showDashboard);
-    $("tab-report").addEventListener("click",showReport);
-
-    $("btn-new").addEventListener("click",createNewInvoice);
-
-    // Save button: save + alert + back
-    $("btn-save").addEventListener("click", () => {
-      saveCurrentInvoice(true, true);
-    });
-
-    // Back button: auto-save without alert + back
-    $("btn-back").addEventListener("click", () => {
-      saveCurrentInvoice(false, true);
-    });
-
-    $("btn-print").addEventListener("click",()=>window.print());
-    $("btn-delete").addEventListener("click",deleteCurrentInvoice);
-
-    $("btn-export").addEventListener("click",exportCsv);
-    $("btn-save-json").addEventListener("click",exportJson);
-    $("btn-reset").addEventListener("click",resetSystem);
-
-    $("btn-load-json").addEventListener("click",()=>$("json-file-input").click());
-    $("json-file-input").addEventListener("change",e=>{
-      const file=e.target.files[0];
-      if(file) importJsonFromFile(file);
-      e.target.value="";
-    });
-
-    document.querySelectorAll(".status-pill").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        document.querySelectorAll(".status-pill").forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.dataset.filter;
-        specialFilter = "none";
-        document.querySelectorAll(".stat-card").forEach(c=>c.classList.remove("active"));
-        const totalCard = document.querySelector('.stat-card[data-type="total"]');
-        if(totalCard && currentFilter==="all") totalCard.classList.add("active");
-        renderDashboard();
-      });
-    });
-
-    document.querySelectorAll(".stat-card").forEach(card=>{
-      card.addEventListener("click",()=>{
-        document.querySelectorAll(".stat-card").forEach(c=>c.classList.remove("active"));
-        card.classList.add("active");
-
-        const t = card.dataset.type;
-        specialFilter = "none";
-
-        if(t === "paid"){
-          currentFilter = "paid";
-        } else if(t === "unpaid"){
-          currentFilter = "unpaid";
-        } else if(t === "due-soon"){
-          currentFilter = "all";
-          specialFilter = "due-soon";
-        } else {
-          currentFilter = "all";
-        }
-
-        document.querySelectorAll(".status-pill").forEach(b=>b.classList.remove("active"));
-        const pill = document.querySelector(`.status-pill[data-filter="${currentFilter}"]`)
-                || document.querySelector(`.status-pill[data-filter="all"]`);
-        if(pill) pill.classList.add("active");
-
-        renderDashboard();
-      });
-    });
-
-    $("po-filter").addEventListener("change",e=>{
-      currentPoFilter=e.target.value;
-      renderDashboard();
-    });
-
-    $("search-input").addEventListener("input",e=>{
-      searchTerm=e.target.value.trim();
-      renderDashboard();
-    });
-
-    $("btn-add-row").addEventListener("click",()=>{
-      const row=createItemRow();
-      $("items-body").appendChild(row);
-      updateRowNumbers();
-      recalcTotals();
-    });
-
-    $("f-discount").addEventListener("input",recalcTotals);
-    $("f-tax").addEventListener("input",recalcTotals);
-    $("f-shipping").addEventListener("input",recalcTotals);
-
-    document.querySelectorAll("th.sortable").forEach(th=>{
-      th.addEventListener("click", ()=>{
-        const field = th.dataset.sort;
-        if(sortField === field){
-          sortDir = (sortDir === "asc") ? "desc" : "asc";
-        } else {
-          sortField = field;
-          sortDir = "asc";
-        }
-        renderDashboard();
-      });
-    });
-
-    $("theme-select").addEventListener("change", e => applyTheme(e.target.value));
-
-    window.editInvoice=editInvoice;
-    window.deleteInvoiceById=deleteInvoiceById;
-  }
-
-  function init(){
-    initTheme();
-    setupEvents();
-    loadInvoices();       // ← هنا سيتم تحميل بيانات التقرير أول مرة
-    renderPoFilterOptions();
-    renderDashboard();
-    renderReport();
-    showDashboard();
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",init);
-  } else {
-    init();
-  }
-</script>
 
 </body>
 </html>
