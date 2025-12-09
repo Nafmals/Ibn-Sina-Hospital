@@ -310,11 +310,50 @@
         </div>
 
         <div class="text-[11px] text-slate-500 md:w-64">
-          ✏️ <span class="font-semibold">ملاحظة:</span>  
+          ✏️ <span class="font-semibold">ملاحظة:</span>
           لتعديل أي حقل، قم بـ
           <span class="font-semibold text-sky-700">نقرة مزدوجة (Double-click)</span>
           على الخلية، ثم احفظ التعديل.  
           🗑️ لحذف سجل استخدم زر <span class="font-semibold text-rose-600">حذف</span> في نهاية السطر.
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ ملخصات عليا (أطباء، متدربين، ذكور/إناث...) -->
+    <section class="glass-card p-4 sm:p-5 mb-5">
+      <h2 class="text-sm font-semibold mb-3">ملخّص عام للموظفين</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3 text-xs sm:text-sm">
+        <div class="bg-white/80 border border-slate-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">إجمالي الموظفين</span>
+          <span id="summaryTotal" class="font-bold text-slate-900">0</span>
+        </div>
+        <div class="bg-white/80 border border-sky-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">الأطباء 👨‍⚕️</span>
+          <span id="summaryDoctors" class="font-bold text-sky-700">0</span>
+        </div>
+        <div class="bg-white/80 border border-emerald-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">المتدربون 🎓</span>
+          <span id="summaryTrainees" class="font-bold text-emerald-700">0</span>
+        </div>
+        <div class="bg-white/80 border border-indigo-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">التمريض / الفنيون</span>
+          <span id="summaryNursesTech" class="font-bold text-indigo-700">0</span>
+        </div>
+        <div class="bg-white/80 border border-blue-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">ذكور 👨</span>
+          <span id="summaryMales" class="font-bold text-blue-700">0</span>
+        </div>
+        <div class="bg-white/80 border border-pink-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">إناث 👩</span>
+          <span id="summaryFemales" class="font-bold text-pink-700">0</span>
+        </div>
+        <div class="bg-white/80 border border-emerald-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">مستمر بالخدمة</span>
+          <span id="summaryActive" class="font-bold text-emerald-700">0</span>
+        </div>
+        <div class="bg-white/80 border border-amber-200 rounded-2xl px-3 py-2 flex flex-col gap-1">
+          <span class="text-slate-500">حالات أخرى</span>
+          <span id="summaryOtherStatus" class="font-bold text-amber-700">0</span>
         </div>
       </div>
     </section>
@@ -345,12 +384,7 @@
     const STORAGE_KEY = "ibn_sina_employees_data_v2";
     const THEME_KEY = "ibn_sina_theme_v1";
 
-    // =====================================================================
-    // 1️⃣ البيانات المدمجة (هنا تضع جميع سجلات مستشفى ابن سينا)
-    // =====================================================================
-    // ملاحظة هامّة:
-    // - يمكنك تحويل الـPDF إلى Excel، ثم إلى CSV/JSON، ثم لصق مصفوفة JSON هنا.
-    // - هيكل كل سجل يجب أن يكون مثل الأمثلة أدناه.
+    // 1️⃣ البيانات المدمجة (أمثلة – أكمل بنفس البنية لباقي الموظفين)
     const defaultData = [
       {
         "الاسم الاول": "ابتهال",
@@ -448,12 +482,10 @@
         "تاريخ التولد": "16/08/1999",
         "تاريخ التعيين": "14/06/2021"
       }
-      // ⬅️ هنا يمكنك إضافة بقية سجلات PDF بنفس البنية أعلاه
+      // ⬅️ أضف باقي السجلات هنا بنفس البنية عندك من ملف PDF
     ];
 
-    // =====================================================================
     // 2️⃣ المتغيرات العامة
-    // =====================================================================
     let allRows = [];
     let filteredRows = [];
     let nextId = 1;
@@ -463,9 +495,7 @@
     let currentGenderFilter = "all";
     let currentTitleFilter = "all";
 
-    // =====================================================================
     // 3️⃣ أدوات مساعدة
-    // =====================================================================
     function setStorageStatus(text, type = "ok") {
       const el = document.getElementById("storageStatus");
       el.textContent = text;
@@ -566,9 +596,7 @@
       titleFilter.value = currentTitle;
     }
 
-    // =====================================================================
     // 4️⃣ البحث و الفلاتر
-    // =====================================================================
     function applyFiltersAndSearch() {
       let rows = allRows.slice();
 
@@ -603,11 +631,10 @@
       renderTable();
       updateCounts();
       updateStatusSummary();
+      updateTopSummary();
     }
 
-    // =====================================================================
-    // 5️⃣ رسم جدول البيانات + التعديل والحذف
-    // =====================================================================
+    // 5️⃣ جدول البيانات + التعديل والحذف
     function renderTable() {
       const thead = document.getElementById("tableHead");
       const tbody = document.getElementById("tableBody");
@@ -624,7 +651,6 @@
 
       const keys = Object.keys(filteredRows[0]).filter(k => k !== "_id");
 
-      // الهيدر
       const headerRow = document.createElement("tr");
       keys.forEach((k) => {
         const th = document.createElement("th");
@@ -636,7 +662,6 @@
       headerRow.appendChild(thActions);
       thead.appendChild(headerRow);
 
-      // الصفوف
       filteredRows.forEach((row) => {
         const tr = document.createElement("tr");
         tr.dataset.id = row._id;
@@ -644,7 +669,7 @@
         keys.forEach((k) => {
           const td = document.createElement("td");
           td.textContent = row[k] != null ? row[k] : "";
-          td.dataset.key = k; // لاستعماله في التعديل
+          td.dataset.key = k;
           tr.appendChild(td);
         });
 
@@ -663,7 +688,6 @@
         tbody.appendChild(tr);
       });
 
-      // التعديل بالنقرة المزدوجة
       tbody.addEventListener("dblclick", handleCellDblClick, { once: true });
     }
 
@@ -674,22 +698,19 @@
       if (!tr) return;
 
       const key = td.dataset.key;
-      if (!key) return; // لا نعدل عمود الإجراءات
+      if (!key) return;
       const id = parseInt(tr.dataset.id, 10);
       const row = allRows.find(r => r._id === id);
       if (!row) return;
 
       const current = row[key] != null ? row[key] : "";
       const newVal = prompt("تعديل القيمة للحقل: " + key, current);
-      if (newVal === null) {
-        // لم يغيّر شيء
-      } else {
+      if (newVal !== null) {
         row[key] = newVal;
         saveToLocalStorage();
         recomputeFiltered();
       }
 
-      // إعادة تفعيل الاستماع للنقرة المزدوجة
       document.getElementById("tableBody")
         .addEventListener("dblclick", handleCellDblClick, { once: true });
     }
@@ -701,9 +722,7 @@
       recomputeFiltered();
     }
 
-    // =====================================================================
-    // 6️⃣ تقرير الحالة الوظيفية (داخل الصفحة + في ملف Excel)
-    // =====================================================================
+    // 6️⃣ تقرير الحالة الوظيفية داخل الصفحة
     function updateStatusSummary() {
       const container = document.getElementById("statusSummary");
       container.innerHTML = "";
@@ -726,9 +745,46 @@
       });
     }
 
-    // =====================================================================
-    // 7️⃣ التصدير: JSON + Excel
-    // =====================================================================
+    // ✅ 7️⃣ ملخصات عليا (أطباء، متدربين، ذكور/إناث...)
+    function updateTopSummary() {
+      const total = allRows.length;
+
+      let doctors = 0;
+      let trainees = 0;
+      let nursesTech = 0;
+      let males = 0;
+      let females = 0;
+      let active = 0;
+      let otherStatus = 0;
+
+      allRows.forEach(r => {
+        const title = (r["العنوان الوظيفي"] || "").toString();
+        const status = (r["الحالة الوظيفية"] || "").toString();
+        const gender = (r["الجنس"] || "").toString();
+
+        if (title.includes("طبيب")) doctors++;
+        if (title.includes("متدرب")) trainees++;
+        if (title.includes("ممرض") || title.includes("تقني") || title.includes("معاون طبي")) nursesTech++;
+
+        if (gender === "ذكر") males++;
+        if (gender === "أنثى") females++;
+
+        if (status.includes("مستمر")) active++;
+      });
+
+      otherStatus = total - active;
+
+      document.getElementById("summaryTotal").textContent = total;
+      document.getElementById("summaryDoctors").textContent = doctors;
+      document.getElementById("summaryTrainees").textContent = trainees;
+      document.getElementById("summaryNursesTech").textContent = nursesTech;
+      document.getElementById("summaryMales").textContent = males;
+      document.getElementById("summaryFemales").textContent = females;
+      document.getElementById("summaryActive").textContent = active;
+      document.getElementById("summaryOtherStatus").textContent = otherStatus;
+    }
+
+    // 8️⃣ التصدير: JSON + Excel
     function exportJson() {
       if (!allRows || allRows.length === 0) {
         alert("لا توجد بيانات لتصديرها.");
@@ -753,12 +809,10 @@
         return;
       }
 
-      // ورقة 1: البيانات الكاملة
       const dataSheet = XLSX.utils.json_to_sheet(
         allRows.map(({ _id, ...rest }) => rest)
       );
 
-      // ورقة 2: تقرير الحالة الوظيفية
       const statusCounts = {};
       allRows.forEach(r => {
         const s = r["الحالة الوظيفية"] || "غير محددة";
@@ -770,7 +824,6 @@
       }));
       const statusSheet = XLSX.utils.json_to_sheet(statusRows);
 
-      // إنشاء ملف
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, dataSheet, "البيانات الكاملة");
       XLSX.utils.book_append_sheet(workbook, statusSheet, "تقرير الحالة الوظيفية");
@@ -778,9 +831,7 @@
       XLSX.writeFile(workbook, "تقرير_موظفي_ابن_سينا.xlsx");
     }
 
-    // =====================================================================
-    // 8️⃣ الثيمات
-    // =====================================================================
+    // 9️⃣ الثيمات
     function applyTheme(themeName) {
       const body = document.body;
       for (let i = 1; i <= 10; i++) {
@@ -797,9 +848,7 @@
       applyTheme(saved);
     }
 
-    // =====================================================================
-    // 9️⃣ التهيئة
-    // =====================================================================
+    // 🔟 التهيئة
     function init() {
       loadTheme();
       loadFromLocalStorage();
