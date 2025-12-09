@@ -190,7 +190,7 @@
                     <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التعليمي</h2>
                     <p class="text-muted mb-0">لوحة تحكم، موظفون، إجازات، وتقارير في منصة واحدة.</p>
                 </div>
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex	align-items-center gap-2">
                     <span class="text-muted small">ثيم الواجهة:</span>
                     <select id="themeSelect" class="form-select form-select-sm theme-selector">
                         <option value="theme-comfort">مريح (افتراضي)</option>
@@ -270,6 +270,9 @@
                         <input type="file" id="importFile" accept=".csv,.xlsx" class="d-none">
                         <button id="btnExport" class="btn btn-outline-primary btn-sm">
                             تصدير إلى Excel
+                        </button>
+                        <button id="btnSave" class="btn btn-success btn-sm">
+                            حفظ البيانات
                         </button>
                         <button id="btnAdd" class="btn btn-primary btn-sm">
                             + إضافة موظف جديد
@@ -514,7 +517,7 @@
                                     <option value="منتهية">منتهية</option>
                                 </select>
                             </div>
-                            <div class="col-12 d-flex justify-content-end align-items-end pt-2 gap-2">
+                            <div class="col-12 d-flex justify-content-end	align-items-end pt-2 gap-2">
                                 <button type="submit" class="btn btn-secondary">بحث</button>
                                 <button type="button" id="btnResetLeaves" class="btn btn-outline-secondary">مسح</button>
                             </div>
@@ -632,7 +635,14 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script>
-    // ---------------- بيانات أولية ----------------
+    // مفاتيح التخزين المحلي
+    const STORAGE_KEYS = {
+        employees: "hr_employees_v1",
+        leaves: "hr_leaves_v1",
+        section: "hr_current_section_v1"
+    };
+
+    // ---------------- بيانات أولية (تُستخدم فقط أول مرة إذا لم يوجد حفظ سابق) ----------------
     const employees = [
         {
             id: 1,
@@ -727,6 +737,42 @@
         { id: 4, employeeId: 6, employeeName: "مها معاذ عباس",    type: "طارئة",    startDate: "2025-03-15", endDate: "2025-03-18", status: "مرفوضة", approvedBy: "رئيس الموارد البشرية" }
     ];
 
+    // ---------------- التخزين المحلي ----------------
+    function saveDataToStorage() {
+        try {
+            localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees));
+            localStorage.setItem(STORAGE_KEYS.leaves, JSON.stringify(leaves));
+        } catch (e) {
+            console.error("localStorage error:", e);
+        }
+    }
+
+    function loadDataFromStorage() {
+        try {
+            const empStr = localStorage.getItem(STORAGE_KEYS.employees);
+            if (empStr) {
+                const arr = JSON.parse(empStr);
+                if (Array.isArray(arr)) {
+                    employees.length = 0;
+                    arr.forEach(e => employees.push(e));
+                }
+            }
+            const lvStr = localStorage.getItem(STORAGE_KEYS.leaves);
+            if (lvStr) {
+                const arr = JSON.parse(lvStr);
+                if (Array.isArray(arr)) {
+                    leaves.length = 0;
+                    arr.forEach(l => leaves.push(l));
+                }
+            }
+        } catch (e) {
+            console.error("load storage error", e);
+        }
+    }
+
+    // تحميل البيانات المحفوظة (إن وجدت)
+    loadDataFromStorage();
+
     let currentView = [...employees];
     let currentLeavesView = [...leaves];
     let editingEmployeeId = null;
@@ -752,6 +798,7 @@
     const btnAdd = document.getElementById("btnAdd");
     const btnExport = document.getElementById("btnExport");
     const btnImport = document.getElementById("btnImport");
+    const btnSave = document.getElementById("btnSave");
     const importFileInput = document.getElementById("importFile");
 
     const dashTotalEmployees = document.getElementById("dashTotalEmployees");
@@ -1113,9 +1160,16 @@
             alert("تم تحديث بيانات الموظف.");
         }
 
+        saveDataToStorage();
         currentView = [...employees];
         renderEmployees(currentView);
         closeEmployeeForm();
+    });
+
+    // زر حفظ يدوي
+    btnSave.addEventListener("click", () => {
+        saveDataToStorage();
+        alert("تم حفظ بيانات الموظفين والإجازات في هذا الجهاز.");
     });
 
     // ---------------- تصدير إلى CSV (Excel) ----------------
@@ -1400,6 +1454,7 @@
             employees.push(emp);
         });
 
+        saveDataToStorage();
         currentView = [...employees];
         renderEmployees(currentView);
         alert("تم استيراد الموظفين من الملف بنجاح.");
@@ -1446,6 +1501,7 @@
         }
         employees.splice(idx, 1);
         if (editingEmployeeId === id) editingEmployeeId = null;
+        saveDataToStorage();
         currentView = [...employees];
         renderEmployees(currentView);
         alert("تم حذف الموظف.");
@@ -1548,6 +1604,7 @@
             status: status || "مقدمة",
             approvedBy: approvedBy || ""
         });
+        saveDataToStorage();
         currentLeavesView = [...leaves];
         renderLeaves(currentLeavesView);
         alert("تمت إضافة طلب الإجازة.");
@@ -1573,6 +1630,7 @@
         const approvedBy = prompt("اسم المعتمد:", lv.approvedBy || "");
         lv.status = status;
         lv.approvedBy = approvedBy || lv.approvedBy;
+        saveDataToStorage();
         renderLeaves(currentLeavesView);
         alert("تم تحديث حالة الإجازة.");
     };
@@ -1582,12 +1640,13 @@
         const idx = leaves.findIndex(l => l.id === id);
         if (idx === -1) { alert("لم يتم العثور على الإجازة."); return; }
         leaves.splice(idx, 1);
+        saveDataToStorage();
         currentLeavesView = [...leaves];
         renderLeaves(currentLeavesView);
         alert("تم حذف الإجازة.");
     };
 
-    // ---------------- التنقل بين الأقسام ----------------
+    // ---------------- التنقل بين الأقسام مع حفظ آخر قسم ----------------
     const navLinks = document.querySelectorAll(".sidebar .nav-link");
     function showSection(sectionId) {
         const ids = ["dashboard","employees","leaves","reports"];
@@ -1603,6 +1662,7 @@
             const targetId = href.substring(1);
             link.classList.toggle("active", targetId === sectionId);
         });
+        localStorage.setItem(STORAGE_KEYS.section, sectionId);
         window.scrollTo({top:0, behavior:"auto"});
     }
     navLinks.forEach(link => {
@@ -1629,7 +1689,12 @@
     currentLeavesView = [...leaves];
     renderEmployees(currentView);
     renderLeaves(currentLeavesView);
-    showSection("dashboard");
+
+    // عند أول مرة نحفظ البيانات الافتراضية إذا لم يكن هناك شيء في التخزين
+    saveDataToStorage();
+
+    const savedSectionId = localStorage.getItem(STORAGE_KEYS.section) || "dashboard";
+    showSection(savedSectionId);
 </script>
 </body>
 </html>
