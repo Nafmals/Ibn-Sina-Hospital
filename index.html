@@ -292,7 +292,7 @@
                     </span>
                 </div>
 
-                <!-- هذه الإحصائيات مخفية حتى لا تظهر العبارة التي طلبت حذفها -->
+                <!-- الإحصائيات النصية مخفية -->
                 <div class="mb-3 d-none">
                     <small class="text-muted d-block">
                         حالات الخدمة: <span id="statusStats">لا توجد بيانات بعد</span>
@@ -920,7 +920,7 @@
         genderOtherReport.textContent = s.other;
     }
 
-    // ---------------- عرض جدول الموظفين (كل الأعمدة) ----------------
+    // ---------------- عرض جدول الموظفين ----------------
     function renderEmployees(list) {
         tableBody.innerHTML = "";
 
@@ -1173,12 +1173,11 @@
             .map(row => row.map(f => `"${String(f ?? "").replace(/"/g, '""')}"`).join(","))
             .join("\r\n");
 
-        // \uFEFF لضمان ظهور العربية بشكل صحيح في Excel
         const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "employees.csv"; // يفتح مباشرة في Excel
+        a.download = "employees.csv";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1254,6 +1253,14 @@
             hireDate: idx(colNames.hireDate)
         };
 
+        const foundCount = Object.values(indices).filter(i => i !== -1).length;
+
+        // إذا لم نجد أي عمود بالاسم -> نستخدم ترتيب الأعمدة كما في الجدول
+        if (foundCount === 0) {
+            importByFixedOrder(rows);
+            return;
+        }
+
         const missing = Object.entries(indices)
             .filter(([, i]) => i === -1)
             .map(([key]) => colNames[key]);
@@ -1318,7 +1325,71 @@
             return;
         }
 
-        const replace = confirm("هل تريد استبدال جميع الموظفين الحاليين بالملف المستورد؟\n(موافق = استبدال الكل، إلغاء = إضافة فوق الموجودين)");
+        mergeImportedEmployees(newEmployees);
+    }
+
+    // استيراد عندما لا توجد عناوين أعمدة معروفة (نعتمد على ترتيب الأعمدة)
+    function importByFixedOrder(rows) {
+        const newEmployees = [];
+
+        // نفترض أن الصف الأول هو عناوين (حتى لو كانت مختلفة) ونبدأ من الصف الثاني
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row || row.every(cell => cell === null || cell === undefined || String(cell).trim() === "")) continue;
+
+            const firstName  = String(row[0]  ?? "").trim();
+            const secondName = String(row[1]  ?? "").trim();
+            const thirdName  = String(row[2]  ?? "").trim();
+            const fourthName = String(row[3]  ?? "").trim();
+            const jobTitle   = String(row[4]  ?? "").trim();
+            const status     = String(row[5]  ?? "").trim();
+            const notes      = String(row[6]  ?? "").trim();
+            const dept       = String(row[7]  ?? "").trim();
+            const jobNumber  = String(row[8]  ?? "").trim();
+            const nationalId = String(row[9]  ?? "").trim();
+            const motherName = String(row[10] ?? "").trim();
+            const gender     = String(row[11] ?? "").trim();
+
+            const birthDateRaw = row[12];
+            const hireDateRaw  = row[13];
+
+            const birthDate = normalizeDateCell(birthDateRaw);
+            const hireDate  = normalizeDateCell(hireDateRaw);
+
+            if (!firstName && !jobTitle && !jobNumber) continue;
+
+            const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
+
+            newEmployees.push({
+                id: 0,
+                fullName,
+                firstName,
+                secondName,
+                thirdName,
+                fourthName,
+                jobTitle,
+                status,
+                department: dept,
+                jobNumber,
+                nationalId,
+                motherName,
+                gender,
+                birthDate,
+                hireDate,
+                notes
+            });
+        }
+
+        if (!newEmployees.length) {
+            alert("الملف لا يحتوي بيانات موظفين بالترتيب المتوقع للأعمدة.");
+            return;
+        }
+
+        mergeImportedEmployees(newEmployees);
+    }
+
+    function mergeImportedEmployees(newEmployees) {
+        const replace = confirm("تم العثور على بيانات موظفين في الملف.\nهل تريد استبدال جميع الموظفين الحاليين بالملف المستورد؟\n(موافق = استبدال الكل، إلغاء = إضافة فوق الموجودين)");
         if (replace) {
             employees.length = 0;
         }
