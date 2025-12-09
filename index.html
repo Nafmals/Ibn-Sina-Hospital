@@ -84,6 +84,44 @@
             --table-header-bg: #e2e8f0;
         }
 
+        /* ثيمات خاصة بالمستشفى */
+        .theme-hospital-blue {
+            --bg-color: #e9f4ff;
+            --bg-soft: #ffffff;
+            --text-color: #102a43;
+            --muted-text: #627d98;
+            --accent: #0ea5e9;
+            --accent-soft: rgba(14, 165, 233, 0.14);
+            --border-color: #cbd2e1;
+            --sidebar-bg: #0f172a;
+            --sidebar-text: #e5e7eb;
+            --table-header-bg: #dbeafe;
+        }
+        .theme-hospital-soft {
+            --bg-color: #f6fbff;
+            --bg-soft: #ffffff;
+            --text-color: #1f2933;
+            --muted-text: #6b7280;
+            --accent: #10b981;
+            --accent-soft: rgba(16, 185, 129, 0.12);
+            --border-color: #d1e3f0;
+            --sidebar-bg: #0284c7;
+            --sidebar-text: #f9fafb;
+            --table-header-bg: #e0f2fe;
+        }
+        .theme-hospital-dark {
+            --bg-color: #020617;
+            --bg-soft: #020617;
+            --text-color: #e5e7eb;
+            --muted-text: #9ca3af;
+            --accent: #22c55e;
+            --accent-soft: rgba(34, 197, 94, 0.18);
+            --border-color: #1f2937;
+            --sidebar-bg: #020617;
+            --sidebar-text: #e5e7eb;
+            --table-header-bg: #020617;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -107,21 +145,15 @@
         .sidebar a.active {
             background: rgba(255, 255, 255, 0.16);
         }
-        main {
-            background-color: var(--bg-color);
-        }
+        main { background-color: var(--bg-color); }
         .card {
             border: 1px solid var(--border-color);
             background-color: var(--bg-soft);
             box-shadow: var(--shadow-soft);
             border-radius: 1rem;
         }
-        .page-title {
-            font-weight: 700;
-        }
-        .text-muted {
-            color: var(--muted-text) !important;
-        }
+        .page-title { font-weight: 700; }
+        .text-muted { color: var(--muted-text) !important; }
         .btn-primary,
         .btn-outline-primary:hover {
             background-color: var(--accent);
@@ -137,17 +169,11 @@
             padding: .25rem .75rem;
             font-size: .8rem;
         }
-        .theme-selector {
-            min-width: 210px;
-        }
-        section {
-            margin-bottom: 2.5rem;
-        }
-        .section-title {
-            margin-bottom: .5rem;
-        }
+        .theme-selector { min-width: 210px; }
+        section { margin-bottom: 2.5rem; }
+        .section-title { margin-bottom: .5rem; }
 
-        /* جدول الموظفين (تصميم احترافي) */
+        /* جدول الموظفين (تصميم + فرز يدوي) */
         .employee-table-wrapper {
             max-height: 500px;
             overflow-y: auto;
@@ -169,6 +195,24 @@
             box-shadow: 0 2px 4px rgba(15, 23, 42, 0.06);
             text-align: center;
             white-space: nowrap;
+            user-select: none;
+        }
+        .employee-table thead th.sortable {
+            cursor: pointer;
+        }
+        .employee-table thead th.sortable::after {
+            content: "⇅";
+            font-size: .7rem;
+            margin-right: .35rem;
+            opacity: .35;
+        }
+        .employee-table thead th.sort-asc::after {
+            content: "▲";
+            opacity: .8;
+        }
+        .employee-table thead th.sort-desc::after {
+            content: "▼";
+            opacity: .8;
         }
         .employee-table tbody td {
             vertical-align: middle;
@@ -205,7 +249,7 @@
         }
     </style>
 </head>
-<body class="theme-comfort">
+<body class="theme-hospital-soft">
 <div class="container-fluid">
     <div class="row">
         <!-- الشريط الجانبي -->
@@ -244,7 +288,10 @@
                 <div class="d-flex	align-items-center gap-2">
                     <span class="text-muted small">ثيم الواجهة:</span>
                     <select id="themeSelect" class="form-select form-select-sm theme-selector">
-                        <option value="theme-comfort">مريح (افتراضي)</option>
+                        <option value="theme-hospital-soft">مستشفى – ناعم (افتراضي)</option>
+                        <option value="theme-hospital-blue">مستشفى – أزرق</option>
+                        <option value="theme-hospital-dark">مستشفى – داكن</option>
+                        <option value="theme-comfort">مريح</option>
                         <option value="theme-light">فاتح</option>
                         <option value="theme-dark">داكن</option>
                         <option value="theme-ocean">أوشن</option>
@@ -356,7 +403,7 @@
                     </span>
                 </div>
 
-                <!-- الإحصائيات النصية (مخفية) -->
+                <!-- إحصائيات نصية (مخفية) -->
                 <div class="mb-3 d-none">
                     <small class="text-muted d-block">
                         حالات الخدمة: <span id="statusStats">لا توجد بيانات بعد</span>
@@ -402,21 +449,21 @@
                             <table class="employee-table table table-sm table-hover align-middle mb-0">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>الأسم الاول</th>
-                                    <th>الأسم الثاني</th>
-                                    <th>الأسم الثالث</th>
-                                    <th>الأسم الرابع</th>
-                                    <th>العنوان الوظيفي</th>
-                                    <th>الحالة الوظيفية</th>
-                                    <th>الملاحظات</th>
-                                    <th>أسم الدائرة / مبنى الوزارة</th>
-                                    <th>الرقم الوظيفي</th>
-                                    <th>الرقم الوطني</th>
-                                    <th>أسم الأم الثلاثي</th>
-                                    <th>الجنس</th>
-                                    <th>تاريخ التولد</th>
-                                    <th>تاريخ التعيين</th>
+                                    <th data-sort-key="index" class="sortable">#</th>
+                                    <th data-sort-key="firstName" class="sortable">الأسم الاول</th>
+                                    <th data-sort-key="secondName" class="sortable">الأسم الثاني</th>
+                                    <th data-sort-key="thirdName" class="sortable">الأسم الثالث</th>
+                                    <th data-sort-key="fourthName" class="sortable">الأسم الرابع</th>
+                                    <th data-sort-key="jobTitle" class="sortable">العنوان الوظيفي</th>
+                                    <th data-sort-key="status" class="sortable">الحالة الوظيفية</th>
+                                    <th data-sort-key="notes" class="sortable">الملاحظات</th>
+                                    <th data-sort-key="department" class="sortable">أسم الدائرة / مبنى الوزارة</th>
+                                    <th data-sort-key="jobNumber" class="sortable">الرقم الوظيفي</th>
+                                    <th data-sort-key="nationalId" class="sortable">الرقم الوطني</th>
+                                    <th data-sort-key="motherName" class="sortable">أسم الأم الثلاثي</th>
+                                    <th data-sort-key="gender" class="sortable">الجنس</th>
+                                    <th data-sort-key="birthDate" class="sortable">تاريخ التولد</th>
+                                    <th data-sort-key="hireDate" class="sortable">تاريخ التعيين</th>
                                     <th class="text-center">إجراءات</th>
                                 </tr>
                                 </thead>
@@ -711,7 +758,7 @@
             gender: "ذكر",
             nationalId: "",
             motherName: "",
-            birthDate: "",
+            birthDate: "1967-10-05",
             notes: ""
         },
         {
@@ -725,7 +772,7 @@
             gender: "ذكر",
             nationalId: "",
             motherName: "",
-            birthDate: "",
+            birthDate: "2000-02-15",
             notes: ""
         },
         {
@@ -739,7 +786,7 @@
             gender: "أنثى",
             nationalId: "",
             motherName: "",
-            birthDate: "",
+            birthDate: "1968-09-05",
             notes: ""
         },
         {
@@ -753,35 +800,7 @@
             gender: "ذكر",
             nationalId: "",
             motherName: "",
-            birthDate: "",
-            notes: ""
-        },
-        {
-            id: 5,
-            fullName: "هند كامل محمد",
-            jobNumber: "113056239",
-            jobTitle: "رئيس مصوري أشعة",
-            department: "مكتب الوزير / الملاك",
-            hireDate: "2014-03-20",
-            status: "متقاعد",
-            gender: "أنثى",
-            nationalId: "",
-            motherName: "",
-            birthDate: "",
-            notes: ""
-        },
-        {
-            id: 6,
-            fullName: "مها معاذ عباس",
-            jobNumber: "153434619",
-            jobTitle: "تقنية تمريض",
-            department: "دائرة الموارد البشرية",
-            hireDate: "2023-09-24",
-            status: "متدرب",
-            gender: "أنثى",
-            nationalId: "",
-            motherName: "",
-            birthDate: "",
+            birthDate: "1998-08-22",
             notes: ""
         }
     ];
@@ -789,8 +808,7 @@
     const leaves = [
         { id: 1, employeeId: 3, employeeName: "سعاد محمد مبارك", type: "مرضية",   startDate: "2025-01-05", endDate: "2025-01-10", status: "مقبولة", approvedBy: "رئيس قسم التمريض" },
         { id: 2, employeeId: 4, employeeName: "حسن فليح إسماعيل", type: "اعتيادية", startDate: "2025-02-01", endDate: "2025-02-07", status: "مقدمة", approvedBy: "" },
-        { id: 3, employeeId: 5, employeeName: "هند كامل محمد",    type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" },
-        { id: 4, employeeId: 6, employeeName: "مها معاذ عباس",    type: "طارئة",    startDate: "2025-03-15", endDate: "2025-03-18", status: "مرفوضة", approvedBy: "رئيس الموارد البشرية" }
+        { id: 3, employeeId: 2, employeeName: "احمد ابراهيم سلمان",    type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" }
     ];
 
     // تخزين محلي
@@ -831,6 +849,7 @@
     let currentView = [...employees];
     let currentLeavesView = [...leaves];
     let editingEmployeeId = null;
+    let currentSort = { key: null, dir: "asc" };
 
     // DOM
     const bodyEl = document.body;
@@ -915,12 +934,21 @@
 
     // ثيم
     function applyTheme(themeClass) {
-        bodyEl.classList.remove("theme-light", "theme-dark", "theme-ocean", "theme-sepia", "theme-comfort");
+        bodyEl.classList.remove(
+            "theme-light",
+            "theme-dark",
+            "theme-ocean",
+            "theme-sepia",
+            "theme-comfort",
+            "theme-hospital-blue",
+            "theme-hospital-soft",
+            "theme-hospital-dark"
+        );
         bodyEl.classList.add(themeClass);
         localStorage.setItem("hr_theme", themeClass);
     }
     themeSelect.addEventListener("change", e => applyTheme(e.target.value));
-    const savedTheme = localStorage.getItem("hr_theme") || "theme-comfort";
+    const savedTheme = localStorage.getItem("hr_theme") || "theme-hospital-soft";
     applyTheme(savedTheme);
     themeSelect.value = savedTheme;
 
@@ -935,7 +963,18 @@
         return `${day}/${month}/${year}`;
     }
 
+    function ensureNameParts(emp) {
+        if (emp._nameNormalized) return;
+        const parts = (emp.fullName || "").trim().split(/\s+/);
+        if (!emp.firstName && parts[0]) emp.firstName = parts[0];
+        if (!emp.secondName && parts[1]) emp.secondName = parts[1];
+        if (!emp.thirdName && parts[2]) emp.thirdName = parts[2];
+        if (!emp.fourthName && parts[3]) emp.fourthName = parts[3];
+        emp._nameNormalized = true;
+    }
+
     function getEmployeeFullName(emp) {
+        ensureNameParts(emp);
         if (emp.fullName) return emp.fullName;
         const parts = [
             emp.firstName || "",
@@ -1043,14 +1082,8 @@
         tableBody.innerHTML = "";
 
         list.forEach((emp, i) => {
+            ensureNameParts(emp);
             const tr = document.createElement("tr");
-
-            const fullName = getEmployeeFullName(emp) || "";
-            const parts = fullName.split(/\s+/);
-            const firstName  = emp.firstName  || parts[0] || "";
-            const secondName = emp.secondName || parts[1] || "";
-            const thirdName  = emp.thirdName  || parts[2] || "";
-            const fourthName = emp.fourthName || parts[3] || "";
 
             const statusClass =
                 emp.status === "مستمر بالخدمة" ? "bg-success" :
@@ -1060,10 +1093,10 @@
 
             tr.innerHTML = `
               <td class="text-center">${i + 1}</td>
-              <td>${firstName}</td>
-              <td>${secondName}</td>
-              <td>${thirdName}</td>
-              <td>${fourthName}</td>
+              <td>${emp.firstName || ""}</td>
+              <td>${emp.secondName || ""}</td>
+              <td>${emp.thirdName || ""}</td>
+              <td>${emp.fourthName || ""}</td>
               <td>${emp.jobTitle || ""}</td>
               <td class="text-center"><span class="badge ${statusClass} badge-status">${emp.status || ""}</span></td>
               <td>${emp.notes || ""}</td>
@@ -1087,6 +1120,80 @@
         renderEmployeeStats(list);
     }
 
+    // فرز يدوي للجدول
+    function parseMaybeNumber(val) {
+        if (val == null) return null;
+        const s = String(val).replace(/\s+/g, "");
+        if (!/^\d+(\.\d+)?$/.test(s)) return null;
+        return Number(s);
+    }
+
+    function parseMaybeDate(val) {
+        if (!val) return null;
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return null;
+        return d.getTime();
+    }
+
+    function getSortValue(emp, key) {
+        ensureNameParts(emp);
+        switch (key) {
+            case "index":     return emp.id;
+            case "firstName": return emp.firstName || "";
+            case "secondName":return emp.secondName || "";
+            case "thirdName": return emp.thirdName || "";
+            case "fourthName":return emp.fourthName || "";
+            case "jobTitle":  return emp.jobTitle || "";
+            case "status":    return emp.status || "";
+            case "notes":     return emp.notes || "";
+            case "department":return emp.department || "";
+            case "jobNumber": return emp.jobNumber || "";
+            case "nationalId":return emp.nationalId || "";
+            case "motherName":return emp.motherName || "";
+            case "gender":    return emp.gender || "";
+            case "birthDate": return emp.birthDate || "";
+            case "hireDate":  return emp.hireDate || "";
+            default:          return "";
+        }
+    }
+
+    function sortEmployees(key, dir) {
+        const factor = dir === "asc" ? 1 : -1;
+        currentView.sort((a, b) => {
+            const va = getSortValue(a, key);
+            const vb = getSortValue(b, key);
+            if (va == null && vb == null) return 0;
+            if (va == null) return 1 * factor;
+            if (vb == null) return -1 * factor;
+
+            // جرّب رقم
+            const na = parseMaybeNumber(va);
+            const nb = parseMaybeNumber(vb);
+            if (na !== null && nb !== null) return (na - nb) * factor;
+
+            // جرّب تاريخ
+            const da = parseMaybeDate(va);
+            const db = parseMaybeDate(vb);
+            if (da !== null && db !== null) return (da - db) * factor;
+
+            // نص عربي
+            return String(va).localeCompare(String(vb), "ar", { numeric: true }) * factor;
+        });
+
+        renderEmployees(currentView);
+    }
+
+    function updateSortIndicators() {
+        const headers = document.querySelectorAll(".employee-table thead th.sortable");
+        headers.forEach(th => {
+            th.classList.remove("sort-asc", "sort-desc");
+            const key = th.getAttribute("data-sort-key");
+            if (key && key === currentSort.key) {
+                th.classList.add(currentSort.dir === "asc" ? "sort-asc" : "sort-desc");
+            }
+        });
+    }
+
     // فلاتر الموظفين
     function applyEmployeeFilters() {
         const nameVal = filterName.value.trim();
@@ -1099,7 +1206,12 @@
             const mStatus = !statusVal || emp.status === statusVal;
             return mName && mDept && mStatus;
         });
-        renderEmployees(currentView);
+        // إذا كان هناك فرز حالي، طبّقه بعد الفلترة
+        if (currentSort.key) {
+            sortEmployees(currentSort.key, currentSort.dir);
+        } else {
+            renderEmployees(currentView);
+        }
     }
     filterForm.addEventListener("submit", e => { e.preventDefault(); applyEmployeeFilters(); });
     btnReset.addEventListener("click", () => {
@@ -1107,6 +1219,8 @@
         filterDept.value = "";
         filterStatus.value = "";
         currentView = [...employees];
+        currentSort = {key:null, dir:"asc"};
+        updateSortIndicators();
         renderEmployees(currentView);
     });
 
@@ -1129,11 +1243,11 @@
     }
 
     function fillEmployeeForm(emp) {
-        const parts = (getEmployeeFullName(emp) || "").split(/\s+/);
-        empFirstNameInput.value = emp.firstName || parts[0] || "";
-        empSecondNameInput.value = emp.secondName || parts[1] || "";
-        empThirdNameInput.value = emp.thirdName || parts[2] || "";
-        empFourthNameInput.value = emp.fourthName || parts[3] || "";
+        ensureNameParts(emp);
+        empFirstNameInput.value = emp.firstName || "";
+        empSecondNameInput.value = emp.secondName || "";
+        empThirdNameInput.value = emp.thirdName || "";
+        empFourthNameInput.value = emp.fourthName || "";
 
         empJobTitleInput.value = emp.jobTitle || "";
         empStatusInput.value = emp.status || "مستمر بالخدمة";
@@ -1221,7 +1335,8 @@
 
         saveDataToStorage();
         currentView = [...employees];
-        renderEmployees(currentView);
+        if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
+        else renderEmployees(currentView);
         closeEmployeeForm();
     });
 
@@ -1257,18 +1372,12 @@
         ];
 
         const rows = list.map(emp => {
-            const fullName = getEmployeeFullName(emp) || "";
-            const parts = fullName.split(/\s+/);
-            const firstName  = emp.firstName  || parts[0] || "";
-            const secondName = emp.secondName || parts[1] || "";
-            const thirdName  = emp.thirdName  || parts[2] || "";
-            const fourthName = emp.fourthName || parts[3] || "";
-
+            ensureNameParts(emp);
             return [
-                firstName,
-                secondName,
-                thirdName,
-                fourthName,
+                emp.firstName || "",
+                emp.secondName || "",
+                emp.thirdName || "",
+                emp.fourthName || "",
                 emp.jobTitle || "",
                 emp.status || "",
                 emp.notes || "",
@@ -1510,7 +1619,8 @@
 
         saveDataToStorage();
         currentView = [...employees];
-        renderEmployees(currentView);
+        if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
+        else renderEmployees(currentView);
         alert("تم استيراد الموظفين من الملف بنجاح.");
     }
 
@@ -1622,7 +1732,8 @@
         if (editingEmployeeId === id) editingEmployeeId = null;
         saveDataToStorage();
         currentView = [...employees];
-        renderEmployees(currentView);
+        if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
+        else renderEmployees(currentView);
         alert("تم حذف الموظف.");
     };
 
@@ -1803,11 +1914,29 @@
         });
     }
 
+    // تفعيل فرز الأعمدة عند الضغط على العناوين
+    const headerCells = document.querySelectorAll(".employee-table thead th.sortable");
+    headerCells.forEach(th => {
+        th.addEventListener("click", () => {
+            const key = th.getAttribute("data-sort-key");
+            if (!key) return;
+            if (currentSort.key === key) {
+                currentSort.dir = currentSort.dir === "asc" ? "desc" : "asc";
+            } else {
+                currentSort.key = key;
+                currentSort.dir = "asc";
+            }
+            sortEmployees(currentSort.key, currentSort.dir);
+            updateSortIndicators();
+        });
+    });
+
     // أول تحميل
     currentView = [...employees];
     currentLeavesView = [...leaves];
     renderEmployees(currentView);
     renderLeaves(currentLeavesView);
+    updateSortIndicators();
 
     // حفظ أولي
     saveDataToStorage();
