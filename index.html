@@ -2,83 +2,78 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>منصة إدارة ملف الموظفين</title>
+  <title>منصة ملف الموظفين</title>
 
-  <!-- Tailwind CSS عبر CDN لتنسيق عصري وسريع -->
+  <!-- Tailwind عبر CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- مكتبة Excel (SheetJS) -->
+  <!-- مكتبة Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js"></script>
 
   <style>
-    /* متغيرات الألوان العامة (يتم تغييرها حسب الثيم) */
     :root {
-      --bg: #020617;
-      --fg: #e5e7eb;
-      --card-bg: #020617;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56,189,248,0.1);
-      --border-subtle: rgba(148,163,184,0.4);
+      --bg: #f3f4f6;
+      --fg: #020617;
+      --card-bg: #ffffff;
+      --accent: #0ea5e9;
+      --accent-soft: rgba(14,165,233,0.10);
+      --border-subtle: rgba(148,163,184,0.5);
     }
 
     body {
-      background: radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%);
+      background: radial-gradient(circle at top, #e5f3ff 0, #f3f4f6 45%, #e5e7eb 100%);
       color: var(--fg);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     .glass-card {
-      background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9));
       border: 1px solid var(--border-subtle);
-      backdrop-filter: blur(18px);
       box-shadow:
-        0 20px 60px rgba(0,0,0,0.7),
-        0 0 40px rgba(56,189,248,0.25);
+        0 10px 30px rgba(15,23,42,0.12),
+        0 0 0 1px rgba(148,163,184,0.12);
     }
 
     .accent-pill {
       background: var(--accent-soft);
-      border: 1px solid rgba(148,163,184,0.4);
+      border: 1px solid rgba(148,163,184,0.3);
     }
 
     .btn-main {
       border-radius: 9999px;
-      border: 1px solid rgba(148,163,184,0.5);
-      background-image: linear-gradient(to right, var(--accent), #6366f1);
+      border: 1px solid rgba(148,163,184,0.4);
+      background-image: linear-gradient(to left, var(--accent), #22c55e);
       color: white;
       font-weight: 600;
-      box-shadow: 0 10px 25px rgba(56,189,248,0.4);
+      box-shadow: 0 8px 20px rgba(15,23,42,0.18);
       transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
     }
-
     .btn-main:hover {
-      transform: translateY(-1px) scale(1.01);
-      box-shadow: 0 18px 35px rgba(56,189,248,0.55);
-      filter: brightness(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(15,23,42,0.25);
+      filter: brightness(1.03);
     }
 
     .btn-ghost {
       border-radius: 9999px;
-      border: 1px solid rgba(148,163,184,0.4);
-      background: radial-gradient(circle at top left, rgba(15,23,42,0.9), rgba(15,23,42,0.5));
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(255,255,255,0.9);
       color: var(--fg);
       transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
     }
-
     .btn-ghost:hover {
-      background: radial-gradient(circle at top right, rgba(30,64,175,0.9), rgba(15,23,42,0.9));
+      background: rgba(241,245,249,1);
       border-color: var(--accent);
       transform: translateY(-1px);
     }
 
     .badge {
       border-radius: 9999px;
-      background: rgba(15,23,42,0.85);
+      background: rgba(255,255,255,0.9);
       border: 1px solid rgba(148,163,184,0.5);
       padding-inline: 0.75rem;
       padding-block: 0.25rem;
       font-size: 0.75rem;
-      color: #9ca3af;
+      color: #4b5563;
     }
 
     table {
@@ -90,18 +85,18 @@
     thead {
       position: sticky;
       top: 0;
-      backdrop-filter: blur(14px);
-      background: linear-gradient(to bottom, rgba(15,23,42,0.96), rgba(15,23,42,0.92));
+      background: #f8fafc;
       z-index: 10;
     }
 
     th {
       padding: 0.6rem 0.75rem;
       text-align: right;
-      border-bottom: 1px solid rgba(148,163,184,0.7);
+      border-bottom: 1px solid rgba(148,163,184,0.8);
       font-weight: 600;
       white-space: nowrap;
-      color: #e5e7eb;
+      color: #020617;
+      background: #f9fafb;
     }
 
     td {
@@ -111,107 +106,95 @@
     }
 
     tbody tr:nth-child(even) {
-      background: rgba(15,23,42,0.7);
+      background: #f9fafb;
     }
-
     tbody tr:nth-child(odd) {
-      background: rgba(15,23,42,0.4);
+      background: #ffffff;
     }
-
     tbody tr:hover {
-      background: rgba(30,64,175,0.55);
+      background: #e0f2fe;
     }
 
-    /* ------ الثيمات (10 ثيمات) ------ */
-
+    /* ثيمات هادئة */
     body.theme-1 {
-      --bg: #020617;
-      --fg: #e5e7eb;
-      --card-bg: #020617;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56,189,248,0.13);
-      --border-subtle: rgba(148,163,184,0.45);
+      --bg: #f3f4f6;
+      --fg: #020617;
+      --card-bg: #ffffff;
+      --accent: #0ea5e9;
+      --accent-soft: rgba(14,165,233,0.10);
+      --border-subtle: rgba(148,163,184,0.5);
     }
-
     body.theme-2 {
-      --bg: #020617;
-      --fg: #f9fafb;
-      --card-bg: #0b1120;
+      --bg: #f5f5f4;
+      --fg: #1c1917;
+      --card-bg: #ffffff;
       --accent: #f97316;
-      --accent-soft: rgba(249,115,22,0.18);
-      --border-subtle: rgba(248,250,252,0.25);
+      --accent-soft: rgba(249,115,22,0.12);
+      --border-subtle: rgba(168,162,158,0.7);
     }
-
     body.theme-3 {
-      --bg: #020617;
-      --fg: #ecfeff;
-      --card-bg: #022c22;
+      --bg: #ecfdf5;
+      --fg: #064e3b;
+      --card-bg: #ffffff;
       --accent: #22c55e;
-      --accent-soft: rgba(34,197,94,0.18);
-      --border-subtle: rgba(45,212,191,0.44);
+      --accent-soft: rgba(34,197,94,0.12);
+      --border-subtle: rgba(22,163,74,0.4);
     }
-
     body.theme-4 {
-      --bg: #020617;
-      --fg: #fdf2f8;
-      --card-bg: #4c1d95;
+      --bg: #fdf2ff;
+      --fg: #4a044e;
+      --card-bg: #ffffff;
       --accent: #ec4899;
-      --accent-soft: rgba(236,72,153,0.18);
-      --border-subtle: rgba(233,213,255,0.6);
+      --accent-soft: rgba(236,72,153,0.12);
+      --border-subtle: rgba(190,24,93,0.4);
     }
-
     body.theme-5 {
-      --bg: #020617;
-      --fg: #e5e7eb;
-      --card-bg: #111827;
+      --bg: #fffbeb;
+      --fg: #78350f;
+      --card-bg: #ffffff;
       --accent: #eab308;
-      --accent-soft: rgba(234,179,8,0.16);
-      --border-subtle: rgba(148,163,184,0.6);
+      --accent-soft: rgba(234,179,8,0.12);
+      --border-subtle: rgba(202,138,4,0.4);
     }
-
     body.theme-6 {
-      --bg: #020617;
-      --fg: #eff6ff;
-      --card-bg: #0f172a;
+      --bg: #eff6ff;
+      --fg: #0f172a;
+      --card-bg: #ffffff;
       --accent: #3b82f6;
-      --accent-soft: rgba(59,130,246,0.18);
-      --border-subtle: rgba(191,219,254,0.55);
+      --accent-soft: rgba(59,130,246,0.12);
+      --border-subtle: rgba(30,64,175,0.4);
     }
-
     body.theme-7 {
-      --bg: #020617;
-      --fg: #f1f5f9;
-      --card-bg: #0f172a;
-      --accent: #8b5cf6;
-      --accent-soft: rgba(139,92,246,0.19);
-      --border-subtle: rgba(148,163,184,0.7);
+      --bg: #f4f4ff;
+      --fg: #111827;
+      --card-bg: #ffffff;
+      --accent: #6366f1;
+      --accent-soft: rgba(99,102,241,0.12);
+      --border-subtle: rgba(79,70,229,0.4);
     }
-
     body.theme-8 {
-      --bg: #020617;
-      --fg: #f4f4f5;
-      --card-bg: #111827;
-      --accent: #f97316;
-      --accent-soft: rgba(248,250,252,0.1);
-      --border-subtle: rgba(82,82,91,0.7);
+      --bg: #fdf2e9;
+      --fg: #1f2933;
+      --card-bg: #ffffff;
+      --accent: #fb7185;
+      --accent-soft: rgba(251,113,133,0.12);
+      --border-subtle: rgba(248,113,113,0.4);
     }
-
     body.theme-9 {
-      --bg: #020617;
-      --fg: #e5e7eb;
-      --card-bg: #0b1120;
-      --accent: #22c55e;
-      --accent-soft: rgba(21,128,61,0.22);
-      --border-subtle: rgba(148,163,184,0.55);
+      --bg: #eef2ff;
+      --fg: #111827;
+      --card-bg: #ffffff;
+      --accent: #8b5cf6;
+      --accent-soft: rgba(139,92,246,0.12);
+      --border-subtle: rgba(109,40,217,0.4);
     }
-
     body.theme-10 {
-      --bg: #020617;
-      --fg: #f9fafb;
-      --card-bg: #020617;
+      --bg: #ecfeff;
+      --fg: #022c22;
+      --card-bg: #ffffff;
       --accent: #14b8a6;
-      --accent-soft: rgba(45,212,191,0.2);
-      --border-subtle: rgba(148,163,184,0.55);
+      --accent-soft: rgba(20,184,166,0.12);
+      --border-subtle: rgba(13,148,136,0.4);
     }
   </style>
 </head>
@@ -221,36 +204,34 @@
     <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
       <div class="space-y-2">
         <div class="inline-flex items-center gap-2 accent-pill px-3 py-1 rounded-full text-xs sm:text-[11px]">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>منصة محلية لإدارة ملف الموظفين – لا تحتاج إلى سيرفر</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>البيانات مدمجة داخل المنصة + حفظ تلقائي في المتصفح</span>
         </div>
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-50">
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
             منصة ملف الموظفين
           </h1>
-          <p class="mt-1 text-sm text-slate-400 max-w-xl">
-            استيراد ملف Excel، حفظ البيانات في المتصفح، تصدير JSON وإصدار تقرير Excel، مع 10 ثيمات مختلفة.
+          <p class="mt-1 text-sm text-slate-600 max-w-xl">
+            عرض بيانات ملف Excel مباشرة، مع إمكانية التحديث بملف جديد، تصدير JSON و Excel، وثيمات مريحة للعين.
           </p>
         </div>
       </div>
 
       <div class="flex flex-col gap-3 items-stretch sm:items-end">
-        <label class="text-xs text-slate-400 flex flex-col gap-1">
-          <span class="flex items-center gap-1">
-            <span>الثيم</span>
-          </span>
+        <label class="text-xs text-slate-500 flex flex-col gap-1">
+          <span>اختيار الثيم</span>
           <select id="themeSelect"
-                  class="bg-slate-950/60 border border-slate-600/60 rounded-full px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/70">
-            <option value="theme-1">أزرق نيوني (افتراضي)</option>
-            <option value="theme-2">برتقالي داكن</option>
-            <option value="theme-3">أخضر هادئ</option>
-            <option value="theme-4">بنفسجي / وردي</option>
-            <option value="theme-5">ذهبي كلاسيكي</option>
-            <option value="theme-6">أزرق رسمي</option>
-            <option value="theme-7">بنفسجي نيون</option>
-            <option value="theme-8">رمادي دافئ</option>
-            <option value="theme-9">أخضر غامق</option>
-            <option value="theme-10">تركوازي</option>
+                  class="bg-white border border-slate-300 rounded-full px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400">
+            <option value="theme-1">أزرق هادئ (افتراضي)</option>
+            <option value="theme-2">برتقالي ناعم</option>
+            <option value="theme-3">أخضر مريح</option>
+            <option value="theme-4">بنفسجي وردي ناعم</option>
+            <option value="theme-5">ذهبي دافئ</option>
+            <option value="theme-6">أزرق رسمي فاتح</option>
+            <option value="theme-7">بنفسجي هادئ</option>
+            <option value="theme-8">وردي خوخي</option>
+            <option value="theme-9">بنفسجي باستيل</option>
+            <option value="theme-10">تركوازي هادئ</option>
           </select>
         </label>
 
@@ -259,7 +240,7 @@
             <input id="fileInput" type="file" accept=".xlsx,.xls"
                    class="absolute inset-0 opacity-0 cursor-pointer" />
             <span class="btn-main text-xs px-4 py-2 flex items-center gap-1.5">
-              📥 استيراد ملف Excel
+              📥 استيراد ملف Excel جديد
             </span>
           </label>
 
@@ -279,19 +260,19 @@
       <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
         <div class="flex flex-wrap gap-2">
           <span class="badge">
-            عدد السجلات: <span id="recordsCount" class="font-semibold text-sky-400 ml-1">0</span>
+            عدد السجلات: <span id="recordsCount" class="font-semibold text-sky-600 ml-1">0</span>
           </span>
           <span class="badge">
-            حالة التخزين: <span id="storageStatus" class="font-semibold text-emerald-400 ml-1">لا يوجد بيانات</span>
+            حالة التخزين: <span id="storageStatus" class="font-semibold text-emerald-600 ml-1">لا يوجد بيانات</span>
           </span>
         </div>
 
         <div class="flex flex-1 gap-3 items-center">
           <div class="relative flex-1">
             <input id="searchInput"
-                   class="w-full rounded-full bg-slate-900/70 border border-slate-600/70 text-xs sm:text-sm text-slate-100 placeholder-slate-500 px-3 sm:px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500/70"
-                   placeholder="ابحث باسم الموظف، العنوان الوظيفي، الرقم الوظيفي ..." />
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
+                   class="w-full rounded-full bg-white border border-slate-300 text-xs sm:text-sm text-slate-800 placeholder-slate-400 px-3 sm:px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                   placeholder="ابحث بالاسم، العنوان الوظيفي، الرقم الوظيفي ..." />
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">🔍</span>
           </div>
           <button id="clearSearchBtn" class="btn-ghost text-xs px-3 py-1.5">
             مسح
@@ -302,7 +283,7 @@
 
     <!-- جدول البيانات -->
     <section class="glass-card rounded-3xl p-4 sm:p-5">
-      <div class="overflow-x-auto rounded-2xl border border-slate-700/60">
+      <div class="overflow-x-auto rounded-2xl border border-slate-200">
         <div class="max-h-[65vh] overflow-auto">
           <table id="dataTable">
             <thead id="tableHead"></thead>
@@ -311,7 +292,7 @@
         </div>
       </div>
       <p class="mt-3 text-xs text-slate-500">
-        ملاحظة: يتم حفظ البيانات تلقائيًا في المتصفح (LocalStorage) بعد استيراد الملف أو تحديثه.
+        البيانات الافتراضية مأخوذة من ملف Excel المدمج. عند استيراد ملف جديد سيتم استبدالها وحفظها في LocalStorage.
       </p>
     </section>
   </div>
@@ -320,25 +301,63 @@
     const STORAGE_KEY = "hr_employees_data_v1";
     const THEME_KEY = "hr_employees_theme_v1";
 
-    let allRows = [];      // كل البيانات من Excel
-    let filteredRows = []; // البيانات بعد البحث
+    // 🔹 بيانات افتراضية مأخوذة من ملفك (أمثلة من الأعلى)
+    // يمكنك إضافة بقية السجلات بنفس البنية.
+    const defaultData = [
+      {
+        "الأسم الاول": "ابتهال",
+        "الأسم الثاني": "سالم",
+        "الأسم الثالث": "منصور",
+        "الأسم الرابع": "حمد",
+        "العنوان الوظيفي": " معاون طبي أقدم",
+        "الحالة الوظيفية ": "مستمر بالخدمة",
+        "الملاحظات": "مسكن \nعلاج طبيعي",
+        "أسم الدائرة / مبنى الوزارة": "مكتب الوزير/الملاك",
+        "الرقم الوظيفي": 144842106,
+        "الرقم الوطني": 200025926804,
+        "أسم الأم الثلاثي": "منيرة حسين ياسين",
+        "الجنس": "أنثى",
+        "تاريخ التولد": "15/02/2000",
+        "تاريخ التعيين": "19/11/2023"
+      },
+      {
+        "الأسم الاول": "ابراهيم",
+        "الأسم الثاني": "سالم",
+        "الأسم الثالث": "منصور",
+        "الأسم الرابع": "حمد",
+        "العنوان الوظيفي": "رئيس معاون طبي اقدم",
+        "الحالة الوظيفية ": "مستمر بالخدمة",
+        "الملاحظات": "مسكن \nعلاج طبيعي",
+        "أسم الدائرة / مبنى الوزارة": "مكتب الوزير/الملاك",
+        "الرقم الوظيفي": 144934285,
+        "الرقم الوطني": 196832782804,
+        "أسم الأم الثلاثي": "زنوبة خضير عباس",
+        "الجنس": "ذكر",
+        "تاريخ التولد": "01/05/1968",
+        "تاريخ التعيين": "11/01/1990"
+      }
+      // 📌 هنا أضف بقية السجلات بنفس الشكل إن رغبت
+    ];
+
+    let allRows = [];
+    let filteredRows = [];
 
     function setStorageStatus(text, type = "ok") {
       const el = document.getElementById("storageStatus");
       el.textContent = text;
       if (type === "ok") {
-        el.classList.remove("text-red-400");
-        el.classList.add("text-emerald-400");
+        el.classList.remove("text-red-500");
+        el.classList.add("text-emerald-600");
       } else {
-        el.classList.remove("text-emerald-400");
-        el.classList.add("text-red-400");
+        el.classList.remove("text-emerald-600");
+        el.classList.add("text-red-500");
       }
     }
 
     function saveToLocalStorage() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(allRows));
-        setStorageStatus("تم الحفظ في التخزين المحلي ✓", "ok");
+        setStorageStatus("تم الحفظ في LocalStorage ✓", "ok");
       } catch (e) {
         console.error(e);
         setStorageStatus("خطأ في الحفظ إلى LocalStorage", "error");
@@ -348,15 +367,23 @@
     function loadFromLocalStorage() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          allRows = parsed;
-          filteredRows = [...allRows];
-          renderTable();
-          updateStats();
-          setStorageStatus("تم تحميل البيانات من LocalStorage ✓", "ok");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            allRows = parsed;
+            filteredRows = [...allRows];
+            renderTable();
+            updateStats();
+            setStorageStatus("تم تحميل البيانات من LocalStorage ✓", "ok");
+            return;
+          }
         }
+        // لا يوجد بيانات محفوظة => استخدم بيانات Excel المدمجة
+        allRows = defaultData;
+        filteredRows = [...allRows];
+        renderTable();
+        updateStats();
+        setStorageStatus("يتم عرض البيانات الافتراضية المدمجة ✓", "ok");
       } catch (e) {
         console.error(e);
         setStorageStatus("تعذر قراءة البيانات من LocalStorage", "error");
@@ -371,14 +398,13 @@
 
       if (!filteredRows || filteredRows.length === 0) {
         tbody.innerHTML = `
-          <tr><td class="px-4 py-3 text-center text-slate-400" colspan="100">
-            لا توجد بيانات لعرضها. قم باستيراد ملف Excel أولاً.
+          <tr><td class="px-4 py-3 text-center text-slate-500" colspan="100">
+            لا توجد بيانات لعرضها.
           </td></tr>`;
         return;
       }
 
       const keys = Object.keys(filteredRows[0]);
-
       const headerRow = document.createElement("tr");
       keys.forEach((k) => {
         const th = document.createElement("th");
@@ -391,8 +417,7 @@
         const tr = document.createElement("tr");
         keys.forEach((k) => {
           const td = document.createElement("td");
-          const value = row[k] != null ? row[k] : "";
-          td.textContent = value;
+          td.textContent = row[k] != null ? row[k] : "";
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -400,8 +425,7 @@
     }
 
     function updateStats() {
-      const countEl = document.getElementById("recordsCount");
-      countEl.textContent = allRows.length.toString();
+      document.getElementById("recordsCount").textContent = allRows.length.toString();
     }
 
     function handleFileSelect(evt) {
@@ -415,8 +439,8 @@
           const workbook = XLSX.read(data, { type: "array" });
           const firstSheetName = workbook.SheetNames[0];
           const sheet = workbook.Sheets[firstSheetName];
-
           const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
           allRows = json;
           filteredRows = [...allRows];
           renderTable();
@@ -442,13 +466,12 @@
         });
       }
       renderTable();
-      const countEl = document.getElementById("recordsCount");
-      countEl.textContent = filteredRows.length.toString();
+      document.getElementById("recordsCount").textContent = filteredRows.length.toString();
     }
 
     function exportJson() {
       if (!allRows || allRows.length === 0) {
-        alert("لا توجد بيانات لتصديرها. قم باستيراد ملف أولاً.");
+        alert("لا توجد بيانات لتصديرها.");
         return;
       }
       const jsonStr = JSON.stringify(allRows, null, 2);
@@ -465,7 +488,7 @@
 
     function exportExcel() {
       if (!allRows || allRows.length === 0) {
-        alert("لا توجد بيانات لتصديرها. قم باستيراد ملف أولاً.");
+        alert("لا توجد بيانات لتصديرها.");
         return;
       }
       const worksheet = XLSX.utils.json_to_sheet(allRows);
@@ -481,6 +504,8 @@
       }
       body.classList.add(themeName);
       localStorage.setItem(THEME_KEY, themeName);
+      // تحديث الخلفية حسب المتغيرات
+      document.body.style.background = `radial-gradient(circle at top, ${getComputedStyle(document.documentElement).getPropertyValue('--bg')} 0, #f3f4f6 60%, #e5e7eb 100%)`;
     }
 
     function loadTheme() {
@@ -500,7 +525,6 @@
 
       const searchInput = document.getElementById("searchInput");
       searchInput.addEventListener("input", (e) => applySearch(e.target.value));
-
       document.getElementById("clearSearchBtn").addEventListener("click", () => {
         searchInput.value = "";
         applySearch("");
