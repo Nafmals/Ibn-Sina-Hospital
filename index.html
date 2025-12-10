@@ -2,1359 +2,965 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام إدارة الموظفين - مستشفى ابن سينا التعليمي</title>
+    <title>نظام إدارة الموظفين</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS RTL -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <!-- تطبيق الثيم المحفوظ قبل تحميل الـ CSS لمنع الوميض -->
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('hrTheme') || 'theme-default';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'theme-default');
+            }
+        })();
+    </script>
+
+    <!-- مكتبة Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
+        /* متغيرات الألوان حسب الثيم */
         :root {
-            --bg-color: #f5f6fa;
-            --bg-soft: #ffffff;
-            --text-color: #1f2933;
-            --muted-text: #6b7280;
-            --accent: #0d6efd;
-            --accent-soft: rgba(13, 110, 253, 0.08);
-            --border-color: #e5e7eb;
-            --sidebar-bg: #0d6efd;
-            --sidebar-text: #ffffff;
-            --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
-            --table-header-bg: #e9ecef;
-        }
-        .theme-light {
-            --bg-color: #f5f6fa;
-            --bg-soft: #ffffff;
-            --text-color: #111827;
-            --muted-text: #6b7280;
-            --accent: #0d6efd;
-            --accent-soft: rgba(13, 110, 253, 0.08);
-            --border-color: #e5e7eb;
-            --sidebar-bg: #0d6efd;
-            --sidebar-text: #ffffff;
-            --table-header-bg: #eef2ff;
-        }
-        .theme-dark {
-            --bg-color: #030712;
-            --bg-soft: #020617;
-            --text-color: #e5e7eb;
-            --muted-text: #9ca3af;
-            --accent: #38bdf8;
-            --accent-soft: rgba(56, 189, 248, 0.1);
-            --border-color: #1f2937;
-            --sidebar-bg: #020617;
+            --sidebar-bg: #111827;
+            --sidebar-bg-active: #1f2937;
             --sidebar-text: #e5e7eb;
-            --table-header-bg: #111827;
-        }
-        .theme-ocean {
-            --bg-color: #0f172a;
-            --bg-soft: #0b1220;
-            --text-color: #e5e7eb;
-            --muted-text: #9ca3af;
-            --accent: #38bdf8;
-            --accent-soft: rgba(56, 189, 248, 0.14);
-            --border-color: #1e293b;
-            --sidebar-bg: #020617;
-            --sidebar-text: #e5e7eb;
-            --table-header-bg: #0b1120;
-        }
-        .theme-sepia {
-            --bg-color: #f4eee2;
-            --bg-soft: #fdf7ec;
-            --text-color: #3b2f2f;
-            --muted-text: #7c6a5f;
-            --accent: #c47f3a;
-            --accent-soft: rgba(196, 127, 58, 0.1);
-            --border-color: #e0d0b8;
-            --sidebar-bg: #c47f3a;
-            --sidebar-text: #fff7ec;
-            --table-header-bg: #f3e3cf;
-        }
-        .theme-comfort {
-            --bg-color: #edf2f7;
-            --bg-soft: #ffffff;
-            --text-color: #1a202c;
-            --muted-text: #718096;
-            --accent: #4299e1;
-            --accent-soft: rgba(66, 153, 225, 0.12);
-            --border-color: #e2e8f0;
-            --sidebar-bg: #2d3748;
-            --sidebar-text: #e2e8f0;
-            --table-header-bg: #e2e8f0;
+            --sidebar-text-muted: #9ca3af;
+
+            --body-bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --card-border: #e5e7eb;
+
+            --accent: #2563eb;
+            --accent-soft: rgba(37, 99, 235, 0.08);
+            --accent-strong: #1d4ed8;
+
+            --text-main: #111827;
+            --text-muted: #6b7280;
+
+            --danger: #dc2626;
+            --success: #16a34a;
+            --warning: #d97706;
+            --badge-bg: #e5e7eb;
+
+            --input-bg: #ffffff;
+            --input-border: #d1d5db;
+            --input-focus: #2563eb;
+
+            --table-header-bg: #e5f0ff;
+            --table-row-hover: #eff6ff;
         }
 
-        /* ثيمات خاصة بالمستشفى */
-        .theme-hospital-blue {
-            --bg-color: #e9f4ff;
-            --bg-soft: #ffffff;
-            --text-color: #102a43;
-            --muted-text: #627d98;
-            --accent: #0ea5e9;
-            --accent-soft: rgba(14, 165, 233, 0.14);
-            --border-color: #cbd2e1;
+        :root[data-theme="theme-default"] {
+            --sidebar-bg: #111827;
+            --sidebar-bg-active: #1f2937;
+            --accent: #2563eb;
+            --accent-strong: #1d4ed8;
+            --body-bg: #f3f4f6;
+            --card-bg: #ffffff;
+        }
+
+        :root[data-theme="theme-blue"] {
             --sidebar-bg: #0f172a;
-            --sidebar-text: #e5e7eb;
-            --table-header-bg: #dbeafe;
+            --sidebar-bg-active: #1e293b;
+            --accent: #0ea5e9;
+            --accent-strong: #0284c7;
+            --body-bg: #e0f2fe;
+            --card-bg: #f9fafb;
         }
-        .theme-hospital-soft {
-            --bg-color: #f6fbff;
-            --bg-soft: #ffffff;
-            --text-color: #1f2933;
-            --muted-text: #6b7280;
-            --accent: #10b981;
-            --accent-soft: rgba(16, 185, 129, 0.12);
-            --border-color: #d1e3f0;
-            --sidebar-bg: #0284c7;
-            --sidebar-text: #f9fafb;
-            --table-header-bg: #e0f2fe;
+
+        :root[data-theme="theme-slate"] {
+            --sidebar-bg: #111827;
+            --sidebar-bg-active: #020617;
+            --accent: #64748b;
+            --accent-strong: #475569;
+            --body-bg: #e5e7eb;
+            --card-bg: #f9fafb;
         }
-        .theme-hospital-dark {
-            --bg-color: #020617;
-            --bg-soft: #020617;
-            --text-color: #e5e7eb;
-            --muted-text: #9ca3af;
-            --accent: #22c55e;
-            --accent-soft: rgba(34, 197, 94, 0.18);
-            --border-color: #1f2937;
-            --sidebar-bg: #020617;
-            --sidebar-text: #e5e7eb;
-            --table-header-bg: #020617;
+
+        :root[data-theme="theme-ocean"] {
+            --sidebar-bg: #022c22;
+            --sidebar-bg-active: #064e3b;
+            --accent: #0d9488;
+            --accent-strong: #0f766e;
+            --body-bg: #ecfeff;
+            --card-bg: #f9fafb;
+        }
+
+        :root[data-theme="theme-olive"] {
+            --sidebar-bg: #1a2e05;
+            --sidebar-bg-active: #365314;
+            --accent: #65a30d;
+            --accent-strong: #4d7c0f;
+            --body-bg: #f7fee7;
+            --card-bg: #fefce8;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            font-family: "Tahoma", "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: var(--body-bg);
+            color: var(--text-main);
         }
-        .sidebar {
+
+        .app {
+            display: flex;
             min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
             background: var(--sidebar-bg);
             color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
         }
-        .sidebar a {
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .sidebar-badge {
+            font-size: 0.7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(209, 213, 219, 0.5);
+            padding: 0.15rem 0.4rem;
+            background: rgba(31, 41, 55, 0.7);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar-nav-item {
+            margin-bottom: 0.4rem;
+        }
+
+        .sidebar-nav-link {
+            display: block;
+            padding: 0.55rem 0.8rem;
+            border-radius: 0.7rem;
             color: var(--sidebar-text);
             text-decoration: none;
-            border-radius: .6rem;
-            padding: .55rem .9rem;
+            font-size: 0.95rem;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-nav-link:hover {
+            background: rgba(55, 65, 81, 0.9);
+            transform: translateX(-2px);
+        }
+
+        .sidebar-nav-link.active {
+            background: var(--sidebar-bg-active);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            font-size: 0.75rem;
+            color: var(--sidebar-text-muted);
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(55, 65, 81, 0.7);
+        }
+
+        .main {
+            flex: 1;
+            padding: 1.5rem 1.8rem;
+            overflow: hidden;
+        }
+
+        .main-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            gap: 0.75rem;
+        }
+
+        .main-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .main-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .main-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        select,
+        input[type="text"],
+        input[type="date"] {
+            font-family: inherit;
+            border-radius: 0.5rem;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            padding: 0.4rem 0.6rem;
+            font-size: 0.85rem;
+            min-width: 120px;
+        }
+
+        select:focus,
+        input[type="text"]:focus,
+        input[type="date"]:focus {
+            outline: 2px solid var(--input-focus);
+            outline-offset: 1px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: var(--accent-strong);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--text-main);
+            border-color: var(--input-border);
+        }
+
+        .btn-secondary:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border-color: transparent;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(148, 163, 184, 0.15);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            border: 1px solid transparent;
+            background: var(--badge-bg);
+        }
+
+        .badge-success {
+            background: rgba(22, 163, 74, 0.08);
+            color: var(--success);
+            border-color: rgba(22, 163, 74, 0.4);
+        }
+
+        .badge-warning {
+            background: rgba(234, 179, 8, 0.08);
+            color: var(--warning);
+            border-color: rgba(234, 179, 8, 0.4);
+        }
+
+        .badge-muted {
+            background: rgba(148, 163, 184, 0.15);
+            color: #4b5563;
+            border-color: rgba(148, 163, 184, 0.4);
+        }
+
+        .page-section {
+            display: none;
+            height: calc(100vh - 100px);
+            overflow: hidden;
+        }
+
+        .page-section.active {
             display: block;
         }
-        .sidebar a:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-        .sidebar a.active {
-            background: rgba(255, 255, 255, 0.16);
-        }
-        main { background-color: var(--bg-color); }
-        .card {
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-soft);
-            box-shadow: var(--shadow-soft);
-            border-radius: 1rem;
-        }
-        .page-title { font-weight: 700; }
-        .text-muted { color: var(--muted-text) !important; }
-        .btn-primary,
-        .btn-outline-primary:hover {
-            background-color: var(--accent);
-            border-color: var(--accent);
-        }
-        .btn-outline-primary {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-        .filter-chip {
-            background-color: var(--accent-soft);
-            border-radius: 999px;
-            padding: .25rem .75rem;
-            font-size: .8rem;
-        }
-        .theme-selector { min-width: 210px; }
-        section { margin-bottom: 2.5rem; }
-        .section-title { margin-bottom: .5rem; }
 
-        /* جدول الموظفين (تصميم + فرز يدوي) */
-        .employee-table-wrapper {
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: .9rem;
-            border: 1px solid var(--border-color);
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.9rem;
+            border: 1px solid var(--card-border);
+            padding: 1rem 1.2rem;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
         }
-        .employee-table {
-            min-width: 1350px;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: .85rem;
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.75rem;
         }
-        .employee-table thead th {
+
+        .toolbar-right {
+            margin-inline-start: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .filters-row > * {
+            flex: 1 1 170px;
+        }
+
+        .table-wrapper {
+            border-radius: 0.8rem;
+            border: 1px solid var(--card-border);
+            overflow: auto;
+            max-height: calc(100vh - 230px);
+            background: #fff;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1200px;
+            font-size: 0.8rem;
+        }
+
+        thead {
+            background: var(--table-header-bg);
             position: sticky;
             top: 0;
             z-index: 2;
-            background-color: var(--table-header-bg);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.06);
-            text-align: center;
-            white-space: nowrap;
-            user-select: none;
-        }
-        .employee-table thead th.sortable {
-            cursor: pointer;
-        }
-        .employee-table thead th.sortable::after {
-            content: "⇅";
-            font-size: .7rem;
-            margin-right: .35rem;
-            opacity: .35;
-        }
-        .employee-table thead th.sort-asc::after {
-            content: "▲";
-            opacity: .8;
-        }
-        .employee-table thead th.sort-desc::after {
-            content: "▼";
-            opacity: .8;
-        }
-        .employee-table tbody td {
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-        .employee-table tbody tr:nth-child(even) {
-            background-color: rgba(148, 163, 184, 0.06);
-        }
-        .employee-table tbody tr:hover {
-            background-color: rgba(59, 130, 246, 0.10);
-        }
-        .badge-status {
-            font-size: 0.7rem;
-            padding: .25rem .5rem;
-            border-radius: 999px;
         }
 
-        /* صفحة/طبقة نموذج الموظف */
-        .employee-overlay {
+        th,
+        td {
+            padding: 0.45rem 0.6rem;
+            text-align: right;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #4b5563;
+            user-select: none;
+            position: relative;
+        }
+
+        th.sortable {
+            cursor: pointer;
+        }
+
+        th.sortable::after {
+            content: "⇅";
+            font-size: 0.7rem;
+            opacity: 0.3;
+            margin-right: 0.15rem;
+        }
+
+        th.sortable.sorted-asc::after {
+            content: "↑";
+            opacity: 0.8;
+        }
+
+        th.sortable.sorted-desc::after {
+            content: "↓";
+            opacity: 0.8;
+        }
+
+        tbody tr:hover {
+            background: var(--table-row-hover);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .table-actions .btn {
+            padding-inline: 0.45rem;
+            font-size: 0.75rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 0.9rem;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .stat-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: 0.35rem;
+        }
+
+        .stat-chip {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+        }
+
+        /* Modal */
+        .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.45);
+            background: rgba(15, 23, 42, 0.55);
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
-            padding: 2rem 1rem;
-            z-index: 1050;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
         }
-        .employee-overlay .card {
-            width: 100%;
-            max-width: 1200px;
-            max-height: 100%;
+
+        .modal-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            width: min(1100px, 96vw);
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--card-border);
+        }
+
+        .modal-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--body-bg);
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .modal-body {
+            padding: 0.9rem 1rem 0.4rem;
             overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 0.65rem 1rem 0.9rem;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: flex-start;
+            gap: 0.5rem;
+        }
+
+        .close-icon-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .close-icon-btn:hover {
+            background: rgba(148, 163, 184, 0.2);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.6rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 50px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 0.8rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--input-border);
+            padding: 0.4rem 0.6rem;
+        }
+
+        .form-group textarea:focus {
+            outline: 2px solid var(--input-focus);
+            outline-offset: 1px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            inset-inline-start: 1rem;
+            background: #111827;
+            color: #f9fafb;
+            border-radius: 999px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.8rem;
+            display: none;
+            align-items: center;
+            gap: 0.4rem;
+            z-index: 60;
+        }
+
+        .toast.show {
+            display: inline-flex;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                padding-inline: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .main {
+                padding-inline: 0.75rem;
+            }
         }
     </style>
 </head>
-<body class="theme-hospital-soft">
-<div class="container-fluid">
-    <div class="row">
-        <!-- الشريط الجانبي -->
-        <nav class="col-md-2 col-lg-2 d-md-block sidebar p-3">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h5 class="mb-0">نظام الموظفين</h5>
-                <span class="badge bg-light text-dark">HR</span>
-            </div>
-            <ul class="nav flex-column gap-1">
-                <li class="nav-item">
-                    <a class="nav-link" href="#dashboard">لوحة التحكم</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="#employees">الموظفون</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#leaves">الإجازات</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#reports">التقارير</a>
-                </li>
-                <li class="nav-item mt-4">
-                    <a class="nav-link" href="#logout">تسجيل الخروج</a>
-                </li>
-            </ul>
-        </nav>
+<body>
 
-        <!-- المحتوى -->
-        <main class="col-md-10 col-lg-10 ms-auto p-4">
-            <!-- شريط علوي -->
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                <div>
-                    <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التعليمي</h2>
-                    <p class="text-muted mb-0">لوحة تحكم، موظفون، إجازات، وتقارير في منصة واحدة.</p>
+<div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-badge">HR</span>
+            <div class="sidebar-title">نظام الموظفين</div>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link active" data-section="dashboardSection">لوحة التحكم</a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" data-section="employeesSection">الموظفون</a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" data-section="leavesSection">الإجازات</a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" data-section="reportsSection">التقارير</a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link" data-section="logoutSection">تسجيل الخروج</a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            نظام بسيط لإدارة الموظفين، الإجازات و التقارير في منصة واحدة.
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <header class="main-header">
+            <div class="main-title-group">
+                <div class="main-title">إدارة موظفي إبن سينا التعليمي</div>
+                <div class="main-subtitle">تحكم، إحصائيات وتقارير من مكان واحد.</div>
+            </div>
+            <div class="header-controls">
+                <label style="font-size:0.85rem;color:var(--text-muted);">
+                    الثيم:
+                    <select id="themeSelect">
+                        <option value="theme-default">افتراضي</option>
+                        <option value="theme-blue">أزرق هادئ</option>
+                        <option value="theme-slate">رمادي أنيق</option>
+                        <option value="theme-ocean">بحري مريح</option>
+                        <option value="theme-olive">أخضر هادئ</option>
+                    </select>
+                </label>
+            </div>
+        </header>
+
+        <!-- Dashboard -->
+        <section id="dashboardSection" class="page-section active">
+            <div class="card">
+                <div class="stats-row" id="dashboardStatsRow">
+                    <div class="stat-card">
+                        <div class="stat-label">إجمالي الموظفين</div>
+                        <div class="stat-value" id="totalEmployees">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">الذكور</div>
+                        <div class="stat-value" id="totalMales">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">الإناث</div>
+                        <div class="stat-value" id="totalFemales">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">الحالة الوظيفية</div>
+                        <div class="stat-chip-row" id="statusChips"></div>
+                    </div>
                 </div>
-                <div class="d-flex	align-items-center gap-2">
-                    <span class="text-muted small">ثيم الواجهة:</span>
-                    <select id="themeSelect" class="form-select form-select-sm theme-selector">
-                        <option value="theme-hospital-soft">مستشفى – ناعم (افتراضي)</option>
-                        <option value="theme-hospital-blue">مستشفى – أزرق</option>
-                        <option value="theme-hospital-dark">مستشفى – داكن</option>
-                        <option value="theme-comfort">مريح</option>
-                        <option value="theme-light">فاتح</option>
-                        <option value="theme-dark">داكن</option>
-                        <option value="theme-ocean">أوشن</option>
-                        <option value="theme-sepia">سيبيا</option>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.4rem;">
+                    يمكنك إدارة بيانات الموظفين من تبويب <strong>الموظفون</strong>، ثم مراجعة الإحصائيات التفصيلية من تبويب
+                    <strong>التقارير</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- Employees -->
+        <section id="employeesSection" class="page-section">
+            <div class="card" style="margin-bottom:0.75rem;">
+                <div class="toolbar">
+                    <button class="btn" id="addEmployeeBtn">+ إضافة موظف جديد</button>
+                    <button class="btn-secondary" id="saveDataBtn">حفظ البيانات</button>
+                    <div class="toolbar-right">
+                        <button class="btn-secondary" id="importExcelBtn">استيراد من Excel</button>
+                        <input type="file" id="importExcelInput" accept=".xlsx,.xls" style="display:none;">
+                        <button class="btn-secondary" id="exportExcelBtn">تصدير إلى Excel</button>
+                        <button class="btn-secondary" id="exportCsvBtn">تصدير CSV</button>
+                        <button class="btn-secondary" id="importJsonBtn">استيراد JSON</button>
+                        <input type="file" id="importJsonInput" accept=".json" style="display:none;">
+                        <button class="btn-secondary" id="exportJsonBtn">تصدير JSON</button>
+                    </div>
+                </div>
+                <div class="filters-row">
+                    <input type="text" id="searchByName" placeholder="بحث بالاسم ...">
+                    <select id="filterByStatus">
+                        <option value="">كل الحالات الوظيفية</option>
+                    </select>
+                    <select id="filterByDepartment">
+                        <option value="">كل الدوائر</option>
+                    </select>
+                    <select id="filterByGender">
+                        <option value="">كل الأنواع</option>
+                        <option value="ذكر">ذكر</option>
+                        <option value="أنثى">أنثى</option>
                     </select>
                 </div>
             </div>
 
-            <!-- لوحة التحكم -->
-            <section id="dashboard">
-                <h4 class="section-title">لوحة التحكم</h4>
-                <p class="text-muted">نظرة سريعة على أعداد الموظفين والإجازات.</p>
+            <div class="table-wrapper">
+                <table id="employeesTable">
+                    <thead>
+                    <tr>
+                        <th style="min-width:40px;">#</th>
+                        <th class="sortable" data-sort-key="firstName">الأسم الاول</th>
+                        <th class="sortable" data-sort-key="secondName">الأسم الثاني</th>
+                        <th class="sortable" data-sort-key="thirdName">الأسم الثالث</th>
+                        <th class="sortable" data-sort-key="fourthName">الأسم الرابع</th>
+                        <th class="sortable" data-sort-key="jobTitle">العنوان الوظيفي</th>
+                        <th class="sortable" data-sort-key="jobStatus">الحالة الوظيفية</th>
+                        <th class="sortable" data-sort-key="notes">الملاحظات</th>
+                        <th class="sortable" data-sort-key="department">أسم الدائرة / مبنى الوزارة</th>
+                        <th class="sortable" data-sort-key="jobNumber">الرقم الوظيفي</th>
+                        <th class="sortable" data-sort-key="nationalId">الرقم الوطني</th>
+                        <th class="sortable" data-sort-key="motherName">أسم الأم الثلاثي</th>
+                        <th class="sortable" data-sort-key="gender">الجنس</th>
+                        <th class="sortable" data-sort-key="birthDate">تاريخ التولد</th>
+                        <th class="sortable" data-sort-key="hireDate">تاريخ التعيين</th>
+                        <th style="min-width:120px;">إجراءات</th>
+                    </tr>
+                    </thead>
+                    <tbody id="employeesTbody">
+                    <!-- يتم الحشو عبر JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-                <div class="row g-3 mb-3">
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجمالي الموظفين</p>
-                            <h3 id="dashTotalEmployees" class="mb-0">0</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">مستمرون بالخدمة</p>
-                            <h3 id="dashActiveEmployees" class="mb-0">0</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">الذكور</p>
-                            <h3 id="dashMaleEmployees" class="mb-0">0</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">الإناث</p>
-                            <h3 id="dashFemaleEmployees" class="mb-0">0</h3>
-                        </div>
-                    </div>
-                </div>
+        <!-- Leaves -->
+        <section id="leavesSection" class="page-section">
+            <div class="card">
+                <h3 style="margin-top:0;">الإجازات</h3>
+                <p style="font-size:0.85rem;color:var(--text-muted);">
+                    يمكن لاحقاً إضافة نموذج لإدارة طلبات الإجازة والموافقة عليها وربطها بملف كل موظف.
+                </p>
+            </div>
+        </section>
 
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجمالي الإجازات</p>
-                            <h4 id="dashTotalLeaves" class="mb-0">0</h4>
-                        </div>
+        <!-- Reports -->
+        <section id="reportsSection" class="page-section">
+            <div class="card">
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-label">إجمالي الموظفين</div>
+                        <div class="stat-value" id="reportTotalEmployees">0</div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات مقبولة</p>
-                            <h4 id="dashAcceptedLeaves" class="mb-0">0</h4>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-label">إجمالي الذكور</div>
+                        <div class="stat-value" id="reportMales">0</div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات قيد الانتظار</p>
-                            <h4 id="dashPendingLeaves" class="mb-0">0</h4>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-label">إجمالي الإناث</div>
+                        <div class="stat-value" id="reportFemales">0</div>
                     </div>
-                </div>
-            </section>
-
-            <!-- الموظفون -->
-            <section id="employees">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h4 class="section-title mb-1">قائمة الموظفين</h4>
-                        <p class="text-muted mb-0">إدارة بيانات جميع الموظفين.</p>
-                    </div>
-                    <div class="d-flex flex-wrap gap-2">
-                        <!-- Excel -->
-                        <button id="btnImportExcel" class="btn btn-outline-secondary btn-sm">
-                            استيراد من Excel
-                        </button>
-                        <input type="file" id="importExcelFile" accept=".csv,.xlsx" class="d-none">
-                        <button id="btnExportExcel" class="btn btn-outline-primary btn-sm">
-                            تصدير إلى Excel
-                        </button>
-                        <!-- JSON -->
-                        <button id="btnImportJson" class="btn btn-outline-secondary btn-sm">
-                            استيراد JSON
-                        </button>
-                        <input type="file" id="importJsonFile" accept=".json" class="d-none">
-                        <button id="btnExportJson" class="btn btn-outline-primary btn-sm">
-                            تصدير JSON
-                        </button>
-                        <!-- حفظ و إضافة -->
-                        <button id="btnSave" class="btn btn-success btn-sm">
-                            حفظ البيانات
-                        </button>
-                        <button id="btnAdd" class="btn btn-primary btn-sm">
-                            + إضافة موظف جديد
-                        </button>
+                    <div class="stat-card">
+                        <div class="stat-label">عدد الدوائر</div>
+                        <div class="stat-value" id="reportDepartmentsCount">0</div>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
-                    <span class="filter-chip">
-                        المجموع: <span id="totalCount">0</span> موظف
-                    </span>
-                    <span class="filter-chip">
-                        مستمر بالخدمة: <span id="activeCount">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        الذكور: <span id="maleCount">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        الإناث: <span id="femaleCount">0</span>
-                    </span>
-                </div>
-
-                <!-- إحصائيات نصية (مخفية) -->
-                <div class="mb-3 d-none">
-                    <small class="text-muted d-block">
-                        حالات الخدمة: <span id="statusStats">لا توجد بيانات بعد</span>
-                    </small>
-                    <small class="text-muted d-block">
-                        توزيع حسب الدائرة: <span id="deptStats">لا توجد بيانات بعد</span>
-                    </small>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <form id="filterForm" class="row g-2 mb-3">
-                            <div class="col-md-3">
-                                <label class="form-label">الاسم</label>
-                                <input type="text" id="filterName" class="form-control" placeholder="بحث بالاسم">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الدائرة</label>
-                                <select id="filterDept" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مكتب الوزير / الملاك">مكتب الوزير / الملاك</option>
-                                    <option value="دائرة الموارد البشرية">دائرة الموارد البشرية</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الحالة الوظيفية</label>
-                                <select id="filterStatus" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مستمر بالخدمة">مستمر بالخدمة</option>
-                                    <option value="إجازة">إجازة</option>
-                                    <option value="متقاعد">متقاعد</option>
-                                    <option value="متدرب">متدرب</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-end gap-2">
-                                <button type="submit" class="btn btn-secondary w-100">بحث</button>
-                                <button type="button" id="btnReset" class="btn btn-outline-secondary">مسح</button>
-                            </div>
-                        </form>
-
-                        <!-- جدول الموظفين -->
-                        <div class="employee-table-wrapper">
-                            <table class="employee-table table table-sm table-hover align-middle mb-0">
-                                <thead>
-                                <tr>
-                                    <th data-sort-key="index" class="sortable">#</th>
-                                    <th data-sort-key="firstName" class="sortable">الأسم الاول</th>
-                                    <th data-sort-key="secondName" class="sortable">الأسم الثاني</th>
-                                    <th data-sort-key="thirdName" class="sortable">الأسم الثالث</th>
-                                    <th data-sort-key="fourthName" class="sortable">الأسم الرابع</th>
-                                    <th data-sort-key="jobTitle" class="sortable">العنوان الوظيفي</th>
-                                    <th data-sort-key="status" class="sortable">الحالة الوظيفية</th>
-                                    <th data-sort-key="notes" class="sortable">الملاحظات</th>
-                                    <th data-sort-key="department" class="sortable">أسم الدائرة / مبنى الوزارة</th>
-                                    <th data-sort-key="jobNumber" class="sortable">الرقم الوظيفي</th>
-                                    <th data-sort-key="nationalId" class="sortable">الرقم الوطني</th>
-                                    <th data-sort-key="motherName" class="sortable">أسم الأم الثلاثي</th>
-                                    <th data-sort-key="gender" class="sortable">الجنس</th>
-                                    <th data-sort-key="birthDate" class="sortable">تاريخ التولد</th>
-                                    <th data-sort-key="hireDate" class="sortable">تاريخ التعيين</th>
-                                    <th class="text-center">إجراءات</th>
-                                </tr>
-                                </thead>
-                                <tbody id="employeesTableBody"></tbody>
-                            </table>
-                        </div>
+                <div class="stats-row" style="margin-top:0.6rem;">
+                    <div class="stat-card">
+                        <h4 style="font-size:0.9rem;margin:0 0 0.4rem;">توزيع الموظفين حسب الجنس</h4>
+                        <table class="table table-sm mb-0" style="width:100%;font-size:0.78rem;">
+                            <thead>
+                            <tr>
+                                <th>الجنس</th>
+                                <th>العدد</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>ذكر</td>
+                                <td id="genderMaleReport">0</td>
+                            </tr>
+                            <tr>
+                                <td>أنثى</td>
+                                <td id="genderFemaleReport">0</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            </section>
 
-            <!-- طبقة نموذج إضافة/تعديل موظف -->
-            <div id="employeeFormSection" class="employee-overlay d-none">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 id="employeeFormTitle" class="mb-0">إضافة موظف جديد</h5>
-                            <button type="button" id="employeeFormClose" class="btn btn-sm btn-outline-secondary">
-                                إغلاق النموذج
-                            </button>
-                        </div>
-
-                        <form id="employeeForm" class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label">الأسم الاول</label>
-                                <input type="text" id="empFirstName" class="form-control" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الأسم الثاني</label>
-                                <input type="text" id="empSecondName" class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الأسم الثالث</label>
-                                <input type="text" id="empThirdName" class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الأسم الرابع</label>
-                                <input type="text" id="empFourthName" class="form-control">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">العنوان الوظيفي</label>
-                                <input type="text" id="empJobTitle" class="form-control" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">الحالة الوظيفية</label>
-                                <select id="empStatus" class="form-select" required>
-                                    <option value="مستمر بالخدمة">مستمر بالخدمة</option>
-                                    <option value="إجازة">إجازة</option>
-                                    <option value="متقاعد">متقاعد</option>
-                                    <option value="متدرب">متدرب</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">أسم الدائرة / مبنى الوزارة</label>
-                                <input type="text" id="empDept" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">الرقم الوظيفي</label>
-                                <input type="text" id="empJobNumber" class="form-control" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">الرقم الوطني</label>
-                                <input type="text" id="empNationalId" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">أسم الأم الثلاثي</label>
-                                <input type="text" id="empMotherName" class="form-control">
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">الجنس</label>
-                                <select id="empGender" class="form-select">
-                                    <option value="">غير محدد</option>
-                                    <option value="ذكر">ذكر</option>
-                                    <option value="أنثى">أنثى</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">تاريخ التولد</label>
-                                <input type="date" id="empBirthDate" class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">تاريخ التعيين</label>
-                                <input type="date" id="empHireDate" class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">الملاحظات</label>
-                                <input type="text" id="empNotes" class="form-control">
-                            </div>
-
-                            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-                                <button type="button" id="employeeFormCancel" class="btn btn-outline-secondary">
-                                    إلغاء
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    حفظ البيانات
-                                </button>
-                            </div>
-                        </form>
+                    <div class="stat-card">
+                        <h4 style="font-size:0.9rem;margin:0 0 0.4rem;">توزيع الموظفين حسب الحالة الوظيفية</h4>
+                        <div id="statusReportList" style="font-size:0.78rem;"></div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- الإجازات -->
-            <section id="leaves">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h4 class="section-title mb-1">الإجازات</h4>
-                        <p class="text-muted mb-0">متابعة طلبات الإجازة وحالتها.</p>
+        <!-- Logout -->
+        <section id="logoutSection" class="page-section">
+            <div class="card">
+                <h3 style="margin-top:0;">تسجيل الخروج</h3>
+                <p style="font-size:0.85rem;color:var(--text-muted);">
+                    في بيئة حقيقية يمكن ربط هذا الزر بنظام الدخول الموحد. حالياً هو مجرد تبويب شكلي.
+                </p>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Modal: Employee -->
+<div class="modal-backdrop" id="employeeModalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <div class="modal-title" id="employeeModalTitle">إضافة موظف جديد</div>
+            <button class="close-icon-btn" id="closeEmployeeModalBtn" title="إغلاق">
+                ✕
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="employeeForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firstNameInput">الأسم الاول</label>
+                        <input type="text" id="firstNameInput" required>
                     </div>
-                    <button id="btnAddLeave" class="btn btn-primary btn-sm">
-                        + طلب إجازة جديد
-                    </button>
-                </div>
-
-                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
-                    <span class="filter-chip">
-                        إجمالي الإجازات: <span id="totalLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        قيد الانتظار: <span id="pendingLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مقبولة: <span id="acceptedLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مرفوضة: <span id="rejectedLeaves">0</span>
-                    </span>
-                </div>
-
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <form id="filterLeaveForm" class="row g-2">
-                            <div class="col-md-4">
-                                <label class="form-label">اسم الموظف</label>
-                                <input type="text" id="filterLeaveName" class="form-control" placeholder="بحث بالاسم">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">نوع الإجازة</label>
-                                <select id="filterLeaveType" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="اعتيادية">اعتيادية</option>
-                                    <option value="مرضية">مرضية</option>
-                                    <option value="طارئة">طارئة</option>
-                                    <option value="دراسية">دراسية</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">حالة الطلب</label>
-                                <select id="filterLeaveStatus" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مقدمة">مقدمة</option>
-                                    <option value="مقبولة">مقبولة</option>
-                                    <option value="مرفوضة">مرفوضة</option>
-                                    <option value="منتهية">منتهية</option>
-                                </select>
-                            </div>
-                            <div class="col-12 d-flex justify-content-end	align-items-end pt-2 gap-2">
-                                <button type="submit" class="btn btn-secondary">بحث</button>
-                                <button type="button" id="btnResetLeaves" class="btn btn-outline-secondary">مسح</button>
-                            </div>
-                        </form>
+                    <div class="form-group">
+                        <label for="secondNameInput">الأسم الثاني</label>
+                        <input type="text" id="secondNameInput">
                     </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الموظف</th>
-                                <th>نوع الإجازة</th>
-                                <th>من تاريخ</th>
-                                <th>إلى تاريخ</th>
-                                <th>الحالة</th>
-                                <th>المعتمد</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="leavesTableBody"></tbody>
-                        </table>
+                    <div class="form-group">
+                        <label for="thirdNameInput">الأسم الثالث</label>
+                        <input type="text" id="thirdNameInput">
                     </div>
-                </div>
-            </section>
-
-            <!-- التقارير -->
-            <section id="reports">
-                <h4 class="section-title">التقارير والإحصائيات</h4>
-                <p class="text-muted">توزيع الموظفين حسب الدائرة والحالة والجنس، مع ملخص عام.</p>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الدائرة</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الدائرة</th>
-                                    <th>عدد الموظفين</th>
-                                </tr>
-                                </thead>
-                                <tbody id="deptReportBody"></tbody>
-                            </table>
-                        </div>
+                    <div class="form-group">
+                        <label for="fourthNameInput">الأسم الرابع</label>
+                        <input type="text" id="fourthNameInput">
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الحالة الوظيفية</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الحالة الوظيفية</th>
-                                    <th>العدد</th>
-                                </tr>
-                                </thead>
-                                <tbody id="statusReportBody"></tbody>
-                            </table>
-                        </div>
+                    <div class="form-group">
+                        <label for="jobTitleInput">العنوان الوظيفي</label>
+                        <input type="text" id="jobTitleInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobStatusInput">الحالة الوظيفية</label>
+                        <select id="jobStatusInput">
+                            <option value="">غير محدد</option>
+                            <option value="مستمر بالخدمة">مستمر بالخدمة</option>
+                            <option value="إجازة">إجازة</option>
+                            <option value="متقاعد">متقاعد</option>
+                            <option value="مجاز دراسياً">مجاز دراسياً</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="departmentInput">أسم الدائرة / مبنى الوزارة</label>
+                        <input type="text" id="departmentInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobNumberInput">الرقم الوظيفي</label>
+                        <input type="text" id="jobNumberInput">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nationalIdInput">الرقم الوطني</label>
+                        <input type="text" id="nationalIdInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="motherNameInput">أسم الأم الثلاثي</label>
+                        <input type="text" id="motherNameInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="genderInput">الجنس</label>
+                        <select id="genderInput">
+                            <option value="">غير محدد</option>
+                            <option value="ذكر">ذكر</option>
+                            <option value="أنثى">أنثى</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDateInput">تاريخ التولد</label>
+                        <input type="date" id="birthDateInput">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hireDateInput">تاريخ التعيين</label>
+                        <input type="date" id="hireDateInput">
+                    </div>
+                    <div class="form-group" style="grid-column: span 3;">
+                        <label for="notesInput">الملاحظات</label>
+                        <textarea id="notesInput" placeholder="ملاحظات إضافية إن وجدت"></textarea>
                     </div>
                 </div>
 
-                <div class="row g-3 mt-1">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">توزيع الموظفين حسب الجنس</h6>
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                <tr>
-                                    <th>الجنس</th>
-                                    <th>العدد</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>ذكر</td>
-                                    <td id="genderMaleReport">0</td>
-                                </tr>
-                                <tr>
-                                    <td>أنثى</td>
-                                    <td id="genderFemaleReport">0</td>
-                                </tr>
-                                <tr>
-                                    <td>غير محدد</td>
-                                    <td id="genderOtherReport">0</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h6 class="mb-3">ملخص سريع</h6>
-                            <ul class="mb-0 small">
-                                <li>إجمالي الموظفين: <span id="reportTotalEmployees">0</span></li>
-                                <li>الموظفون على رأس الخدمة: <span id="reportActiveEmployees">0</span></li>
-                                <li>إجمالي الإجازات: <span id="reportTotalLeaves">0</span></li>
-                                <li>إجازات مقبولة: <span id="reportAcceptedLeaves">0</span></li>
-                                <li>إجازات قيد الانتظار: <span id="reportPendingLeaves">0</span></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelEmployeeModalBtn">إلغاء</button>
+                    <button type="submit" class="btn" id="saveEmployeeBtn">حفظ البيانات</button>
                 </div>
-            </section>
-        </main>
+            </form>
+        </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
-    const STORAGE_KEYS = {
-        employees: "hr_employees_v1",
-        leaves: "hr_leaves_v1",
-        section: "hr_current_section_v1"
-    };
+    (function () {
+        "use strict";
 
-    // بيانات أولية (تستخدم أول مرة فقط إذا لا يوجد تخزين سابق)
-    const employees = [
-        {
-            id: 1,
-            fullName: "توفيق سالم ابتهال",
-            jobNumber: "196758925337",
-            jobTitle: "رئيس أطباء اختصاص",
-            department: "مكتب الوزير / الملاك",
-            hireDate: "1991-11-01",
-            status: "مستمر بالخدمة",
-            gender: "ذكر",
-            nationalId: "",
-            motherName: "",
-            birthDate: "1967-10-05",
-            notes: ""
-        },
-        {
-            id: 2,
-            fullName: "احمد ابراهيم سلمان",
-            jobNumber: "200065880073",
-            jobTitle: "تقني أشعة وسونار",
-            department: "مكتب الوزير / الملاك",
-            hireDate: "2023-11-19",
-            status: "مستمر بالخدمة",
-            gender: "ذكر",
-            nationalId: "",
-            motherName: "",
-            birthDate: "2000-02-15",
-            notes: ""
-        },
-        {
-            id: 3,
-            fullName: "سعاد محمد مبارك",
-            jobNumber: "113023332",
-            jobTitle: "رئيس ممرضين",
-            department: "دائرة الموارد البشرية",
-            hireDate: "2005-07-31",
-            status: "إجازة",
-            gender: "أنثى",
-            nationalId: "",
-            motherName: "",
-            birthDate: "1968-09-05",
-            notes: ""
-        },
-        {
-            id: 4,
-            fullName: "حسن فليح إسماعيل",
-            jobNumber: "115714223",
-            jobTitle: "طبيب اختصاص أشعة",
-            department: "مكتب الوزير / الملاك",
-            hireDate: "2010-01-18",
-            status: "مستمر بالخدمة",
-            gender: "ذكر",
-            nationalId: "",
-            motherName: "",
-            birthDate: "1998-08-22",
-            notes: ""
-        }
-    ];
+        const STORAGE_KEY_EMPLOYEES = "hrEmployeesData_v1";
+        const STORAGE_KEY_THEME = "hrTheme";
+        const STORAGE_KEY_SECTION = "hrActiveSection";
 
-    const leaves = [
-        { id: 1, employeeId: 3, employeeName: "سعاد محمد مبارك", type: "مرضية",   startDate: "2025-01-05", endDate: "2025-01-10", status: "مقبولة", approvedBy: "رئيس قسم التمريض" },
-        { id: 2, employeeId: 4, employeeName: "حسن فليح إسماعيل", type: "اعتيادية", startDate: "2025-02-01", endDate: "2025-02-07", status: "مقدمة", approvedBy: "" },
-        { id: 3, employeeId: 2, employeeName: "احمد ابراهيم سلمان",    type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" }
-    ];
-
-    // تخزين محلي
-    function saveDataToStorage() {
-        try {
-            localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees));
-            localStorage.setItem(STORAGE_KEYS.leaves, JSON.stringify(leaves));
-        } catch (e) {
-            console.error("localStorage error:", e);
-        }
-    }
-
-    function loadDataFromStorage() {
-        try {
-            const empStr = localStorage.getItem(STORAGE_KEYS.employees);
-            if (empStr) {
-                const arr = JSON.parse(empStr);
-                if (Array.isArray(arr)) {
-                    employees.length = 0;
-                    arr.forEach(e => employees.push(e));
-                }
-            }
-            const lvStr = localStorage.getItem(STORAGE_KEYS.leaves);
-            if (lvStr) {
-                const arr = JSON.parse(lvStr);
-                if (Array.isArray(arr)) {
-                    leaves.length = 0;
-                    arr.forEach(l => leaves.push(l));
-                }
-            }
-        } catch (e) {
-            console.error("load storage error", e);
-        }
-    }
-
-    loadDataFromStorage();
-
-    let currentView = [...employees];
-    let currentLeavesView = [...leaves];
-    let editingEmployeeId = null;
-    let currentSort = { key: null, dir: "asc" };
-
-    // DOM
-    const bodyEl = document.body;
-    const themeSelect = document.getElementById("themeSelect");
-
-    const tableBody = document.getElementById("employeesTableBody");
-    const totalCountSpan = document.getElementById("totalCount");
-    const activeCountSpan = document.getElementById("activeCount");
-    const maleCountSpan = document.getElementById("maleCount");
-    const femaleCountSpan = document.getElementById("femaleCount");
-    const statusStatsSpan = document.getElementById("statusStats");
-    const deptStatsSpan = document.getElementById("deptStats");
-
-    const filterForm = document.getElementById("filterForm");
-    const filterName = document.getElementById("filterName");
-    const filterDept = document.getElementById("filterDept");
-    const filterStatus = document.getElementById("filterStatus");
-    const btnReset = document.getElementById("btnReset");
-
-    const btnAdd = document.getElementById("btnAdd");
-    const btnExportExcel = document.getElementById("btnExportExcel");
-    const btnImportExcel = document.getElementById("btnImportExcel");
-    const importExcelFileInput = document.getElementById("importExcelFile");
-
-    const btnExportJson = document.getElementById("btnExportJson");
-    const btnImportJson = document.getElementById("btnImportJson");
-    const importJsonFileInput = document.getElementById("importJsonFile");
-
-    const btnSave = document.getElementById("btnSave");
-
-    const dashTotalEmployees = document.getElementById("dashTotalEmployees");
-    const dashActiveEmployees = document.getElementById("dashActiveEmployees");
-    const dashMaleEmployees = document.getElementById("dashMaleEmployees");
-    const dashFemaleEmployees = document.getElementById("dashFemaleEmployees");
-    const dashTotalLeaves = document.getElementById("dashTotalLeaves");
-    const dashAcceptedLeaves = document.getElementById("dashAcceptedLeaves");
-    const dashPendingLeaves = document.getElementById("dashPendingLeaves");
-
-    const leavesTableBody = document.getElementById("leavesTableBody");
-    const totalLeavesSpan = document.getElementById("totalLeaves");
-    const pendingLeavesSpan = document.getElementById("pendingLeaves");
-    const acceptedLeavesSpan = document.getElementById("acceptedLeaves");
-    const rejectedLeavesSpan = document.getElementById("rejectedLeaves");
-    const btnAddLeave = document.getElementById("btnAddLeave");
-    const filterLeaveForm = document.getElementById("filterLeaveForm");
-    const filterLeaveName = document.getElementById("filterLeaveName");
-    const filterLeaveType = document.getElementById("filterLeaveType");
-    const filterLeaveStatus = document.getElementById("filterLeaveStatus");
-    const btnResetLeaves = document.getElementById("btnResetLeaves");
-
-    const deptReportBody = document.getElementById("deptReportBody");
-    const statusReportBody = document.getElementById("statusReportBody");
-    const genderMaleReport = document.getElementById("genderMaleReport");
-    const genderFemaleReport = document.getElementById("genderFemaleReport");
-    const genderOtherReport = document.getElementById("genderOtherReport");
-    const reportTotalEmployees = document.getElementById("reportTotalEmployees");
-    const reportActiveEmployees = document.getElementById("reportActiveEmployees");
-    const reportTotalLeaves = document.getElementById("reportTotalLeaves");
-    const reportAcceptedLeaves = document.getElementById("reportAcceptedLeaves");
-    const reportPendingLeaves = document.getElementById("reportPendingLeaves");
-
-    const employeeFormSection = document.getElementById("employeeFormSection");
-    const employeeFormTitle = document.getElementById("employeeFormTitle");
-    const employeeForm = document.getElementById("employeeForm");
-    const employeeFormClose = document.getElementById("employeeFormClose");
-    const employeeFormCancel = document.getElementById("employeeFormCancel");
-
-    const empFirstNameInput = document.getElementById("empFirstName");
-    const empSecondNameInput = document.getElementById("empSecondName");
-    const empThirdNameInput = document.getElementById("empThirdName");
-    const empFourthNameInput = document.getElementById("empFourthName");
-    const empJobTitleInput = document.getElementById("empJobTitle");
-    const empStatusInput = document.getElementById("empStatus");
-    const empDeptInput = document.getElementById("empDept");
-    const empJobNumberInput = document.getElementById("empJobNumber");
-    const empNationalIdInput = document.getElementById("empNationalId");
-    const empMotherNameInput = document.getElementById("empMotherName");
-    const empGenderInput = document.getElementById("empGender");
-    const empBirthDateInput = document.getElementById("empBirthDate");
-    const empHireDateInput = document.getElementById("empHireDate");
-    const empNotesInput = document.getElementById("empNotes");
-
-    // ثيم
-    function applyTheme(themeClass) {
-        bodyEl.classList.remove(
-            "theme-light",
-            "theme-dark",
-            "theme-ocean",
-            "theme-sepia",
-            "theme-comfort",
-            "theme-hospital-blue",
-            "theme-hospital-soft",
-            "theme-hospital-dark"
-        );
-        bodyEl.classList.add(themeClass);
-        localStorage.setItem("hr_theme", themeClass);
-    }
-    themeSelect.addEventListener("change", e => applyTheme(e.target.value));
-    const savedTheme = localStorage.getItem("hr_theme") || "theme-hospital-soft";
-    applyTheme(savedTheme);
-    themeSelect.value = savedTheme;
-
-    // توابع مساعدة
-    function formatDate(dateStr) {
-        if (!dateStr) return "";
-        const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return dateStr;
-        const day = String(d.getDate()).padStart(2, "0");
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        const year = d.getFullYear();
-        return `${day}/${month}/${year}`;
-    }
-
-    function ensureNameParts(emp) {
-        if (emp._nameNormalized) return;
-        const parts = (emp.fullName || "").trim().split(/\s+/);
-        if (!emp.firstName && parts[0]) emp.firstName = parts[0];
-        if (!emp.secondName && parts[1]) emp.secondName = parts[1];
-        if (!emp.thirdName && parts[2]) emp.thirdName = parts[2];
-        if (!emp.fourthName && parts[3]) emp.fourthName = parts[3];
-        emp._nameNormalized = true;
-    }
-
-    function getEmployeeFullName(emp) {
-        ensureNameParts(emp);
-        if (emp.fullName) return emp.fullName;
-        const parts = [
-            emp.firstName || "",
-            emp.secondName || "",
-            emp.thirdName || "",
-            emp.fourthName || ""
-        ].filter(Boolean);
-        return parts.join(" ");
-    }
-
-    function normalizeDateCell(value) {
-        if (!value) return "";
-        if (value instanceof Date) {
-            const y = value.getFullYear();
-            const m = String(value.getMonth() + 1).padStart(2, "0");
-            const d = String(value.getDate()).padStart(2, "0");
-            return `${y}-${m}-${d}`;
-        }
-        if (typeof value === "number" && typeof XLSX !== "undefined" && XLSX.SSF && XLSX.SSF.parse_date_code) {
-            const o = XLSX.SSF.parse_date_code(value);
-            if (o) {
-                const y = o.y;
-                const m = String(o.m).padStart(2, "0");
-                const d = String(o.d).padStart(2, "0");
-                return `${y}-${m}-${d}`;
-            }
-        }
-        if (typeof value === "string") {
-            const v = value.trim();
-            if (!v) return "";
-            const d = new Date(v);
-            if (!isNaN(d.getTime())) {
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, "0");
-                const dd = String(d.getDate()).padStart(2, "0");
-                return `${y}-${m}-${dd}`;
-            }
-            return v;
-        }
-        return "";
-    }
-
-    // إحصائيات الموظفين
-    function calculateEmployeeStats(list) {
-        const stats = { total: list.length, active: 0, male: 0, female: 0, other: 0, byStatus: {}, byDept: {} };
-        list.forEach(emp => {
-            if (emp.status === "مستمر بالخدمة") stats.active++;
-            const st = emp.status || "غير محدد";
-            const dept = emp.department || "غير محدد";
-            stats.byStatus[st] = (stats.byStatus[st] || 0) + 1;
-            stats.byDept[dept] = (stats.byDept[dept] || 0) + 1;
-
-            const g = emp.gender || "";
-            if (g === "ذكر") stats.male++;
-            else if (g === "أنثى") stats.female++;
-            else stats.other++;
-        });
-        return stats;
-    }
-
-    function renderEmployeeStats(list) {
-        const s = calculateEmployeeStats(list);
-
-        totalCountSpan.textContent = s.total;
-        activeCountSpan.textContent = s.active;
-        maleCountSpan.textContent = s.male;
-        femaleCountSpan.textContent = s.female;
-
-        dashTotalEmployees.textContent = s.total;
-        dashActiveEmployees.textContent = s.active;
-        dashMaleEmployees.textContent = s.male;
-        dashFemaleEmployees.textContent = s.female;
-
-        reportTotalEmployees.textContent = s.total;
-        reportActiveEmployees.textContent = s.active;
-
-        if (statusStatsSpan) {
-            statusStatsSpan.textContent = Object.entries(s.byStatus).map(([k, v]) => `${k}: ${v}`).join(" | ");
-        }
-        if (deptStatsSpan) {
-            deptStatsSpan.textContent = Object.entries(s.byDept).map(([k, v]) => `${k}: ${v}`).join(" | ");
-        }
-
-        deptReportBody.innerHTML = "";
-        Object.entries(s.byDept).forEach(([dept, count]) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${dept}</td><td>${count}</td>`;
-            deptReportBody.appendChild(tr);
-        });
-
-        statusReportBody.innerHTML = "";
-        Object.entries(s.byStatus).forEach(([st, count]) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${st}</td><td>${count}</td>`;
-            statusReportBody.appendChild(tr);
-        });
-
-        genderMaleReport.textContent = s.male;
-        genderFemaleReport.textContent = s.female;
-        genderOtherReport.textContent = s.other;
-    }
-
-    // عرض جدول الموظفين
-    function renderEmployees(list) {
-        tableBody.innerHTML = "";
-
-        list.forEach((emp, i) => {
-            ensureNameParts(emp);
-            const tr = document.createElement("tr");
-
-            const statusClass =
-                emp.status === "مستمر بالخدمة" ? "bg-success" :
-                emp.status === "إجازة"          ? "bg-warning" :
-                emp.status === "متقاعد"         ? "bg-secondary" :
-                                                  "bg-info";
-
-            tr.innerHTML = `
-              <td class="text-center">${i + 1}</td>
-              <td>${emp.firstName || ""}</td>
-              <td>${emp.secondName || ""}</td>
-              <td>${emp.thirdName || ""}</td>
-              <td>${emp.fourthName || ""}</td>
-              <td>${emp.jobTitle || ""}</td>
-              <td class="text-center"><span class="badge ${statusClass} badge-status">${emp.status || ""}</span></td>
-              <td>${emp.notes || ""}</td>
-              <td>${emp.department || ""}</td>
-              <td class="text-center">${emp.jobNumber || ""}</td>
-              <td class="text-center">${emp.nationalId || ""}</td>
-              <td>${emp.motherName || ""}</td>
-              <td class="text-center">${emp.gender || ""}</td>
-              <td class="text-center">${formatDate(emp.birthDate)}</td>
-              <td class="text-center">${formatDate(emp.hireDate)}</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEmployee(${emp.id})">عرض</button>
-                <button class="btn btn-sm btn-outline-secondary me-1" onclick="editEmployee(${emp.id})">تعديل</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee(${emp.id})">حذف</button>
-              </td>
-            `;
-
-            tableBody.appendChild(tr);
-        });
-
-        renderEmployeeStats(list);
-    }
-
-    // فرز يدوي للجدول
-    function parseMaybeNumber(val) {
-        if (val == null) return null;
-        const s = String(val).replace(/\s+/g, "");
-        if (!/^\d+(\.\d+)?$/.test(s)) return null;
-        return Number(s);
-    }
-
-    function parseMaybeDate(val) {
-        if (!val) return null;
-        const d = new Date(val);
-        if (isNaN(d.getTime())) return null;
-        return d.getTime();
-    }
-
-    function getSortValue(emp, key) {
-        ensureNameParts(emp);
-        switch (key) {
-            case "index":     return emp.id;
-            case "firstName": return emp.firstName || "";
-            case "secondName":return emp.secondName || "";
-            case "thirdName": return emp.thirdName || "";
-            case "fourthName":return emp.fourthName || "";
-            case "jobTitle":  return emp.jobTitle || "";
-            case "status":    return emp.status || "";
-            case "notes":     return emp.notes || "";
-            case "department":return emp.department || "";
-            case "jobNumber": return emp.jobNumber || "";
-            case "nationalId":return emp.nationalId || "";
-            case "motherName":return emp.motherName || "";
-            case "gender":    return emp.gender || "";
-            case "birthDate": return emp.birthDate || "";
-            case "hireDate":  return emp.hireDate || "";
-            default:          return "";
-        }
-    }
-
-    function sortEmployees(key, dir) {
-        const factor = dir === "asc" ? 1 : -1;
-        currentView.sort((a, b) => {
-            const va = getSortValue(a, key);
-            const vb = getSortValue(b, key);
-            if (va == null && vb == null) return 0;
-            if (va == null) return 1 * factor;
-            if (vb == null) return -1 * factor;
-
-            // جرّب رقم
-            const na = parseMaybeNumber(va);
-            const nb = parseMaybeNumber(vb);
-            if (na !== null && nb !== null) return (na - nb) * factor;
-
-            // جرّب تاريخ
-            const da = parseMaybeDate(va);
-            const db = parseMaybeDate(vb);
-            if (da !== null && db !== null) return (da - db) * factor;
-
-            // نص عربي
-            return String(va).localeCompare(String(vb), "ar", { numeric: true }) * factor;
-        });
-
-        renderEmployees(currentView);
-    }
-
-    function updateSortIndicators() {
-        const headers = document.querySelectorAll(".employee-table thead th.sortable");
-        headers.forEach(th => {
-            th.classList.remove("sort-asc", "sort-desc");
-            const key = th.getAttribute("data-sort-key");
-            if (key && key === currentSort.key) {
-                th.classList.add(currentSort.dir === "asc" ? "sort-asc" : "sort-desc");
-            }
-        });
-    }
-
-    // فلاتر الموظفين
-    function applyEmployeeFilters() {
-        const nameVal = filterName.value.trim();
-        const deptVal = filterDept.value;
-        const statusVal = filterStatus.value;
-
-        currentView = employees.filter(emp => {
-            const mName = !nameVal || getEmployeeFullName(emp).includes(nameVal);
-            const mDept = !deptVal || emp.department === deptVal;
-            const mStatus = !statusVal || emp.status === statusVal;
-            return mName && mDept && mStatus;
-        });
-        // إذا كان هناك فرز حالي، طبّقه بعد الفلترة
-        if (currentSort.key) {
-            sortEmployees(currentSort.key, currentSort.dir);
-        } else {
-            renderEmployees(currentView);
-        }
-    }
-    filterForm.addEventListener("submit", e => { e.preventDefault(); applyEmployeeFilters(); });
-    btnReset.addEventListener("click", () => {
-        filterName.value = "";
-        filterDept.value = "";
-        filterStatus.value = "";
-        currentView = [...employees];
-        currentSort = {key:null, dir:"asc"};
-        updateSortIndicators();
-        renderEmployees(currentView);
-    });
-
-    // نموذج الموظف (Overlay)
-    function clearEmployeeForm() {
-        empFirstNameInput.value = "";
-        empSecondNameInput.value = "";
-        empThirdNameInput.value = "";
-        empFourthNameInput.value = "";
-        empJobTitleInput.value = "";
-        empStatusInput.value = "مستمر بالخدمة";
-        empDeptInput.value = "";
-        empJobNumberInput.value = "";
-        empNationalIdInput.value = "";
-        empMotherNameInput.value = "";
-        empGenderInput.value = "";
-        empBirthDateInput.value = "";
-        empHireDateInput.value = "";
-        empNotesInput.value = "";
-    }
-
-    function fillEmployeeForm(emp) {
-        ensureNameParts(emp);
-        empFirstNameInput.value = emp.firstName || "";
-        empSecondNameInput.value = emp.secondName || "";
-        empThirdNameInput.value = emp.thirdName || "";
-        empFourthNameInput.value = emp.fourthName || "";
-
-        empJobTitleInput.value = emp.jobTitle || "";
-        empStatusInput.value = emp.status || "مستمر بالخدمة";
-        empDeptInput.value = emp.department || "";
-        empJobNumberInput.value = emp.jobNumber || "";
-        empNationalIdInput.value = emp.nationalId || "";
-        empMotherNameInput.value = emp.motherName || "";
-        empGenderInput.value = emp.gender || "";
-        empBirthDateInput.value = emp.birthDate || "";
-        empHireDateInput.value = emp.hireDate || "";
-        empNotesInput.value = emp.notes || "";
-    }
-
-    function openEmployeeForm(mode, emp) {
-        if (mode === "add") {
-            editingEmployeeId = null;
-            employeeFormTitle.textContent = "إضافة موظف جديد";
-            clearEmployeeForm();
-        } else if (mode === "edit" && emp) {
-            editingEmployeeId = emp.id;
-            employeeFormTitle.textContent = "تعديل بيانات الموظف";
-            fillEmployeeForm(emp);
-        }
-        employeeFormSection.classList.remove("d-none");
-    }
-    function closeEmployeeForm() {
-        employeeFormSection.classList.add("d-none");
-    }
-    employeeFormClose.addEventListener("click", closeEmployeeForm);
-    employeeFormCancel.addEventListener("click", closeEmployeeForm);
-
-    btnAdd.addEventListener("click", () => openEmployeeForm("add", null));
-
-    employeeForm.addEventListener("submit", e => {
-        e.preventDefault();
-
-        const firstName = empFirstNameInput.value.trim();
-        const secondName = empSecondNameInput.value.trim();
-        const thirdName = empThirdNameInput.value.trim();
-        const fourthName = empFourthNameInput.value.trim();
-        const jobTitle = empJobTitleInput.value.trim();
-        const status = empStatusInput.value;
-        const dept = empDeptInput.value.trim();
-        const jobNumber = empJobNumberInput.value.trim();
-
-        if (!firstName || !jobTitle || !dept || !jobNumber) {
-            alert("الرجاء تعبئة الحقول الأساسية (الاسم الأول، العنوان الوظيفي، الدائرة، الرقم الوظيفي).");
-            return;
-        }
-
-        const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
-
-        const commonData = {
-            fullName,
-            firstName,
-            secondName,
-            thirdName,
-            fourthName,
-            jobTitle,
-            status,
-            department: dept,
-            jobNumber,
-            nationalId: empNationalIdInput.value.trim(),
-            motherName: empMotherNameInput.value.trim(),
-            gender: empGenderInput.value,
-            birthDate: empBirthDateInput.value,
-            hireDate: empHireDateInput.value,
-            notes: empNotesInput.value.trim()
-        };
-
-        if (editingEmployeeId === null) {
-            const newId = employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1;
-            const newEmp = { id: newId, ...commonData };
-            employees.push(newEmp);
-            alert("تمت إضافة الموظف بنجاح.");
-        } else {
-            const emp = employees.find(e => e.id === editingEmployeeId);
-            if (!emp) {
-                alert("لم يتم العثور على الموظف.");
-                return;
-            }
-            Object.assign(emp, commonData);
-            alert("تم تحديث بيانات الموظف.");
-        }
-
-        saveDataToStorage();
-        currentView = [...employees];
-        if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
-        else renderEmployees(currentView);
-        closeEmployeeForm();
-    });
-
-    // زر حفظ يدوي
-    btnSave.addEventListener("click", () => {
-        saveDataToStorage();
-        alert("تم حفظ بيانات الموظفين والإجازات في هذا الجهاز.");
-    });
-
-    // تصدير Excel (CSV)
-    btnExportExcel.addEventListener("click", () => {
-        const list = currentView;
-        if (!list.length) {
-            alert("لا توجد بيانات لتصديرها.");
-            return;
-        }
-
-        const header = [
+        const excelHeaders = [
             "الأسم الاول",
             "الأسم الثاني",
             "الأسم الثالث",
@@ -1371,578 +977,763 @@
             "تاريخ التعيين"
         ];
 
-        const rows = list.map(emp => {
-            ensureNameParts(emp);
-            return [
-                emp.firstName || "",
-                emp.secondName || "",
-                emp.thirdName || "",
-                emp.fourthName || "",
-                emp.jobTitle || "",
-                emp.status || "",
-                emp.notes || "",
-                emp.department || "",
-                emp.jobNumber || "",
-                emp.nationalId || "",
-                emp.motherName || "",
-                emp.gender || "",
-                emp.birthDate || "",
-                emp.hireDate || ""
-            ];
-        });
+        const sidebarLinks = document.querySelectorAll(".sidebar-nav-link");
+        const sections = document.querySelectorAll(".page-section");
 
-        const csv = [header, ...rows]
-            .map(row => row.map(f => `"${String(f ?? "").replace(/"/g, '""')}"`).join(","))
-            .join("\r\n");
+        const themeSelect = document.getElementById("themeSelect");
 
-        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "employees.csv";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
+        const employeesTbody = document.getElementById("employeesTbody");
+        const searchByName = document.getElementById("searchByName");
+        const filterByStatus = document.getElementById("filterByStatus");
+        const filterByDepartment = document.getElementById("filterByDepartment");
+        const filterByGender = document.getElementById("filterByGender");
 
-    // استيراد من Excel / CSV
-    btnImportExcel.addEventListener("click", () => {
-        importExcelFileInput.click();
-    });
+        const addEmployeeBtn = document.getElementById("addEmployeeBtn");
+        const saveDataBtn = document.getElementById("saveDataBtn");
 
-    importExcelFileInput.addEventListener("change", e => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const importExcelBtn = document.getElementById("importExcelBtn");
+        const importExcelInput = document.getElementById("importExcelInput");
+        const exportExcelBtn = document.getElementById("exportExcelBtn");
+        const exportCsvBtn = document.getElementById("exportCsvBtn");
 
-        const reader = new FileReader();
-        reader.onload = event => {
-            const data = new Uint8Array(event.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const importJsonBtn = document.getElementById("importJsonBtn");
+        const importJsonInput = document.getElementById("importJsonInput");
+        const exportJsonBtn = document.getElementById("exportJsonBtn");
 
-            importEmployeesFromSheet(rows);
-            importExcelFileInput.value = "";
-        };
-        reader.readAsArrayBuffer(file);
-    });
+        const employeeModalBackdrop = document.getElementById("employeeModalBackdrop");
+        const closeEmployeeModalBtn = document.getElementById("closeEmployeeModalBtn");
+        const cancelEmployeeModalBtn = document.getElementById("cancelEmployeeModalBtn");
+        const employeeModalTitle = document.getElementById("employeeModalTitle");
+        const employeeForm = document.getElementById("employeeForm");
+        const saveEmployeeBtn = document.getElementById("saveEmployeeBtn");
 
-    function importEmployeesFromSheet(rows) {
-        if (!rows || rows.length < 2) {
-            alert("الملف لا يحتوي بيانات موظفين.");
-            return;
+        const firstNameInput = document.getElementById("firstNameInput");
+        const secondNameInput = document.getElementById("secondNameInput");
+        const thirdNameInput = document.getElementById("thirdNameInput");
+        const fourthNameInput = document.getElementById("fourthNameInput");
+        const jobTitleInput = document.getElementById("jobTitleInput");
+        const jobStatusInput = document.getElementById("jobStatusInput");
+        const departmentInput = document.getElementById("departmentInput");
+        const jobNumberInput = document.getElementById("jobNumberInput");
+        const nationalIdInput = document.getElementById("nationalIdInput");
+        const motherNameInput = document.getElementById("motherNameInput");
+        const genderInput = document.getElementById("genderInput");
+        const birthDateInput = document.getElementById("birthDateInput");
+        const hireDateInput = document.getElementById("hireDateInput");
+        const notesInput = document.getElementById("notesInput");
+
+        const totalEmployeesEl = document.getElementById("totalEmployees");
+        const totalMalesEl = document.getElementById("totalMales");
+        const totalFemalesEl = document.getElementById("totalFemales");
+        const statusChipsEl = document.getElementById("statusChips");
+
+        const reportTotalEmployees = document.getElementById("reportTotalEmployees");
+        const reportMales = document.getElementById("reportMales");
+        const reportFemales = document.getElementById("reportFemales");
+        const reportDepartmentsCount = document.getElementById("reportDepartmentsCount");
+        const genderMaleReport = document.getElementById("genderMaleReport");
+        const genderFemaleReport = document.getElementById("genderFemaleReport");
+        const statusReportList = document.getElementById("statusReportList");
+
+        const toastEl = document.getElementById("toast");
+
+        let employees = [];
+        let editingIndex = null;
+        let modalMode = "add"; // add | edit | view
+        let sortState = {key: null, direction: "asc"};
+
+        // Utility -----------------------------------
+
+        function showToast(message) {
+            toastEl.textContent = message;
+            toastEl.classList.add("show");
+            setTimeout(() => toastEl.classList.remove("show"), 2200);
         }
 
-        const header = rows[0].map(h => (h || "").toString().trim());
-
-        const colNames = {
-            first: "الأسم الاول",
-            second: "الأسم الثاني",
-            third: "الأسم الثالث",
-            fourth: "الأسم الرابع",
-            jobTitle: "العنوان الوظيفي",
-            status: "الحالة الوظيفية",
-            notes: "الملاحظات",
-            dept: "أسم الدائرة / مبنى الوزارة",
-            jobNumber: "الرقم الوظيفي",
-            nationalId: "الرقم الوطني",
-            motherName: "أسم الأم الثلاثي",
-            gender: "الجنس",
-            birthDate: "تاريخ التولد",
-            hireDate: "تاريخ التعيين"
-        };
-
-        function idx(name) { return header.indexOf(name); }
-
-        const indices = {
-            first: idx(colNames.first),
-            second: idx(colNames.second),
-            third: idx(colNames.third),
-            fourth: idx(colNames.fourth),
-            jobTitle: idx(colNames.jobTitle),
-            status: idx(colNames.status),
-            notes: idx(colNames.notes),
-            dept: idx(colNames.dept),
-            jobNumber: idx(colNames.jobNumber),
-            nationalId: idx(colNames.nationalId),
-            motherName: idx(colNames.motherName),
-            gender: idx(colNames.gender),
-            birthDate: idx(colNames.birthDate),
-            hireDate: idx(colNames.hireDate)
-        };
-
-        const foundCount = Object.values(indices).filter(i => i !== -1).length;
-
-        if (foundCount === 0) {
-            importByFixedOrder(rows);
-            return;
-        }
-
-        const missing = Object.entries(indices)
-            .filter(([, i]) => i === -1)
-            .map(([key]) => colNames[key]);
-
-        if (missing.length) {
-            alert("لا يمكن قراءة الملف. الأعمدة التالية مفقودة:\n" + missing.join(" ، "));
-            return;
-        }
-
-        const newEmployees = [];
-
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            if (!row || row.every(cell => cell === null || cell === undefined || String(cell).trim() === "")) continue;
-
-            const firstName  = String(row[indices.first]  ?? "").trim();
-            const secondName = String(row[indices.second] ?? "").trim();
-            const thirdName  = String(row[indices.third]  ?? "").trim();
-            const fourthName = String(row[indices.fourth] ?? "").trim();
-
-            const jobTitle   = String(row[indices.jobTitle]   ?? "").trim();
-            const status     = String(row[indices.status]     ?? "").trim();
-            const notes      = String(row[indices.notes]      ?? "").trim();
-            const dept       = String(row[indices.dept]       ?? "").trim();
-            const jobNumber  = String(row[indices.jobNumber]  ?? "").trim();
-            const nationalId = String(row[indices.nationalId] ?? "").trim();
-            const motherName = String(row[indices.motherName] ?? "").trim();
-            const gender     = String(row[indices.gender]     ?? "").trim();
-
-            const birthDateRaw = row[indices.birthDate];
-            const hireDateRaw  = row[indices.hireDate];
-
-            const birthDate = normalizeDateCell(birthDateRaw);
-            const hireDate  = normalizeDateCell(hireDateRaw);
-
-            if (!firstName && !jobTitle && !jobNumber) continue;
-
-            const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
-
-            newEmployees.push({
-                id: 0,
-                fullName,
-                firstName,
-                secondName,
-                thirdName,
-                fourthName,
-                jobTitle,
-                status,
-                department: dept,
-                jobNumber,
-                nationalId,
-                motherName,
-                gender,
-                birthDate,
-                hireDate,
-                notes
-            });
-        }
-
-        if (!newEmployees.length) {
-            alert("لم يتم العثور على أي صفوف صالحة للموظفين في الملف.");
-            return;
-        }
-
-        mergeImportedEmployees(newEmployees);
-    }
-
-    function importByFixedOrder(rows) {
-        const newEmployees = [];
-
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            if (!row || row.every(cell => cell === null || cell === undefined || String(cell).trim() === "")) continue;
-
-            const firstName  = String(row[0]  ?? "").trim();
-            const secondName = String(row[1]  ?? "").trim();
-            const thirdName  = String(row[2]  ?? "").trim();
-            const fourthName = String(row[3]  ?? "").trim();
-            const jobTitle   = String(row[4]  ?? "").trim();
-            const status     = String(row[5]  ?? "").trim();
-            const notes      = String(row[6]  ?? "").trim();
-            const dept       = String(row[7]  ?? "").trim();
-            const jobNumber  = String(row[8]  ?? "").trim();
-            const nationalId = String(row[9]  ?? "").trim();
-            const motherName = String(row[10] ?? "").trim();
-            const gender     = String(row[11] ?? "").trim();
-
-            const birthDateRaw = row[12];
-            const hireDateRaw  = row[13];
-
-            const birthDate = normalizeDateCell(birthDateRaw);
-            const hireDate  = normalizeDateCell(hireDateRaw);
-
-            if (!firstName && !jobTitle && !jobNumber) continue;
-
-            const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
-
-            newEmployees.push({
-                id: 0,
-                fullName,
-                firstName,
-                secondName,
-                thirdName,
-                fourthName,
-                jobTitle,
-                status,
-                department: dept,
-                jobNumber,
-                nationalId,
-                motherName,
-                gender,
-                birthDate,
-                hireDate,
-                notes
-            });
-        }
-
-        if (!newEmployees.length) {
-            alert("الملف لا يحتوي بيانات موظفين بالترتيب المتوقع للأعمدة.");
-            return;
-        }
-
-        mergeImportedEmployees(newEmployees);
-    }
-
-    function mergeImportedEmployees(newEmployees) {
-        const replace = confirm("تم العثور على بيانات موظفين في الملف.\nهل تريد استبدال جميع الموظفين الحاليين بالملف المستورد؟\n(موافق = استبدال الكل، إلغاء = إضافة فوق الموجودين)");
-        if (replace) {
-            employees.length = 0;
-        }
-
-        let maxId = employees.length ? Math.max(...employees.map(e => e.id)) : 0;
-        newEmployees.forEach(emp => {
-            emp.id = ++maxId;
-            employees.push(emp);
-        });
-
-        saveDataToStorage();
-        currentView = [...employees];
-        if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
-        else renderEmployees(currentView);
-        alert("تم استيراد الموظفين من الملف بنجاح.");
-    }
-
-    // تصدير JSON
-    btnExportJson.addEventListener("click", () => {
-        if (!employees.length) {
-            alert("لا توجد بيانات لتصديرها.");
-            return;
-        }
-        const data = JSON.stringify(employees, null, 2);
-        const blob = new Blob([data], {type: "application/json;charset=utf-8;"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "employees.json";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
-
-    // استيراد JSON
-    btnImportJson.addEventListener("click", () => {
-        importJsonFileInput.click();
-    });
-
-    importJsonFileInput.addEventListener("change", e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
+        function persistEmployees() {
             try {
-                const data = JSON.parse(ev.target.result);
-                if (!Array.isArray(data)) {
-                    alert("صيغة ملف JSON غير صحيحة، يجب أن يكون مصفوفة من الموظفين.");
-                    return;
-                }
-                const newEmployees = data.map(item => {
-                    const firstName  = item.firstName  || "";
-                    const secondName = item.secondName || "";
-                    const thirdName  = item.thirdName  || "";
-                    const fourthName = item.fourthName || "";
-                    const fullName   = item.fullName || [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
-                    return {
-                        id: 0,
-                        fullName,
-                        firstName,
-                        secondName,
-                        thirdName,
-                        fourthName,
-                        jobTitle: item.jobTitle || "",
-                        status: item.status || "مستمر بالخدمة",
-                        department: item.department || "",
-                        jobNumber: item.jobNumber || "",
-                        nationalId: item.nationalId || "",
-                        motherName: item.motherName || "",
-                        gender: item.gender || "",
-                        birthDate: item.birthDate || "",
-                        hireDate: item.hireDate || "",
-                        notes: item.notes || ""
-                    };
-                });
-                if (!newEmployees.length) {
-                    alert("ملف JSON لا يحتوي بيانات موظفين صالحة.");
-                    return;
-                }
-                mergeImportedEmployees(newEmployees);
-            } catch (err) {
-                console.error(err);
-                alert("تعذر قراءة ملف JSON. تأكد من أن الصيغة صحيحة.");
-            } finally {
-                importJsonFileInput.value = "";
+                localStorage.setItem(STORAGE_KEY_EMPLOYEES, JSON.stringify(employees));
+            } catch (e) {
+                console.error("Cannot save employees", e);
             }
-        };
-        reader.readAsText(file, "utf-8");
-    });
+        }
 
-    // عرض / تعديل / حذف موظف
-    window.viewEmployee = id => {
-        const emp = employees.find(e => e.id === id);
-        if (!emp) { alert("لم يتم العثور على الموظف."); return; }
-        const info =
-            "معلومات الموظف:\n\n" +
-            `الاسم الكامل: ${getEmployeeFullName(emp)}\n` +
-            `الرقم الوظيفي: ${emp.jobNumber || ""}\n` +
-            `الرقم الوطني: ${emp.nationalId || ""}\n` +
-            `العنوان الوظيفي: ${emp.jobTitle || ""}\n` +
-            `أسم الدائرة / مبنى الوزارة: ${emp.department || ""}\n` +
-            `الحالة الوظيفية: ${emp.status || ""}\n` +
-            `الجنس: ${emp.gender || "غير محدد"}\n` +
-            `أسم الأم الثلاثي: ${emp.motherName || ""}\n` +
-            `تاريخ التولد: ${emp.birthDate || ""}\n` +
-            `تاريخ التعيين: ${emp.hireDate || ""}\n` +
-            `الملاحظات: ${emp.notes || ""}`;
-        alert(info);
-    };
+        function loadEmployeesFromStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY_EMPLOYEES);
+                if (raw) {
+                    employees = JSON.parse(raw) || [];
+                }
+            } catch (e) {
+                employees = [];
+            }
 
-    window.editEmployee = id => {
-        const emp = employees.find(e => e.id === id);
-        if (!emp) { alert("لم يتم العثور على الموظف."); return; }
-        openEmployeeForm("edit", emp);
-    };
+            if (!Array.isArray(employees) || employees.length === 0) {
+                // بيانات تجريبية بسيطة
+                employees = [
+                    {
+                        firstName: "توفيق",
+                        secondName: "سالم",
+                        thirdName: "ابتهال",
+                        fourthName: "",
+                        jobTitle: "رئيس أطباء اختصاص",
+                        jobStatus: "مستمر بالخدمة",
+                        notes: "بورد عراقي",
+                        department: "مكتب الوزير / الملاك",
+                        jobNumber: "113023332",
+                        nationalId: "196758925337",
+                        motherName: "سعاد محمد مبارك",
+                        gender: "أنثى",
+                        birthDate: "1967-05-10",
+                        hireDate: "1991-11-01"
+                    },
+                    {
+                        firstName: "ابتهاج",
+                        secondName: "فتاح",
+                        thirdName: "عواد",
+                        fourthName: "",
+                        jobTitle: "تقني أشعة وسونار",
+                        jobStatus: "مستمر بالخدمة",
+                        notes: "إستثناء من التدرج",
+                        department: "مكتب الوزير / الملاك",
+                        jobNumber: "153435104",
+                        nationalId: "200065880073",
+                        motherName: "ابتهال محمد سلمان",
+                        gender: "ذكر",
+                        birthDate: "2000-02-15",
+                        hireDate: "2023-11-19"
+                    }
+                ];
+                persistEmployees();
+            }
+        }
 
-    window.deleteEmployee = id => {
-        if (!confirm("هل أنت متأكد من حذف هذا الموظف؟")) return;
-        const idx = employees.findIndex(e => e.id === id);
-        if (idx === -1) { alert("لم يتم العثور على الموظف."); return; }
-        employees.splice(idx, 1);
-        if (editingEmployeeId === id) editingEmployeeId = null;
-        saveDataToStorage();
-        currentView = [...employees];
-        if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
-        else renderEmployees(currentView);
-        alert("تم حذف الموظف.");
-    };
+        function applyTheme(theme) {
+            document.documentElement.setAttribute("data-theme", theme);
+            try {
+                localStorage.setItem(STORAGE_KEY_THEME, theme);
+            } catch (e) {
+            }
+        }
 
-    // إجازات
-    function calculateLeaveStats(list) {
-        const s = { total: list.length, pending: 0, accepted: 0, rejected: 0 };
-        list.forEach(l => {
-            if (l.status === "مقدمة") s.pending++;
-            else if (l.status === "مقبولة") s.accepted++;
-            else if (l.status === "مرفوضة") s.rejected++;
+        function getSavedTheme() {
+            try {
+                return localStorage.getItem(STORAGE_KEY_THEME) || "theme-default";
+            } catch (e) {
+                return "theme-default";
+            }
+        }
+
+        function saveActiveSection(id) {
+            try {
+                localStorage.setItem(STORAGE_KEY_SECTION, id);
+            } catch (e) {
+            }
+        }
+
+        function getActiveSection() {
+            try {
+                return localStorage.getItem(STORAGE_KEY_SECTION) || "employeesSection";
+            } catch (e) {
+                return "employeesSection";
+            }
+        }
+
+        // Navigation -------------------------------
+
+        function setActiveSection(sectionId) {
+            sections.forEach(s => {
+                s.classList.toggle("active", s.id === sectionId);
+            });
+            sidebarLinks.forEach(l => {
+                l.classList.toggle("active", l.dataset.section === sectionId);
+            });
+            saveActiveSection(sectionId);
+        }
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                const sectionId = link.dataset.section;
+                setActiveSection(sectionId);
+            });
         });
-        return s;
-    }
 
-    function renderLeaveStats(list) {
-        const s = calculateLeaveStats(list);
+        // Employees rendering & filters ------------
 
-        totalLeavesSpan.textContent = s.total;
-        pendingLeavesSpan.textContent = s.pending;
-        acceptedLeavesSpan.textContent = s.accepted;
-        rejectedLeavesSpan.textContent = s.rejected;
+        function matchesFilters(emp) {
+            const nameQuery = (searchByName.value || "").trim();
+            const status = filterByStatus.value;
+            const department = filterByDepartment.value;
+            const gender = filterByGender.value;
 
-        dashTotalLeaves.textContent = s.total;
-        dashAcceptedLeaves.textContent = s.accepted;
-        dashPendingLeaves.textContent = s.pending;
+            let ok = true;
 
-        reportTotalLeaves.textContent = s.total;
-        reportAcceptedLeaves.textContent = s.accepted;
-        reportPendingLeaves.textContent = s.pending;
-    }
+            if (nameQuery) {
+                const fullName = [emp.firstName, emp.secondName, emp.thirdName, emp.fourthName].join(" ");
+                ok = fullName.includes(nameQuery);
+            }
 
-    function renderLeaves(list) {
-        leavesTableBody.innerHTML = "";
-        list.forEach((lv, i) => {
-            const statusClass =
-                lv.status === "مقبولة" ? "bg-success" :
-                lv.status === "مقدمة" ? "bg-warning" :
-                lv.status === "مرفوضة" ? "bg-danger" : "bg-secondary";
+            if (ok && status) {
+                ok = emp.jobStatus === status;
+            }
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td class="text-center">${i + 1}</td>
-              <td>${lv.employeeName}</td>
-              <td>${lv.type}</td>
-              <td class="text-center">${formatDate(lv.startDate)}</td>
-              <td class="text-center">${formatDate(lv.endDate)}</td>
-              <td class="text-center"><span class="badge ${statusClass} badge-status">${lv.status}</span></td>
-              <td>${lv.approvedBy || "-"}</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewLeave(${lv.id})">عرض</button>
-                <button class="btn btn-sm btn-outline-secondary me-1" onclick="editLeaveStatus(${lv.id})">تحديث الحالة</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteLeave(${lv.id})">حذف</button>
-              </td>`;
-            leavesTableBody.appendChild(tr);
-        });
+            if (ok && department) {
+                ok = emp.department === department;
+            }
 
-        renderLeaveStats(list);
-    }
+            if (ok && gender) {
+                ok = emp.gender === gender;
+            }
 
-    filterLeaveForm.addEventListener("submit", e => {
-        e.preventDefault();
-        const nameVal = filterLeaveName.value.trim();
-        const typeVal = filterLeaveType.value;
-        const statusVal = filterLeaveStatus.value;
+            return ok;
+        }
 
-        currentLeavesView = leaves.filter(lv => {
-            const mName = !nameVal || lv.employeeName.includes(nameVal);
-            const mType = !typeVal || lv.type === typeVal;
-            const mStatus = !statusVal || lv.status === statusVal;
-            return mName && mType && mStatus;
-        });
-        renderLeaves(currentLeavesView);
-    });
+        function compareValues(a, b) {
+            if (a == null) a = "";
+            if (b == null) b = "";
+            const isDate = /^\d{4}-\d{2}-\d{2}$/.test(a) && /^\d{4}-\d{2}-\d{2}$/.test(b);
+            if (isDate) {
+                return a.localeCompare(b);
+            }
+            const na = Number(a);
+            const nb = Number(b);
+            if (!isNaN(na) && !isNaN(nb)) {
+                return na - nb;
+            }
+            return String(a).localeCompare(String(b), "ar");
+        }
 
-    btnResetLeaves.addEventListener("click", () => {
-        filterLeaveName.value = "";
-        filterLeaveType.value = "";
-        filterLeaveStatus.value = "";
-        currentLeavesView = [...leaves];
-        renderLeaves(currentLeavesView);
-    });
+        function renderEmployees() {
+            const rows = employees
+                .map((emp, index) => ({emp, index}))
+                .filter(row => matchesFilters(row.emp));
 
-    btnAddLeave.addEventListener("click", () => {
-        const employeeName = prompt("أدخل اسم الموظف:"); if (!employeeName) return;
-        const type = prompt("نوع الإجازة:", "اعتيادية");
-        const startDate = prompt("تاريخ البدء (YYYY-MM-DD):", "2025-01-01");
-        const endDate = prompt("تاريخ النهاية (YYYY-MM-DD):", "2025-01-07");
-        const status = prompt("حالة الطلب:", "مقدمة");
-        const approvedBy = prompt("اسم المعتمد:", "");
-        const newId = leaves.length ? Math.max(...leaves.map(l => l.id)) + 1 : 1;
-        leaves.push({
-            id: newId,
-            employeeId: null,
-            employeeName,
-            type: type || "اعتيادية",
-            startDate: startDate || "",
-            endDate: endDate || "",
-            status: status || "مقدمة",
-            approvedBy: approvedBy || ""
-        });
-        saveDataToStorage();
-        currentLeavesView = [...leaves];
-        renderLeaves(currentLeavesView);
-        alert("تمت إضافة طلب الإجازة.");
-    });
+            if (sortState.key) {
+                rows.sort((a, b) => {
+                    const v1 = a.emp[sortState.key] || "";
+                    const v2 = b.emp[sortState.key] || "";
+                    const cmp = compareValues(v1, v2);
+                    return sortState.direction === "asc" ? cmp : -cmp;
+                });
+            }
 
-    window.viewLeave = id => {
-        const lv = leaves.find(l => l.id === id);
-        if (!lv) { alert("لم يتم العثور على الإجازة."); return; }
-        alert(
-            "معلومات الإجازة:\n\n" +
-            `الموظف: ${lv.employeeName}\n` +
-            `نوع الإجازة: ${lv.type}\n` +
-            `من: ${formatDate(lv.startDate)}\n` +
-            `إلى: ${formatDate(lv.endDate)}\n` +
-            `الحالة: ${lv.status}\n` +
-            `المعتمد: ${lv.approvedBy || "-"}` );
-    };
+            employeesTbody.innerHTML = "";
+            rows.forEach((row, displayIndex) => {
+                const emp = row.emp;
+                const tr = document.createElement("tr");
 
-    window.editLeaveStatus = id => {
-        const lv = leaves.find(l => l.id === id);
-        if (!lv) { alert("لم يتم العثور على الإجازة."); return; }
-        const status = prompt("تحديث حالة الإجازة:", lv.status); if (!status) return;
-        const approvedBy = prompt("اسم المعتمد:", lv.approvedBy || "");
-        lv.status = status;
-        lv.approvedBy = approvedBy || lv.approvedBy;
-        saveDataToStorage();
-        renderLeaves(currentLeavesView);
-        alert("تم تحديث حالة الإجازة.");
-    };
+                const idxTd = document.createElement("td");
+                idxTd.textContent = displayIndex + 1;
+                tr.appendChild(idxTd);
 
-    window.deleteLeave = id => {
-        if (!confirm("هل أنت متأكد من حذف هذه الإجازة؟")) return;
-        const idx = leaves.findIndex(l => l.id === id);
-        if (idx === -1) { alert("لم يتم العثور على الإجازة."); return; }
-        leaves.splice(idx, 1);
-        saveDataToStorage();
-        currentLeavesView = [...leaves];
-        renderLeaves(currentLeavesView);
-        alert("تم حذف الإجازة.");
-    };
+                function td(text) {
+                    const cell = document.createElement("td");
+                    cell.textContent = text || "";
+                    return cell;
+                }
 
-    // التنقل بين الأقسام
-    const navLinks = document.querySelectorAll(".sidebar .nav-link");
-    function showSection(sectionId) {
-        const ids = ["dashboard","employees","leaves","reports"];
-        ids.forEach(id => {
-            const sec = document.getElementById(id);
-            if (!sec) return;
-            if (id === sectionId) sec.classList.remove("d-none");
-            else sec.classList.add("d-none");
-        });
-        navLinks.forEach(link => {
-            const href = link.getAttribute("href") || "";
-            if (!href.startsWith("#")) return;
-            const targetId = href.substring(1);
-            link.classList.toggle("active", targetId === sectionId);
-        });
-        localStorage.setItem(STORAGE_KEYS.section, sectionId);
-        window.scrollTo({top:0, behavior:"auto"});
-    }
-    navLinks.forEach(link => {
-        const href = link.getAttribute("href") || "";
-        if (!href.startsWith("#")) return;
-        const targetId = href.substring(1);
-        if (["dashboard","employees","leaves","reports"].includes(targetId)) {
-            link.addEventListener("click", e => {
-                e.preventDefault();
-                showSection(targetId);
+                tr.appendChild(td(emp.firstName));
+                tr.appendChild(td(emp.secondName));
+                tr.appendChild(td(emp.thirdName));
+                tr.appendChild(td(emp.fourthName));
+                tr.appendChild(td(emp.jobTitle));
+
+                const statusTd = document.createElement("td");
+                const statusBadge = document.createElement("span");
+                statusBadge.className = "badge";
+                let statusClass = "badge-muted";
+                if (emp.jobStatus === "مستمر بالخدمة") statusClass = "badge-success";
+                else if (emp.jobStatus && emp.jobStatus.indexOf("إجازة") !== -1) statusClass = "badge-warning";
+                statusBadge.classList.add(statusClass);
+                statusBadge.textContent = emp.jobStatus || "غير محدد";
+                statusTd.appendChild(statusBadge);
+                tr.appendChild(statusTd);
+
+                tr.appendChild(td(emp.notes));
+                tr.appendChild(td(emp.department));
+                tr.appendChild(td(emp.jobNumber));
+                tr.appendChild(td(emp.nationalId));
+                tr.appendChild(td(emp.motherName));
+                tr.appendChild(td(emp.gender));
+                tr.appendChild(td(emp.birthDate));
+                tr.appendChild(td(emp.hireDate));
+
+                const actionsTd = document.createElement("td");
+                actionsTd.className = "table-actions";
+
+                const viewBtn = document.createElement("button");
+                viewBtn.className = "btn btn-ghost";
+                viewBtn.textContent = "عرض";
+                viewBtn.addEventListener("click", () => openEmployeeModal(row.index, "view"));
+                actionsTd.appendChild(viewBtn);
+
+                const editBtn = document.createElement("button");
+                editBtn.className = "btn btn-secondary";
+                editBtn.textContent = "تعديل";
+                editBtn.addEventListener("click", () => openEmployeeModal(row.index, "edit"));
+                actionsTd.appendChild(editBtn);
+
+                const delBtn = document.createElement("button");
+                delBtn.className = "btn btn-danger";
+                delBtn.textContent = "حذف";
+                delBtn.addEventListener("click", () => deleteEmployee(row.index));
+                actionsTd.appendChild(delBtn);
+
+                tr.appendChild(actionsTd);
+
+                employeesTbody.appendChild(tr);
+            });
+
+            renderFiltersOptions();
+            renderEmployeeStats();
+        }
+
+        function renderFiltersOptions() {
+            const statuses = new Set();
+            const departments = new Set();
+            employees.forEach(emp => {
+                if (emp.jobStatus) statuses.add(emp.jobStatus);
+                if (emp.department) departments.add(emp.department);
+            });
+
+            const currentStatus = filterByStatus.value;
+            const currentDept = filterByDepartment.value;
+
+            filterByStatus.innerHTML = '<option value="">كل الحالات الوظيفية</option>';
+            statuses.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s;
+                opt.textContent = s;
+                filterByStatus.appendChild(opt);
+            });
+            filterByStatus.value = currentStatus || "";
+
+            filterByDepartment.innerHTML = '<option value="">كل الدوائر</option>';
+            departments.forEach(d => {
+                const opt = document.createElement("option");
+                opt.value = d;
+                opt.textContent = d;
+                filterByDepartment.appendChild(opt);
+            });
+            filterByDepartment.value = currentDept || "";
+        }
+
+        function renderEmployeeStats() {
+            const total = employees.length;
+            let males = 0;
+            let females = 0;
+            const statusCount = {};
+            const departments = new Set();
+
+            employees.forEach(emp => {
+                if (emp.gender === "ذكر") males++;
+                else if (emp.gender === "أنثى") females++;
+                if (emp.department) departments.add(emp.department);
+                if (emp.jobStatus) {
+                    statusCount[emp.jobStatus] = (statusCount[emp.jobStatus] || 0) + 1;
+                }
+            });
+
+            totalEmployeesEl.textContent = total;
+            totalMalesEl.textContent = males;
+            totalFemalesEl.textContent = females;
+
+            reportTotalEmployees.textContent = total;
+            reportMales.textContent = males;
+            reportFemales.textContent = females;
+            reportDepartmentsCount.textContent = departments.size;
+            genderMaleReport.textContent = males;
+            genderFemaleReport.textContent = females;
+
+            statusChipsEl.innerHTML = "";
+            statusReportList.innerHTML = "";
+
+            Object.keys(statusCount).forEach(status => {
+                const chip = document.createElement("span");
+                chip.className = "stat-chip";
+                chip.textContent = status + " : " + statusCount[status];
+                statusChipsEl.appendChild(chip);
+
+                const line = document.createElement("div");
+                line.textContent = status + " : " + statusCount[status];
+                statusReportList.appendChild(line);
             });
         }
-    });
-    const logoutLink = Array.from(navLinks).find(l => (l.textContent || "").trim() === "تسجيل الخروج");
-    if (logoutLink) {
-        logoutLink.addEventListener("click", e => {
-            e.preventDefault();
-            alert("تم تسجيل الخروج (تجريبيًا، يمكن ربطه لاحقًا بصفحة دخول).");
-        });
-    }
 
-    // تفعيل فرز الأعمدة عند الضغط على العناوين
-    const headerCells = document.querySelectorAll(".employee-table thead th.sortable");
-    headerCells.forEach(th => {
-        th.addEventListener("click", () => {
-            const key = th.getAttribute("data-sort-key");
-            if (!key) return;
-            if (currentSort.key === key) {
-                currentSort.dir = currentSort.dir === "asc" ? "desc" : "asc";
-            } else {
-                currentSort.key = key;
-                currentSort.dir = "asc";
+        // Modal ------------------------------------
+
+        function resetEmployeeForm() {
+            employeeForm.reset();
+            [firstNameInput, secondNameInput, thirdNameInput, fourthNameInput,
+                jobTitleInput, jobStatusInput, departmentInput, jobNumberInput,
+                nationalIdInput, motherNameInput, genderInput,
+                birthDateInput, hireDateInput, notesInput
+            ].forEach(el => el.disabled = false);
+            saveEmployeeBtn.style.display = "";
+        }
+
+        function openEmployeeModal(index, mode) {
+            resetEmployeeForm();
+            modalMode = mode || "add";
+
+            if (mode === "add") {
+                editingIndex = null;
+                employeeModalTitle.textContent = "إضافة موظف جديد";
+            } else if (mode === "edit" || mode === "view") {
+                editingIndex = index;
+                const emp = employees[index];
+                if (!emp) return;
+
+                firstNameInput.value = emp.firstName || "";
+                secondNameInput.value = emp.secondName || "";
+                thirdNameInput.value = emp.thirdName || "";
+                fourthNameInput.value = emp.fourthName || "";
+                jobTitleInput.value = emp.jobTitle || "";
+                jobStatusInput.value = emp.jobStatus || "";
+                departmentInput.value = emp.department || "";
+                jobNumberInput.value = emp.jobNumber || "";
+                nationalIdInput.value = emp.nationalId || "";
+                motherNameInput.value = emp.motherName || "";
+                genderInput.value = emp.gender || "";
+                birthDateInput.value = emp.birthDate || "";
+                hireDateInput.value = emp.hireDate || "";
+                notesInput.value = emp.notes || "";
+
+                employeeModalTitle.textContent = mode === "edit" ? "تعديل بيانات الموظف" : "عرض بيانات الموظف";
+
+                if (mode === "view") {
+                    [firstNameInput, secondNameInput, thirdNameInput, fourthNameInput,
+                        jobTitleInput, jobStatusInput, departmentInput, jobNumberInput,
+                        nationalIdInput, motherNameInput, genderInput,
+                        birthDateInput, hireDateInput, notesInput
+                    ].forEach(el => el.disabled = true);
+                    saveEmployeeBtn.style.display = "none";
+                }
             }
-            sortEmployees(currentSort.key, currentSort.dir);
-            updateSortIndicators();
+
+            employeeModalBackdrop.classList.add("open");
+        }
+
+        function closeEmployeeModal() {
+            employeeModalBackdrop.classList.remove("open");
+        }
+
+        addEmployeeBtn.addEventListener("click", () => openEmployeeModal(null, "add"));
+        closeEmployeeModalBtn.addEventListener("click", closeEmployeeModal);
+        cancelEmployeeModalBtn.addEventListener("click", closeEmployeeModal);
+
+        employeeModalBackdrop.addEventListener("click", (e) => {
+            if (e.target === employeeModalBackdrop) {
+                closeEmployeeModal();
+            }
         });
-    });
 
-    // أول تحميل
-    currentView = [...employees];
-    currentLeavesView = [...leaves];
-    renderEmployees(currentView);
-    renderLeaves(currentLeavesView);
-    updateSortIndicators();
+        employeeForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (modalMode === "view") {
+                closeEmployeeModal();
+                return;
+            }
 
-    // حفظ أولي
-    saveDataToStorage();
+            const newEmp = {
+                firstName: firstNameInput.value.trim(),
+                secondName: secondNameInput.value.trim(),
+                thirdName: thirdNameInput.value.trim(),
+                fourthName: fourthNameInput.value.trim(),
+                jobTitle: jobTitleInput.value.trim(),
+                jobStatus: jobStatusInput.value,
+                notes: notesInput.value.trim(),
+                department: departmentInput.value.trim(),
+                jobNumber: jobNumberInput.value.trim(),
+                nationalId: nationalIdInput.value.trim(),
+                motherName: motherNameInput.value.trim(),
+                gender: genderInput.value,
+                birthDate: birthDateInput.value,
+                hireDate: hireDateInput.value
+            };
 
-    const savedSectionId = localStorage.getItem(STORAGE_KEYS.section) || "dashboard";
-    showSection(savedSectionId);
+            if (!newEmp.firstName) {
+                alert("يرجى إدخال الأسم الاول.");
+                return;
+            }
+
+            if (editingIndex == null) {
+                employees.push(newEmp);
+            } else {
+                employees[editingIndex] = newEmp;
+            }
+
+            persistEmployees();
+            renderEmployees();
+            showToast("تم حفظ بيانات الموظف.");
+            closeEmployeeModal();
+        });
+
+        function deleteEmployee(index) {
+            const emp = employees[index];
+            if (!emp) return;
+            if (confirm("هل أنت متأكد من حذف هذا الموظف؟")) {
+                employees.splice(index, 1);
+                persistEmployees();
+                renderEmployees();
+                showToast("تم حذف الموظف.");
+            }
+        }
+
+        // Sorting ----------------------------------
+
+        const headerCells = document.querySelectorAll("#employeesTable thead th.sortable");
+        headerCells.forEach(th => {
+            th.addEventListener("click", () => {
+                const key = th.dataset.sortKey;
+                if (!key) return;
+                if (sortState.key === key) {
+                    sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+                } else {
+                    sortState.key = key;
+                    sortState.direction = "asc";
+                }
+
+                headerCells.forEach(h => {
+                    h.classList.remove("sorted-asc", "sorted-desc");
+                });
+                th.classList.add(sortState.direction === "asc" ? "sorted-asc" : "sorted-desc");
+
+                renderEmployees();
+            });
+        });
+
+        // Filters events ---------------------------
+
+        [searchByName, filterByStatus, filterByDepartment, filterByGender].forEach(el => {
+            el.addEventListener("input", renderEmployees);
+            el.addEventListener("change", renderEmployees);
+        });
+
+        // Theme -----------------------------------
+
+        themeSelect.addEventListener("change", () => {
+            applyTheme(themeSelect.value);
+        });
+
+        // Save data button -------------------------
+
+        saveDataBtn.addEventListener("click", () => {
+            persistEmployees();
+            showToast("تم حفظ البيانات في المتصفح.");
+        });
+
+        // Excel Export / Import --------------------
+
+        exportExcelBtn.addEventListener("click", () => {
+            const wsData = [excelHeaders.slice()];
+            employees.forEach(emp => {
+                wsData.push([
+                    emp.firstName || "",
+                    emp.secondName || "",
+                    emp.thirdName || "",
+                    emp.fourthName || "",
+                    emp.jobTitle || "",
+                    emp.jobStatus || "",
+                    emp.notes || "",
+                    emp.department || "",
+                    emp.jobNumber || "",
+                    emp.nationalId || "",
+                    emp.motherName || "",
+                    emp.gender || "",
+                    emp.birthDate || "",
+                    emp.hireDate || ""
+                ]);
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, "الموظفون");
+
+            XLSX.writeFile(wb, "employees.xlsx");
+        });
+
+        exportCsvBtn.addEventListener("click", () => {
+            const rows = [];
+            rows.push(excelHeaders.join(","));
+            employees.forEach(emp => {
+                const row = [
+                    emp.firstName || "",
+                    emp.secondName || "",
+                    emp.thirdName || "",
+                    emp.fourthName || "",
+                    emp.jobTitle || "",
+                    emp.jobStatus || "",
+                    emp.notes || "",
+                    emp.department || "",
+                    emp.jobNumber || "",
+                    emp.nationalId || "",
+                    emp.motherName || "",
+                    emp.gender || "",
+                    emp.birthDate || "",
+                    emp.hireDate || ""
+                ].map(v => '"' + String(v).replace(/"/g, '""') + '"');
+                rows.push(row.join(","));
+            });
+
+            const blob = new Blob([rows.join("\n")], {type: "text/csv;charset=utf-8;"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "employees.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        importExcelBtn.addEventListener("click", () => importExcelInput.click());
+        importExcelInput.addEventListener("change", handleExcelImport);
+
+        function handleExcelImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                const data = ev.target.result;
+                const workbook = XLSX.read(data, {type: "binary"});
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, {header: 1, raw: false});
+
+                if (!rows.length) {
+                    alert("الملف فارغ.");
+                    return;
+                }
+
+                const headerRow = rows[0].map(h => String(h || "").trim());
+                const missing = excelHeaders.filter(h => !headerRow.includes(h));
+                if (missing.length) {
+                    alert("لا يمكن قراءة الملف. الأعمدة التالية مفقودة:\n" + missing.join(" ، "));
+                    return;
+                }
+
+                const idx = {};
+                excelHeaders.forEach(h => {
+                    idx[h] = headerRow.indexOf(h);
+                });
+
+                const imported = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const r = rows[i];
+                    if (!r || !r.length) continue;
+
+                    const emp = {
+                        firstName: r[idx["الأسم الاول"]] || "",
+                        secondName: r[idx["الأسم الثاني"]] || "",
+                        thirdName: r[idx["الأسم الثالث"]] || "",
+                        fourthName: r[idx["الأسم الرابع"]] || "",
+                        jobTitle: r[idx["العنوان الوظيفي"]] || "",
+                        jobStatus: r[idx["الحالة الوظيفية"]] || "",
+                        notes: r[idx["الملاحظات"]] || "",
+                        department: r[idx["أسم الدائرة / مبنى الوزارة"]] || "",
+                        jobNumber: r[idx["الرقم الوظيفي"]] || "",
+                        nationalId: r[idx["الرقم الوطني"]] || "",
+                        motherName: r[idx["أسم الأم الثلاثي"]] || "",
+                        gender: r[idx["الجنس"]] || "",
+                        birthDate: r[idx["تاريخ التولد"]] || "",
+                        hireDate: r[idx["تاريخ التعيين"]] || ""
+                    };
+
+                    if (!emp.firstName && !emp.secondName && !emp.thirdName) continue;
+                    imported.push(emp);
+                }
+
+                if (!imported.length) {
+                    alert("لم يتم العثور على سجلات صالحة في الملف.");
+                    return;
+                }
+
+                employees = imported;
+                persistEmployees();
+                renderEmployees();
+                showToast("تم استيراد بيانات الموظفين من ملف Excel.");
+                importExcelInput.value = "";
+            };
+
+            reader.readAsBinaryString(file);
+        }
+
+        // JSON Export / Import ---------------------
+
+        exportJsonBtn.addEventListener("click", () => {
+            const blob = new Blob([JSON.stringify(employees, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "employees.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        importJsonBtn.addEventListener("click", () => importJsonInput.click());
+        importJsonInput.addEventListener("change", handleJsonImport);
+
+        function handleJsonImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (!Array.isArray(data)) throw new Error("صيغة غير صحيحة.");
+
+                    employees = data.map(emp => ({
+                        firstName: emp.firstName || "",
+                        secondName: emp.secondName || "",
+                        thirdName: emp.thirdName || "",
+                        fourthName: emp.fourthName || "",
+                        jobTitle: emp.jobTitle || "",
+                        jobStatus: emp.jobStatus || "",
+                        notes: emp.notes || "",
+                        department: emp.department || "",
+                        jobNumber: emp.jobNumber || "",
+                        nationalId: emp.nationalId || "",
+                        motherName: emp.motherName || "",
+                        gender: emp.gender || "",
+                        birthDate: emp.birthDate || "",
+                        hireDate: emp.hireDate || ""
+                    }));
+
+                    persistEmployees();
+                    renderEmployees();
+                    showToast("تم استيراد بيانات الموظفين من ملف JSON.");
+                } catch (err) {
+                    alert("تعذر قراءة ملف JSON. يرجى التأكد من الصيغة.");
+                } finally {
+                    importJsonInput.value = "";
+                }
+            };
+            reader.readAsText(file, "utf-8");
+        }
+
+        // Init ------------------------------------
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // تحميل الثيم المحفوظ وضبط القائمة
+            const savedTheme = getSavedTheme();
+            themeSelect.value = savedTheme;
+            applyTheme(savedTheme);
+
+            // إعادة فتح آخر تبويب بعد الإنعاش
+            const activeSection = getActiveSection();
+            setActiveSection(activeSection);
+
+            // تحميل الموظفين
+            loadEmployeesFromStorage();
+            renderEmployees();
+        });
+
+    })();
 </script>
+
 </body>
 </html>
