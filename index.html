@@ -430,12 +430,21 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">الحالة الوظيفية</label>
+                                <!-- فلتر الحالة الوظيفية مع الخيارات الإضافية -->
                                 <select id="filterStatus" class="form-select">
                                     <option value="">الكل</option>
+
+                                    <!-- الحالات الأساسية -->
                                     <option value="مستمر بالخدمة">مستمر بالخدمة</option>
                                     <option value="إجازة">إجازة</option>
                                     <option value="متقاعد">متقاعد</option>
                                     <option value="متدرب">متدرب</option>
+
+                                    <!-- الحالات الإضافية -->
+                                    <option value="اجازه دراسيه">اجازه دراسيه</option>
+                                    <option value="اجازه امومه">اجازه امومه</option>
+                                    <option value="اجازه خمس سنوات">اجازه خمس سنوات</option>
+                                    <option value="منسب إلى الدوائر الأخرى">منسب إلى الدوائر الأخرى</option>
                                 </select>
                             </div>
                             <div class="col-md-3 d-flex align-items-end gap-2">
@@ -449,22 +458,18 @@
                             <table class="employee-table table table-sm table-hover align-middle mb-0">
                                 <thead>
                                 <tr>
-                                    <th data-sort-key="index" class="sortable">#</th>
-                                    <th data-sort-key="firstName" class="sortable">الأسم الاول</th>
-                                    <th data-sort-key="secondName" class="sortable">الأسم الثاني</th>
-                                    <th data-sort-key="thirdName" class="sortable">الأسم الثالث</th>
-                                    <th data-sort-key="fourthName" class="sortable">الأسم الرابع</th>
-                                    <th data-sort-key="jobTitle" class="sortable">العنوان الوظيفي</th>
-                                    <th data-sort-key="status" class="sortable">الحالة الوظيفية</th>
-                                    <th data-sort-key="notes" class="sortable">الملاحظات</th>
-                                    <th data-sort-key="department" class="sortable">أسم الدائرة / مبنى الوزارة</th>
-                                    <th data-sort-key="jobNumber" class="sortable">الرقم الوظيفي</th>
-                                    <th data-sort-key="nationalId" class="sortable">الرقم الوطني</th>
-                                    <th data-sort-key="motherName" class="sortable">أسم الأم الثلاثي</th>
-                                    <th data-sort-key="gender" class="sortable">الجنس</th>
-                                    <th data-sort-key="birthDate" class="sortable">تاريخ التولد</th>
-                                    <th data-sort-key="hireDate" class="sortable">تاريخ التعيين</th>
+                                    <!-- أقصى اليسار: إجراءات -->
                                     <th class="text-center">إجراءات</th>
+
+                                    <th data-sort-key="hireDate" class="sortable">تاريخ التعيين</th>
+                                    <th data-sort-key="birthDate" class="sortable">تاريخ التولد</th>
+                                    <th data-sort-key="gender" class="sortable">الجنس</th>
+                                    <th data-sort-key="motherName" class="sortable">أسم الأم الثلاثي</th>
+                                    <th data-sort-key="nationalId" class="sortable">الرقم الوطني</th>
+                                    <th data-sort-key="jobNumber" class="sortable">الرقم الوظيفي</th>
+                                    <th data-sort-key="department" class="sortable">أسم الدائرة / مبنى الوزارة</th>
+                                    <th data-sort-key="notes" class="sortable">الملاحظات</th>
+                                    <th data-sort-key="status" class="sortable">الحالة الوظيفية</th>
                                 </tr>
                                 </thead>
                                 <tbody id="employeesTableBody"></tbody>
@@ -509,11 +514,19 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">الحالة الوظيفية</label>
+                                <!-- قائمة الحالة الوظيفية مع الخيارات الإضافية -->
                                 <select id="empStatus" class="form-select" required>
+                                    <!-- الحالات الأساسية -->
                                     <option value="مستمر بالخدمة">مستمر بالخدمة</option>
                                     <option value="إجازة">إجازة</option>
                                     <option value="متقاعد">متقاعد</option>
                                     <option value="متدرب">متدرب</option>
+
+                                    <!-- الحالات الإضافية -->
+                                    <option value="اجازه دراسيه">اجازه دراسيه</option>
+                                    <option value="اجازه امومه">اجازه امومه</option>
+                                    <option value="اجازه خمس سنوات">اجازه خمس سنوات</option>
+                                    <option value="منسب إلى الدوائر الأخرى">منسب إلى الدوائر الأخرى</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -1077,11 +1090,11 @@
         genderOtherReport.textContent = s.other;
     }
 
-    // عرض جدول الموظفين
+    // عرض جدول الموظفين (بالترتيب الجديد مثل الصورة)
     function renderEmployees(list) {
         tableBody.innerHTML = "";
 
-        list.forEach((emp, i) => {
+        list.forEach((emp) => {
             ensureNameParts(emp);
             const tr = document.createElement("tr");
 
@@ -1092,25 +1105,24 @@
                                                   "bg-info";
 
             tr.innerHTML = `
-              <td class="text-center">${i + 1}</td>
-              <td>${emp.firstName || ""}</td>
-              <td>${emp.secondName || ""}</td>
-              <td>${emp.thirdName || ""}</td>
-              <td>${emp.fourthName || ""}</td>
-              <td>${emp.jobTitle || ""}</td>
-              <td class="text-center"><span class="badge ${statusClass} badge-status">${emp.status || ""}</span></td>
-              <td>${emp.notes || ""}</td>
-              <td>${emp.department || ""}</td>
-              <td class="text-center">${emp.jobNumber || ""}</td>
-              <td class="text-center">${emp.nationalId || ""}</td>
-              <td>${emp.motherName || ""}</td>
-              <td class="text-center">${emp.gender || ""}</td>
-              <td class="text-center">${formatDate(emp.birthDate)}</td>
-              <td class="text-center">${formatDate(emp.hireDate)}</td>
+              <!-- إجراءات (أقصى اليسار) -->
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEmployee(${emp.id})">عرض</button>
                 <button class="btn btn-sm btn-outline-secondary me-1" onclick="editEmployee(${emp.id})">تعديل</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee(${emp.id})">حذف</button>
+              </td>
+
+              <!-- ترتيب الأعمدة مطابق للصورة -->
+              <td class="text-center">${formatDate(emp.hireDate)}</td>
+              <td class="text-center">${formatDate(emp.birthDate)}</td>
+              <td class="text-center">${emp.gender || ""}</td>
+              <td>${emp.motherName || ""}</td>
+              <td class="text-center">${emp.nationalId || ""}</td>
+              <td class="text-center">${emp.jobNumber || ""}</td>
+              <td>${emp.department || ""}</td>
+              <td>${emp.notes || ""}</td>
+              <td class="text-center">
+                <span class="badge ${statusClass} badge-status">${emp.status || ""}</span>
               </td>
             `;
 
