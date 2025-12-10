@@ -265,6 +265,10 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="#employees">الموظفون</a>
                 </li>
+                <!-- صفحة الموظفين غير الموجودين -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#missingEmployees">الموظفون غير الموجودين</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#leaves">الإجازات</a>
                 </li>
@@ -282,7 +286,7 @@
             <!-- شريط علوي -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                 <div>
-                    <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التدريبي</h2>
+                    <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التعليمي</h2>
                     <p class="text-muted mb-0">لوحة تحكم، موظفون، إجازات، وتقارير في منصة واحدة.</p>
                 </div>
                 <div class="d-flex	align-items-center gap-2">
@@ -359,7 +363,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
                         <h4 class="section-title mb-1">قائمة الموظفين</h4>
-                        <p class="text-muted mb-0">إدارة بيانات جميع الموظفين.</p>
+                        <p class="text-muted mb-0">إدارة بيانات جميع الموظفين الموجودين على رأس العمل أو داخل المستشفى.</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         <!-- Excel -->
@@ -390,7 +394,7 @@
 
                 <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
                     <span class="filter-chip">
-                        المجموع: <span id="totalCount">0</span> موظف
+                        المجموع (الظاهرين هنا فقط): <span id="totalCount">0</span> موظف
                     </span>
                     <span class="filter-chip">
                         مستمر بالخدمة: <span id="activeCount">0</span>
@@ -430,7 +434,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">الحالة الوظيفية</label>
-                                <!-- فلتر الحالة الوظيفية مع الخيارات الإضافية -->
+                                <!-- فلتر الحالة الوظيفية -->
                                 <select id="filterStatus" class="form-select">
                                     <option value="">الكل</option>
 
@@ -440,7 +444,7 @@
                                     <option value="متقاعد">متقاعد</option>
                                     <option value="متدرب">متدرب</option>
 
-                                    <!-- الحالات الإضافية -->
+                                    <!-- الحالات الإضافية (لن تظهر في هذه الصفحة لكن قد نحتاجها في التقارير) -->
                                     <option value="اجازه دراسيه">اجازه دراسيه</option>
                                     <option value="اجازه امومه">اجازه امومه</option>
                                     <option value="اجازه خمس سنوات">اجازه خمس سنوات</option>
@@ -477,6 +481,55 @@
                                 </tr>
                                 </thead>
                                 <tbody id="employeesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- الموظفون غير الموجودين -->
+            <section id="missingEmployees" class="d-none">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h4 class="section-title mb-1">الموظفون غير الموجودين</h4>
+                        <p class="text-muted mb-0">
+                            يحتوي على الموظفين الذين حالتهم:
+                            اجازه دراسيه، اجازه امومه، اجازه خمس سنوات، منسب إلى الدوائر الأخرى.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
+                    <span class="filter-chip">
+                        عدد الموظفين غير الموجودين: <span id="missingCount">0</span>
+                    </span>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="employee-table-wrapper">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الأسم الاول</th>
+                                    <th>الأسم الثاني</th>
+                                    <th>الأسم الثالث</th>
+                                    <th>الأسم الرابع</th>
+                                    <th>العنوان الوظيفي</th>
+                                    <th>الحالة الوظيفية</th>
+                                    <th>الملاحظات</th>
+                                    <th>أسم الدائرة / مبنى الوزارة</th>
+                                    <th>الرقم الوظيفي</th>
+                                    <th>الرقم الوطني</th>
+                                    <th>أسم الأم الثلاثي</th>
+                                    <th>الجنس</th>
+                                    <th>تاريخ التولد</th>
+                                    <th>تاريخ التعيين</th>
+                                    <th class="text-center">إجراءات</th>
+                                </tr>
+                                </thead>
+                                <tbody id="missingEmployeesTableBody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -592,7 +645,7 @@
                         <h4 class="section-title mb-1">الإجازات</h4>
                         <p class="text-muted mb-0">متابعة طلبات الإجازة وحالتها.</p>
                     </div>
-                <button id="btnAddLeave" class="btn btn-primary btn-sm">
+                    <button id="btnAddLeave" class="btn btn-primary btn-sm">
                         + طلب إجازة جديد
                     </button>
                 </div>
@@ -762,6 +815,20 @@
         section: "hr_current_section_v1"
     };
 
+    // الحالات التي تعتبر "موظفين غير موجودين"
+    const SPECIAL_STATUSES = [
+        "اجازه دراسيه",
+        "اجازه امومه",
+        "اجازه خمس سنوات",
+        "منسب إلى الدوائر الأخرى"
+    ];
+    function isSpecialStatus(status) {
+        return SPECIAL_STATUSES.includes(status);
+    }
+    function getMainEmployees() {
+        return employees.filter(emp => !isSpecialStatus(emp.status));
+    }
+
     // بيانات أولية (تستخدم أول مرة فقط إذا لا يوجد تخزين سابق)
     const employees = [
         {
@@ -863,7 +930,7 @@
 
     loadDataFromStorage();
 
-    let currentView = [...employees];
+    let currentView = [];
     let currentLeavesView = [...leaves];
     let editingEmployeeId = null;
     let currentSort = { key: null, dir: "asc" };
@@ -879,6 +946,9 @@
     const femaleCountSpan = document.getElementById("femaleCount");
     const statusStatsSpan = document.getElementById("statusStats");
     const deptStatsSpan = document.getElementById("deptStats");
+
+    const missingTableBody = document.getElementById("missingEmployeesTableBody");
+    const missingCountSpan = document.getElementById("missingCount");
 
     const filterForm = document.getElementById("filterForm");
     const filterName = document.getElementById("filterName");
@@ -1094,7 +1164,7 @@
         genderOtherReport.textContent = s.other;
     }
 
-    // عرض جدول الموظفين
+    // عرض جدول الموظفين (الرئيسي – فقط غير الخاصين)
     function renderEmployees(list) {
         tableBody.innerHTML = "";
 
@@ -1133,7 +1203,41 @@
             tableBody.appendChild(tr);
         });
 
-        renderEmployeeStats(list);
+        // الإحصائيات على أساس كل الموظفين (بما فيهم غير الموجودين)
+        renderEmployeeStats(employees);
+    }
+
+    // عرض جدول الموظفين غير الموجودين
+    function renderMissingEmployees() {
+        const list = employees.filter(emp => isSpecialStatus(emp.status));
+        missingTableBody.innerHTML = "";
+        list.forEach((emp, i) => {
+            ensureNameParts(emp);
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td class="text-center">${i + 1}</td>
+              <td>${emp.firstName || ""}</td>
+              <td>${emp.secondName || ""}</td>
+              <td>${emp.thirdName || ""}</td>
+              <td>${emp.fourthName || ""}</td>
+              <td>${emp.jobTitle || ""}</td>
+              <td class="text-center"><span class="badge bg-secondary badge-status">${emp.status || ""}</span></td>
+              <td>${emp.notes || ""}</td>
+              <td>${emp.department || ""}</td>
+              <td class="text-center">${emp.jobNumber || ""}</td>
+              <td class="text-center">${emp.nationalId || ""}</td>
+              <td>${emp.motherName || ""}</td>
+              <td class="text-center">${emp.gender || ""}</td>
+              <td class="text-center">${formatDate(emp.birthDate)}</td>
+              <td class="text-center">${formatDate(emp.hireDate)}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="editEmployee(${emp.id})">تعديل</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee(${emp.id})">حذف</button>
+              </td>
+            `;
+            missingTableBody.appendChild(tr);
+        });
+        missingCountSpan.textContent = list.length;
     }
 
     // فرز يدوي للجدول
@@ -1182,21 +1286,19 @@
             if (va == null) return 1 * factor;
             if (vb == null) return -1 * factor;
 
-            // جرّب رقم
             const na = parseMaybeNumber(va);
             const nb = parseMaybeNumber(vb);
             if (na !== null && nb !== null) return (na - nb) * factor;
 
-            // جرّب تاريخ
             const da = parseMaybeDate(va);
             const db = parseMaybeDate(vb);
             if (da !== null && db !== null) return (da - db) * factor;
 
-            // نص عربي
             return String(va).localeCompare(String(vb), "ar", { numeric: true }) * factor;
         });
 
         renderEmployees(currentView);
+        renderMissingEmployees();
     }
 
     function updateSortIndicators() {
@@ -1210,23 +1312,26 @@
         });
     }
 
-    // فلاتر الموظفين
+    // فلاتر الموظفين (في صفحة الموظفين فقط – تستبعد غير الموجودين)
     function applyEmployeeFilters() {
         const nameVal = filterName.value.trim();
         const deptVal = filterDept.value;
         const statusVal = filterStatus.value;
 
-        currentView = employees.filter(emp => {
+        const baseList = employees.filter(emp => !isSpecialStatus(emp.status));
+
+        currentView = baseList.filter(emp => {
             const mName = !nameVal || getEmployeeFullName(emp).includes(nameVal);
             const mDept = !deptVal || emp.department === deptVal;
             const mStatus = !statusVal || emp.status === statusVal;
             return mName && mDept && mStatus;
         });
-        // إذا كان هناك فرز حالي، طبّقه بعد الفلترة
+
         if (currentSort.key) {
             sortEmployees(currentSort.key, currentSort.dir);
         } else {
             renderEmployees(currentView);
+            renderMissingEmployees();
         }
     }
     filterForm.addEventListener("submit", e => { e.preventDefault(); applyEmployeeFilters(); });
@@ -1234,10 +1339,11 @@
         filterName.value = "";
         filterDept.value = "";
         filterStatus.value = "";
-        currentView = [...employees];
+        currentView = getMainEmployees();
         currentSort = {key:null, dir:"asc"};
         updateSortIndicators();
         renderEmployees(currentView);
+        renderMissingEmployees();
     });
 
     // نموذج الموظف (Overlay)
@@ -1350,9 +1456,12 @@
         }
 
         saveDataToStorage();
-        currentView = [...employees];
+        currentView = getMainEmployees();
         if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
-        else renderEmployees(currentView);
+        else {
+            renderEmployees(currentView);
+            renderMissingEmployees();
+        }
         closeEmployeeForm();
     });
 
@@ -1634,9 +1743,12 @@
         });
 
         saveDataToStorage();
-        currentView = [...employees];
+        currentView = getMainEmployees();
         if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
-        else renderEmployees(currentView);
+        else {
+            renderEmployees(currentView);
+            renderMissingEmployees();
+        }
         alert("تم استيراد الموظفين من الملف بنجاح.");
     }
 
@@ -1747,9 +1859,12 @@
         employees.splice(idx, 1);
         if (editingEmployeeId === id) editingEmployeeId = null;
         saveDataToStorage();
-        currentView = [...employees];
+        currentView = getMainEmployees();
         if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
-        else renderEmployees(currentView);
+        else {
+            renderEmployees(currentView);
+            renderMissingEmployees();
+        }
         alert("تم حذف الموظف.");
     };
 
@@ -1895,7 +2010,7 @@
     // التنقل بين الأقسام
     const navLinks = document.querySelectorAll(".sidebar .nav-link");
     function showSection(sectionId) {
-        const ids = ["dashboard","employees","leaves","reports"];
+        const ids = ["dashboard","employees","missingEmployees","leaves","reports"];
         ids.forEach(id => {
             const sec = document.getElementById(id);
             if (!sec) return;
@@ -1915,7 +2030,7 @@
         const href = link.getAttribute("href") || "";
         if (!href.startsWith("#")) return;
         const targetId = href.substring(1);
-        if (["dashboard","employees","leaves","reports"].includes(targetId)) {
+        if (["dashboard","employees","missingEmployees","leaves","reports"].includes(targetId)) {
             link.addEventListener("click", e => {
                 e.preventDefault();
                 showSection(targetId);
@@ -1930,7 +2045,7 @@
         });
     }
 
-    // تفعيل فرز الأعمدة عند الضغط على العناوين
+    // تفعيل فرز الأعمدة عند الضغط على عناوين جدول الموظفين الرئيسي
     const headerCells = document.querySelectorAll(".employee-table thead th.sortable");
     headerCells.forEach(th => {
         th.addEventListener("click", () => {
@@ -1948,16 +2063,17 @@
     });
 
     // أول تحميل
-    currentView = [...employees];
+    currentView = getMainEmployees();
     currentLeavesView = [...leaves];
     renderEmployees(currentView);
     renderLeaves(currentLeavesView);
+    renderMissingEmployees();
     updateSortIndicators();
 
     // حفظ أولي
     saveDataToStorage();
 
-    const savedSectionId = localStorage.getItem(STORAGE_KEYS.section) || "dashboard";
+    const savedSectionId = localStorage.getItem(STORAGE_KEYS.section) || "employees";
     showSection(savedSectionId);
 </script>
 </body>
