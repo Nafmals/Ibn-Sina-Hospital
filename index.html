@@ -173,7 +173,7 @@
         section { margin-bottom: 2.5rem; }
         .section-title { margin-bottom: .5rem; }
 
-        /* جدول الموظفين (تصميم + فرز يدوي) */
+        /* جدول الموظفين */
         .employee-table-wrapper {
             max-height: 500px;
             overflow-y: auto;
@@ -363,7 +363,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
                         <h4 class="section-title mb-1">قائمة الموظفين</h4>
-                        <p class="text-muted mb-0">إدارة بيانات جميع الموظفين الموجودين على رأس العمل أو داخل المستشفى.</p>
+                        <p class="text-muted mb-0">الموظفون الموجودون على رأس العمل أو داخل المستشفى.</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         <!-- Excel -->
@@ -434,21 +434,15 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">الحالة الوظيفية</label>
-                                <!-- فلتر الحالة الوظيفية -->
                                 <select id="filterStatus" class="form-select">
                                     <option value="">الكل</option>
-
-                                    <!-- الحالات الأساسية -->
                                     <option value="مستمر بالخدمة">مستمر بالخدمة</option>
-                                    <option value="إجازة">إجازة</option>
+                                    <option value="منسب">منسب</option>
+                                    <option value="منقول">منقول</option>
+                                    <option value="أجازة طويلة">أجازة طويلة</option>
+                                    <option value="مجاز دراسيا">مجاز دراسيا</option>
+                                    <option value="أجازة أمومة">أجازة أمومة</option>
                                     <option value="متقاعد">متقاعد</option>
-                                    <option value="متدرب">متدرب</option>
-
-                                    <!-- الحالات الإضافية (لن تظهر في هذه الصفحة لكن قد نحتاجها في التقارير) -->
-                                    <option value="اجازه دراسيه">اجازه دراسيه</option>
-                                    <option value="اجازه امومه">اجازه امومه</option>
-                                    <option value="اجازه خمس سنوات">اجازه خمس سنوات</option>
-                                    <option value="منسب إلى الدوائر الأخرى">منسب إلى الدوائر الأخرى</option>
                                 </select>
                             </div>
                             <div class="col-md-3 d-flex align-items-end gap-2">
@@ -493,8 +487,7 @@
                     <div>
                         <h4 class="section-title mb-1">الموظفون غير الموجودين</h4>
                         <p class="text-muted mb-0">
-                            يحتوي على الموظفين الذين حالتهم:
-                            اجازه دراسيه، اجازه امومه، اجازه خمس سنوات، منسب إلى الدوائر الأخرى.
+                            موظفون حالتهم: منسب، منقول، أجازة طويلة، مجاز دراسيا، أجازة أمومة.
                         </p>
                     </div>
                 </div>
@@ -536,7 +529,7 @@
                 </div>
             </section>
 
-            <!-- طبقة نموذج إضافة/تعديل موظف -->
+            <!-- نموذج إضافة/تعديل موظف -->
             <div id="employeeFormSection" class="employee-overlay d-none">
                 <div class="card">
                     <div class="card-body">
@@ -571,19 +564,14 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">الحالة الوظيفية</label>
-                                <!-- قائمة الحالة الوظيفية مع الخيارات الإضافية -->
                                 <select id="empStatus" class="form-select" required>
-                                    <!-- الحالات الأساسية -->
                                     <option value="مستمر بالخدمة">مستمر بالخدمة</option>
-                                    <option value="إجازة">إجازة</option>
+                                    <option value="منسب">منسب</option>
+                                    <option value="منقول">منقول</option>
+                                    <option value="أجازة طويلة">أجازة طويلة</option>
+                                    <option value="مجاز دراسيا">مجاز دراسيا</option>
+                                    <option value="أجازة أمومة">أجازة أمومة</option>
                                     <option value="متقاعد">متقاعد</option>
-                                    <option value="متدرب">متدرب</option>
-
-                                    <!-- الحالات الإضافية -->
-                                    <option value="اجازه دراسيه">اجازه دراسيه</option>
-                                    <option value="اجازه امومه">اجازه امومه</option>
-                                    <option value="اجازه خمس سنوات">اجازه خمس سنوات</option>
-                                    <option value="منسب إلى الدوائر الأخرى">منسب إلى الدوائر الأخرى</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -643,7 +631,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
                         <h4 class="section-title mb-1">الإجازات</h4>
-                        <p class="text-muted mb-0">متابعة طلبات الإجازة وحالتها.</p>
+                        <p class="text-muted mb-0">جميع تفاصيل الموظف مع تفاصيل الإجازة.</p>
                     </div>
                     <button id="btnAddLeave" class="btn btn-primary btn-sm">
                         + طلب إجازة جديد
@@ -680,6 +668,12 @@
                                     <option value="مرضية">مرضية</option>
                                     <option value="طارئة">طارئة</option>
                                     <option value="دراسية">دراسية</option>
+                                    <!-- أنواع مرتبطة بالحالة الوظيفية الخاصة -->
+                                    <option value="أجازة طويلة">أجازة طويلة</option>
+                                    <option value="مجاز دراسيا">مجاز دراسيا</option>
+                                    <option value="أجازة أمومة">أجازة أمومة</option>
+                                    <option value="منسب">منسب</option>
+                                    <option value="منقول">منقول</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -702,21 +696,36 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الموظف</th>
-                                <th>نوع الإجازة</th>
-                                <th>من تاريخ</th>
-                                <th>إلى تاريخ</th>
-                                <th>الحالة</th>
-                                <th>المعتمد</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="leavesTableBody"></tbody>
-                        </table>
+                        <div class="employee-table-wrapper">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الأسم الاول</th>
+                                    <th>الأسم الثاني</th>
+                                    <th>الأسم الثالث</th>
+                                    <th>الأسم الرابع</th>
+                                    <th>العنوان الوظيفي</th>
+                                    <th>الحالة الوظيفية</th>
+                                    <th>الملاحظات</th>
+                                    <th>أسم الدائرة / مبنى الوزارة</th>
+                                    <th>الرقم الوظيفي</th>
+                                    <th>الرقم الوطني</th>
+                                    <th>أسم الأم الثلاثي</th>
+                                    <th>الجنس</th>
+                                    <th>تاريخ التولد</th>
+                                    <th>تاريخ التعيين</th>
+                                    <th>نوع الإجازة</th>
+                                    <th>من تاريخ</th>
+                                    <th>إلى تاريخ</th>
+                                    <th>حالة الطلب</th>
+                                    <th>المعتمد</th>
+                                    <th class="text-center">إجراءات</th>
+                                </tr>
+                                </thead>
+                                <tbody id="leavesTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -815,21 +824,43 @@
         section: "hr_current_section_v1"
     };
 
+    // قائمة الحالات الوظيفية المعتمدة حاليًا
+    const EMPLOYEE_STATUSES = [
+        "مستمر بالخدمة",
+        "منسب",
+        "منقول",
+        "أجازة طويلة",
+        "مجاز دراسيا",
+        "أجازة أمومة",
+        "متقاعد"
+    ];
+
     // الحالات التي تعتبر "موظفين غير موجودين"
     const SPECIAL_STATUSES = [
-        "اجازه دراسيه",
-        "اجازه امومه",
-        "اجازه خمس سنوات",
-        "منسب إلى الدوائر الأخرى"
+        "منسب",
+        "منقول",
+        "أجازة طويلة",
+        "مجاز دراسيا",
+        "أجازة أمومة"
     ];
     function isSpecialStatus(status) {
         return SPECIAL_STATUSES.includes(status);
     }
+
+    // ربط الحالة الخاصة بنوع إجازة تلقائي
+    const SPECIAL_STATUS_TO_LEAVE_TYPE = {
+        "منسب": "منسب",
+        "منقول": "منقول",
+        "أجازة طويلة": "أجازة طويلة",
+        "مجاز دراسيا": "مجاز دراسيا",
+        "أجازة أمومة": "أجازة أمومة"
+    };
+
     function getMainEmployees() {
         return employees.filter(emp => !isSpecialStatus(emp.status));
     }
 
-    // بيانات أولية (تستخدم أول مرة فقط إذا لا يوجد تخزين سابق)
+    // بيانات أولية
     const employees = [
         {
             id: 1,
@@ -866,7 +897,7 @@
             jobTitle: "رئيس ممرضين",
             department: "دائرة الموارد البشرية",
             hireDate: "2005-07-31",
-            status: "إجازة",
+            status: "متقاعد",
             gender: "أنثى",
             nationalId: "",
             motherName: "",
@@ -890,9 +921,9 @@
     ];
 
     const leaves = [
-        { id: 1, employeeId: 3, employeeName: "سعاد محمد مبارك", type: "مرضية",   startDate: "2025-01-05", endDate: "2025-01-10", status: "مقبولة", approvedBy: "رئيس قسم التمريض" },
+        { id: 1, employeeId: 3, employeeName: "سعاد محمد مبارك", type: "أجازة طويلة", startDate: "2025-01-05", endDate: "2025-01-10", status: "مقبولة", approvedBy: "رئيس قسم التمريض", _autoSpecial:true },
         { id: 2, employeeId: 4, employeeName: "حسن فليح إسماعيل", type: "اعتيادية", startDate: "2025-02-01", endDate: "2025-02-07", status: "مقدمة", approvedBy: "" },
-        { id: 3, employeeId: 2, employeeName: "احمد ابراهيم سلمان",    type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" }
+        { id: 3, employeeId: 2, employeeName: "احمد ابراهيم سلمان", type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" }
     ];
 
     // تخزين محلي
@@ -1125,7 +1156,7 @@
     function renderEmployeeStats(list) {
         const s = calculateEmployeeStats(list);
 
-        totalCountSpan.textContent = s.total;
+        totalCountSpan.textContent = getMainEmployees().length;
         activeCountSpan.textContent = s.active;
         maleCountSpan.textContent = s.male;
         femaleCountSpan.textContent = s.female;
@@ -1174,9 +1205,8 @@
 
             const statusClass =
                 emp.status === "مستمر بالخدمة" ? "bg-success" :
-                emp.status === "إجازة"          ? "bg-warning" :
-                emp.status === "متقاعد"         ? "bg-secondary" :
-                                                  "bg-info";
+                emp.status === "متقاعد"        ? "bg-secondary" :
+                                                  "bg-warning";
 
             tr.innerHTML = `
               <td class="text-center">${i + 1}</td>
@@ -1203,7 +1233,6 @@
             tableBody.appendChild(tr);
         });
 
-        // الإحصائيات على أساس كل الموظفين (بما فيهم غير الموجودين)
         renderEmployeeStats(employees);
     }
 
@@ -1221,7 +1250,7 @@
               <td>${emp.thirdName || ""}</td>
               <td>${emp.fourthName || ""}</td>
               <td>${emp.jobTitle || ""}</td>
-              <td class="text-center"><span class="badge bg-secondary badge-status">${emp.status || ""}</span></td>
+              <td class="text-center"><span class="badge bg-info badge-status">${emp.status || ""}</span></td>
               <td>${emp.notes || ""}</td>
               <td>${emp.department || ""}</td>
               <td class="text-center">${emp.jobNumber || ""}</td>
@@ -1312,7 +1341,7 @@
         });
     }
 
-    // فلاتر الموظفين (في صفحة الموظفين فقط – تستبعد غير الموجودين)
+    // فلاتر الموظفين
     function applyEmployeeFilters() {
         const nameVal = filterName.value.trim();
         const deptVal = filterDept.value;
@@ -1346,7 +1375,36 @@
         renderMissingEmployees();
     });
 
-    // نموذج الموظف (Overlay)
+    // إنشاء/تحديث سجل إجازة تلقائي للحالات الخاصة
+    function ensureLeaveForSpecialStatus(emp) {
+        const type = SPECIAL_STATUS_TO_LEAVE_TYPE[emp.status];
+        const existing = leaves.find(l => l.employeeId === emp.id && l._autoSpecial);
+
+        if (type) {
+            if (existing) {
+                existing.type = type;
+                existing.employeeName = getEmployeeFullName(emp);
+                existing.status = "مقبولة";
+            } else {
+                const newId = leaves.length ? Math.max(...leaves.map(l => l.id)) + 1 : 1;
+                leaves.push({
+                    id: newId,
+                    employeeId: emp.id,
+                    employeeName: getEmployeeFullName(emp),
+                    type,
+                    startDate: emp.hireDate || "",
+                    endDate: "",
+                    status: "مقبولة",
+                    approvedBy: "",
+                    _autoSpecial: true
+                });
+            }
+        } else if (existing) {
+            existing.status = "منتهية";
+        }
+    }
+
+    // نموذج الموظف
     function clearEmployeeForm() {
         empFirstNameInput.value = "";
         empSecondNameInput.value = "";
@@ -1444,6 +1502,8 @@
             const newId = employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1;
             const newEmp = { id: newId, ...commonData };
             employees.push(newEmp);
+            ensureNameParts(newEmp);
+            ensureLeaveForSpecialStatus(newEmp);
             alert("تمت إضافة الموظف بنجاح.");
         } else {
             const emp = employees.find(e => e.id === editingEmployeeId);
@@ -1452,6 +1512,8 @@
                 return;
             }
             Object.assign(emp, commonData);
+            ensureNameParts(emp);
+            ensureLeaveForSpecialStatus(emp);
             alert("تم تحديث بيانات الموظف.");
         }
 
@@ -1462,6 +1524,8 @@
             renderEmployees(currentView);
             renderMissingEmployees();
         }
+        currentLeavesView = [...leaves];
+        renderLeaves(currentLeavesView);
         closeEmployeeForm();
     });
 
@@ -1740,6 +1804,8 @@
         newEmployees.forEach(emp => {
             emp.id = ++maxId;
             employees.push(emp);
+            ensureNameParts(emp);
+            ensureLeaveForSpecialStatus(emp);
         });
 
         saveDataToStorage();
@@ -1749,6 +1815,8 @@
             renderEmployees(currentView);
             renderMissingEmployees();
         }
+        currentLeavesView = [...leaves];
+        renderLeaves(currentLeavesView);
         alert("تم استيراد الموظفين من الملف بنجاح.");
     }
 
@@ -1826,26 +1894,7 @@
         reader.readAsText(file, "utf-8");
     });
 
-    // عرض / تعديل / حذف موظف
-    window.viewEmployee = id => {
-        const emp = employees.find(e => e.id === id);
-        if (!emp) { alert("لم يتم العثور على الموظف."); return; }
-        const info =
-            "معلومات الموظف:\n\n" +
-            `الاسم الكامل: ${getEmployeeFullName(emp)}\n` +
-            `الرقم الوظيفي: ${emp.jobNumber || ""}\n` +
-            `الرقم الوطني: ${emp.nationalId || ""}\n` +
-            `العنوان الوظيفي: ${emp.jobTitle || ""}\n` +
-            `أسم الدائرة / مبنى الوزارة: ${emp.department || ""}\n` +
-            `الحالة الوظيفية: ${emp.status || ""}\n` +
-            `الجنس: ${emp.gender || "غير محدد"}\n` +
-            `أسم الأم الثلاثي: ${emp.motherName || ""}\n` +
-            `تاريخ التولد: ${emp.birthDate || ""}\n` +
-            `تاريخ التعيين: ${emp.hireDate || ""}\n` +
-            `الملاحظات: ${emp.notes || ""}`;
-        alert(info);
-    };
-
+    // تعديل / حذف موظف
     window.editEmployee = id => {
         const emp = employees.find(e => e.id === id);
         if (!emp) { alert("لم يتم العثور على الموظف."); return; }
@@ -1899,6 +1948,30 @@
     function renderLeaves(list) {
         leavesTableBody.innerHTML = "";
         list.forEach((lv, i) => {
+            let emp = null;
+            if (lv.employeeId != null) {
+                emp = employees.find(e => e.id === lv.employeeId) || null;
+            }
+            if (!emp && lv.employeeName) {
+                emp = employees.find(e => getEmployeeFullName(e) === lv.employeeName) || null;
+            }
+            if (emp) ensureNameParts(emp);
+
+            const firstName  = emp ? (emp.firstName || "") : (lv.employeeName ? lv.employeeName.split(/\s+/)[0] : "");
+            const secondName = emp ? (emp.secondName || "") : "";
+            const thirdName  = emp ? (emp.thirdName || "")  : "";
+            const fourthName = emp ? (emp.fourthName || "") : "";
+            const jobTitle   = emp ? (emp.jobTitle || "")   : "";
+            const empStatus  = emp ? (emp.status || "")     : "";
+            const notes      = emp ? (emp.notes || "")      : "";
+            const dept       = emp ? (emp.department || "") : "";
+            const jobNumber  = emp ? (emp.jobNumber || "")  : "";
+            const nationalId = emp ? (emp.nationalId || "") : "";
+            const motherName = emp ? (emp.motherName || "") : "";
+            const gender     = emp ? (emp.gender || "")     : "";
+            const birthDate  = emp ? (emp.birthDate || "")  : "";
+            const hireDate   = emp ? (emp.hireDate || "")   : "";
+
             const statusClass =
                 lv.status === "مقبولة" ? "bg-success" :
                 lv.status === "مقدمة" ? "bg-warning" :
@@ -1907,14 +1980,26 @@
             const tr = document.createElement("tr");
             tr.innerHTML = `
               <td class="text-center">${i + 1}</td>
-              <td>${lv.employeeName}</td>
+              <td>${firstName}</td>
+              <td>${secondName}</td>
+              <td>${thirdName}</td>
+              <td>${fourthName}</td>
+              <td>${jobTitle}</td>
+              <td>${empStatus}</td>
+              <td>${notes}</td>
+              <td>${dept}</td>
+              <td class="text-center">${jobNumber}</td>
+              <td class="text-center">${nationalId}</td>
+              <td>${motherName}</td>
+              <td class="text-center">${gender}</td>
+              <td class="text-center">${formatDate(birthDate)}</td>
+              <td class="text-center">${formatDate(hireDate)}</td>
               <td>${lv.type}</td>
               <td class="text-center">${formatDate(lv.startDate)}</td>
               <td class="text-center">${formatDate(lv.endDate)}</td>
               <td class="text-center"><span class="badge ${statusClass} badge-status">${lv.status}</span></td>
               <td>${lv.approvedBy || "-"}</td>
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewLeave(${lv.id})">عرض</button>
                 <button class="btn btn-sm btn-outline-secondary me-1" onclick="editLeaveStatus(${lv.id})">تحديث الحالة</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteLeave(${lv.id})">حذف</button>
               </td>`;
@@ -1931,7 +2016,7 @@
         const statusVal = filterLeaveStatus.value;
 
         currentLeavesView = leaves.filter(lv => {
-            const mName = !nameVal || lv.employeeName.includes(nameVal);
+            const mName = !nameVal || (lv.employeeName && lv.employeeName.includes(nameVal));
             const mType = !typeVal || lv.type === typeVal;
             const mStatus = !statusVal || lv.status === statusVal;
             return mName && mType && mStatus;
@@ -1948,14 +2033,15 @@
     });
 
     btnAddLeave.addEventListener("click", () => {
-        const employeeName = prompt("أدخل اسم الموظف:"); if (!employeeName) return;
+        const employeeName = prompt("أدخل اسم الموظف (الاسم الرباعي):"); if (!employeeName) return;
         const type = prompt("نوع الإجازة:", "اعتيادية");
         const startDate = prompt("تاريخ البدء (YYYY-MM-DD):", "2025-01-01");
         const endDate = prompt("تاريخ النهاية (YYYY-MM-DD):", "2025-01-07");
         const status = prompt("حالة الطلب:", "مقدمة");
         const approvedBy = prompt("اسم المعتمد:", "");
+
         const newId = leaves.length ? Math.max(...leaves.map(l => l.id)) + 1 : 1;
-        leaves.push({
+        const lv = {
             id: newId,
             employeeId: null,
             employeeName,
@@ -1964,25 +2050,20 @@
             endDate: endDate || "",
             status: status || "مقدمة",
             approvedBy: approvedBy || ""
-        });
+        };
+
+        const empMatch = employees.find(e => getEmployeeFullName(e) === employeeName.trim());
+        if (empMatch) {
+            lv.employeeId = empMatch.id;
+            lv.employeeName = getEmployeeFullName(empMatch);
+        }
+
+        leaves.push(lv);
         saveDataToStorage();
         currentLeavesView = [...leaves];
         renderLeaves(currentLeavesView);
         alert("تمت إضافة طلب الإجازة.");
     });
-
-    window.viewLeave = id => {
-        const lv = leaves.find(l => l.id === id);
-        if (!lv) { alert("لم يتم العثور على الإجازة."); return; }
-        alert(
-            "معلومات الإجازة:\n\n" +
-            `الموظف: ${lv.employeeName}\n` +
-            `نوع الإجازة: ${lv.type}\n` +
-            `من: ${formatDate(lv.startDate)}\n` +
-            `إلى: ${formatDate(lv.endDate)}\n` +
-            `الحالة: ${lv.status}\n` +
-            `المعتمد: ${lv.approvedBy || "-"}` );
-    };
 
     window.editLeaveStatus = id => {
         const lv = leaves.find(l => l.id === id);
@@ -2045,7 +2126,7 @@
         });
     }
 
-    // تفعيل فرز الأعمدة عند الضغط على عناوين جدول الموظفين الرئيسي
+    // تفعيل فرز الأعمدة
     const headerCells = document.querySelectorAll(".employee-table thead th.sortable");
     headerCells.forEach(th => {
         th.addEventListener("click", () => {
