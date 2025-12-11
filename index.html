@@ -175,7 +175,7 @@
 
         /* جدول الموظفين (يستغل الفراغ السفلي) */
         .employee-table-wrapper {
-            height: calc(100vh - 330px); /* هنا يتم التحكم بارتفاع الجدول */
+            height: calc(100vh - 330px);
             min-height: 350px;
             overflow-y: auto;
             border-radius: .9rem;
@@ -459,14 +459,23 @@
                                 <input type="text" id="empFourthName" class="form-control">
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <label class="form-label">اخر ترفيع</label>
+                                <input type="date" id="empLastPromotion" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">اخر علاوة سنوية</label>
+                                <input type="date" id="empLastAnnualBonus" class="form-control">
+                            </div>
+                            <div class="col-md-3">
                                 <label class="form-label">العنوان الوظيفي</label>
                                 <input type="text" id="empJobTitle" class="form-control" required>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">الحالة الوظيفية</label>
                                 <select id="empStatus" class="form-select" required></select>
                             </div>
+
                             <div class="col-md-4">
                                 <label class="form-label">أسم الدائرة / مبنى الوزارة</label>
                                 <input type="text" id="empDept" class="form-control" required>
@@ -504,6 +513,13 @@
                             <div class="col-md-3">
                                 <label class="form-label">الملاحظات</label>
                                 <input type="text" id="empNotes" class="form-control">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">ملف الموظف (صورة / PDF / ملف آخر)</label>
+                                <input type="file" id="empFile" class="form-control"
+                                       accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar,.eml">
+                                <div id="empFileInfo" class="form-text mt-1"></div>
                             </div>
 
                             <div class="col-12 d-flex justify-content-end gap-2 mt-2">
@@ -623,7 +639,13 @@
             nationalId: "",
             motherName: "",
             birthDate: "1967-10-05",
-            notes: ""
+            lastPromotion: "",
+            lastAnnualBonus: "",
+            notes: "",
+            extra: {},
+            fileName: null,
+            fileType: null,
+            fileData: null
         },
         {
             id: 2,
@@ -637,7 +659,13 @@
             nationalId: "",
             motherName: "",
             birthDate: "2000-02-15",
-            notes: ""
+            lastPromotion: "",
+            lastAnnualBonus: "",
+            notes: "",
+            extra: {},
+            fileName: null,
+            fileType: null,
+            fileData: null
         },
         {
             id: 3,
@@ -651,7 +679,13 @@
             nationalId: "",
             motherName: "",
             birthDate: "1968-09-05",
-            notes: ""
+            lastPromotion: "",
+            lastAnnualBonus: "",
+            notes: "",
+            extra: {},
+            fileName: null,
+            fileType: null,
+            fileData: null
         },
         {
             id: 4,
@@ -665,7 +699,13 @@
             nationalId: "",
             motherName: "",
             birthDate: "1998-08-22",
-            notes: ""
+            lastPromotion: "",
+            lastAnnualBonus: "",
+            notes: "",
+            extra: {},
+            fileName: null,
+            fileType: null,
+            fileData: null
         }
     ];
 
@@ -706,6 +746,8 @@
         { key: "secondName", label: "الأسم الثاني",              sortable: true },
         { key: "thirdName",  label: "الأسم الثالث",              sortable: true },
         { key: "fourthName", label: "الأسم الرابع",              sortable: true },
+        { key: "lastPromotion", label: "اخر ترفيع",              sortable: true },
+        { key: "lastAnnualBonus", label: "اخر علاوة سنوية",      sortable: true },
         { key: "jobTitle",   label: "العنوان الوظيفي",           sortable: true },
         { key: "status",     label: "الحالة الوظيفية",           sortable: true },
         { key: "notes",      label: "الملاحظات",                sortable: true },
@@ -784,6 +826,8 @@
     const empSecondNameInput = document.getElementById("empSecondName");
     const empThirdNameInput = document.getElementById("empThirdName");
     const empFourthNameInput = document.getElementById("empFourthName");
+    const empLastPromotionInput = document.getElementById("empLastPromotion");
+    const empLastAnnualBonusInput = document.getElementById("empLastAnnualBonus");
     const empJobTitleInput = document.getElementById("empJobTitle");
     const empStatusInput = document.getElementById("empStatus");
     const empDeptInput = document.getElementById("empDept");
@@ -794,6 +838,14 @@
     const empBirthDateInput = document.getElementById("empBirthDate");
     const empHireDateInput = document.getElementById("empHireDate");
     const empNotesInput = document.getElementById("empNotes");
+
+    const empFileInput = document.getElementById("empFile");
+    const empFileInfo = document.getElementById("empFileInfo");
+
+    // متغيرات مؤقتة لملف الموظف في النموذج
+    let formFileName = null;
+    let formFileType = null;
+    let formFileData = null;
 
     // ثيم
     function applyTheme(themeClass) {
@@ -1055,6 +1107,8 @@
               <td>${emp.secondName || ""}</td>
               <td>${emp.thirdName || ""}</td>
               <td>${emp.fourthName || ""}</td>
+              <td class="text-center">${formatDate(emp.lastPromotion)}</td>
+              <td class="text-center">${formatDate(emp.lastAnnualBonus)}</td>
               <td>${emp.jobTitle || ""}</td>
               <td class="text-center"><span class="badge ${statusClass} badge-status">${emp.status || ""}</span></td>
               <td>${emp.notes || ""}</td>
@@ -1075,10 +1129,15 @@
             });
 
             // عمود الإجراءات
+            const hasFile = !!emp.fileData;
             rowHtml += `
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-secondary me-1" onclick="editEmployee(${emp.id})">تعديل</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee(${emp.id})">حذف</button>
+                <button class="btn btn-sm btn-outline-danger me-1" onclick="deleteEmployee(${emp.id})">حذف</button>
+                <button class="btn btn-sm btn-outline-primary" onclick="downloadEmployeeFile(${emp.id})"
+                    ${hasFile ? "" : "disabled"}>
+                    ملف
+                </button>
               </td>
             `;
 
@@ -1116,6 +1175,8 @@
             case "secondName":return emp.secondName || "";
             case "thirdName": return emp.thirdName || "";
             case "fourthName":return emp.fourthName || "";
+            case "lastPromotion": return emp.lastPromotion || "";
+            case "lastAnnualBonus": return emp.lastAnnualBonus || "";
             case "jobTitle":  return emp.jobTitle || "";
             case "status":    return emp.status || "";
             case "notes":     return emp.notes || "";
@@ -1217,6 +1278,8 @@
         empSecondNameInput.value = "";
         empThirdNameInput.value = "";
         empFourthNameInput.value = "";
+        empLastPromotionInput.value = "";
+        empLastAnnualBonusInput.value = "";
         empJobTitleInput.value = "";
         empDeptInput.value = "";
         empJobNumberInput.value = "";
@@ -1226,6 +1289,9 @@
         empBirthDateInput.value = "";
         empHireDateInput.value = "";
         empNotesInput.value = "";
+        empFileInput.value = "";
+        empFileInfo.textContent = "";
+        formFileName = formFileType = formFileData = null;
         if (empStatusInput.options.length) {
             empStatusInput.value = "مستمر بالخدمة";
         }
@@ -1238,6 +1304,9 @@
         empThirdNameInput.value = emp.thirdName || "";
         empFourthNameInput.value = emp.fourthName || "";
 
+        empLastPromotionInput.value = emp.lastPromotion || "";
+        empLastAnnualBonusInput.value = emp.lastAnnualBonus || "";
+
         empJobTitleInput.value = emp.jobTitle || "";
         empStatusInput.value = emp.status || "مستمر بالخدمة";
         empDeptInput.value = emp.department || "";
@@ -1248,6 +1317,16 @@
         empBirthDateInput.value = emp.birthDate || "";
         empHireDateInput.value = emp.hireDate || "";
         empNotesInput.value = emp.notes || "";
+
+        empFileInput.value = "";
+        formFileName = emp.fileName || null;
+        formFileType = emp.fileType || null;
+        formFileData = emp.fileData || null;
+        if (formFileName) {
+            empFileInfo.textContent = "ملف محفوظ: " + formFileName;
+        } else {
+            empFileInfo.textContent = "";
+        }
     }
 
     function openEmployeeForm(mode, emp) {
@@ -1270,6 +1349,24 @@
 
     btnAdd.addEventListener("click", () => openEmployeeForm("add", null));
 
+    // قراءة ملف الموظف عند الاختيار
+    empFileInput.addEventListener("change", () => {
+        const file = empFileInput.files[0];
+        if (!file) {
+            formFileName = formFileType = formFileData = null;
+            empFileInfo.textContent = "";
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = e => {
+            formFileName = file.name;
+            formFileType = file.type || "application/octet-stream";
+            formFileData = e.target.result; // dataURL
+            empFileInfo.textContent = "سيتم حفظ الملف: " + formFileName;
+        };
+        reader.readAsDataURL(file);
+    });
+
     employeeForm.addEventListener("submit", e => {
         e.preventDefault();
 
@@ -1289,12 +1386,27 @@
 
         const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
 
+        // في حالة التعديل ولم يُختَر ملف جديد نحتفظ بالملف القديم
+        let fileNameToSave = formFileName;
+        let fileTypeToSave = formFileType;
+        let fileDataToSave = formFileData;
+        if (editingEmployeeId !== null && fileNameToSave == null) {
+            const oldEmp = employees.find(e => e.id === editingEmployeeId);
+            if (oldEmp) {
+                fileNameToSave = oldEmp.fileName || null;
+                fileTypeToSave = oldEmp.fileType || null;
+                fileDataToSave = oldEmp.fileData || null;
+            }
+        }
+
         const commonData = {
             fullName,
             firstName,
             secondName,
             thirdName,
             fourthName,
+            lastPromotion: empLastPromotionInput.value || "",
+            lastAnnualBonus: empLastAnnualBonusInput.value || "",
             jobTitle,
             status,
             department: dept,
@@ -1304,12 +1416,15 @@
             gender: empGenderInput.value,
             birthDate: empBirthDateInput.value,
             hireDate: empHireDateInput.value,
-            notes: empNotesInput.value.trim()
+            notes: empNotesInput.value.trim(),
+            fileName: fileNameToSave,
+            fileType: fileTypeToSave,
+            fileData: fileDataToSave
         };
 
         if (editingEmployeeId === null) {
             const newId = employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1;
-            const newEmp = { id: newId, ...commonData };
+            const newEmp = { id: newId, extra: {}, ...commonData };
             employees.push(newEmp);
             alert("تمت إضافة الموظف بنجاح.");
         } else {
@@ -1319,6 +1434,7 @@
                 return;
             }
             Object.assign(emp, commonData);
+            if (!emp.extra) emp.extra = {};
             alert("تم تحديث بيانات الموظف.");
         }
 
@@ -1352,6 +1468,8 @@
             "الأسم الثاني",
             "الأسم الثالث",
             "الأسم الرابع",
+            "اخر ترفيع",
+            "اخر علاوة سنوية",
             "العنوان الوظيفي",
             "الحالة الوظيفية",
             "الملاحظات",
@@ -1373,6 +1491,8 @@
                 emp.secondName || "",
                 emp.thirdName || "",
                 emp.fourthName || "",
+                emp.lastPromotion || "",
+                emp.lastAnnualBonus || "",
                 emp.jobTitle || "",
                 emp.status || "",
                 emp.notes || "",
@@ -1438,6 +1558,10 @@
             second: "الأسم الثاني",
             third: "الأسم الثالث",
             fourth: "الأسم الرابع",
+            lastPromotion: "اخر ترفيع",
+            lastPromotion2: "آخر ترفيع",
+            lastAnnual: "اخر علاوة سنوية",
+            lastAnnual2: "علاوة سنوية",
             jobTitle: "العنوان الوظيفي",
             status: "الحالة الوظيفية",
             notes: "الملاحظات",
@@ -1457,6 +1581,16 @@
             second: idx(colNames.second),
             third: idx(colNames.third),
             fourth: idx(colNames.fourth),
+            lastPromotion: (() => {
+                const i1 = idx(colNames.lastPromotion);
+                if (i1 !== -1) return i1;
+                return idx(colNames.lastPromotion2);
+            })(),
+            lastAnnual: (() => {
+                const i1 = idx(colNames.lastAnnual);
+                if (i1 !== -1) return i1;
+                return idx(colNames.lastAnnual2);
+            })(),
             jobTitle: idx(colNames.jobTitle),
             status: idx(colNames.status),
             notes: idx(colNames.notes),
@@ -1487,6 +1621,9 @@
             const thirdName  = String(row[indices.third]  ?? "").trim();
             const fourthName = String(row[indices.fourth] ?? "").trim();
 
+            const lastPromotionRaw = indices.lastPromotion !== -1 ? row[indices.lastPromotion] : "";
+            const lastAnnualRaw    = indices.lastAnnual   !== -1 ? row[indices.lastAnnual]   : "";
+
             const jobTitle   = String(row[indices.jobTitle]   ?? "").trim();
             const status     = String(row[indices.status]     ?? "").trim();
             const notes      = String(row[indices.notes]      ?? "").trim();
@@ -1501,6 +1638,8 @@
 
             const birthDate = normalizeDateCell(birthDateRaw);
             const hireDate  = normalizeDateCell(hireDateRaw);
+            const lastPromotion = normalizeDateCell(lastPromotionRaw);
+            const lastAnnualBonus = normalizeDateCell(lastAnnualRaw);
 
             if (!firstName && !jobTitle && !jobNumber) continue;
 
@@ -1525,6 +1664,8 @@
                 secondName,
                 thirdName,
                 fourthName,
+                lastPromotion,
+                lastAnnualBonus,
                 jobTitle,
                 status,
                 department: dept,
@@ -1535,7 +1676,10 @@
                 birthDate,
                 hireDate,
                 notes,
-                extra
+                extra,
+                fileName: null,
+                fileType: null,
+                fileData: null
             });
         }
 
@@ -1558,20 +1702,23 @@
             const secondName = String(row[1]  ?? "").trim();
             const thirdName  = String(row[2]  ?? "").trim();
             const fourthName = String(row[3]  ?? "").trim();
-            const jobTitle   = String(row[4]  ?? "").trim();
-            const status     = String(row[5]  ?? "").trim();
-            const notes      = String(row[6]  ?? "").trim();
-            const dept       = String(row[7]  ?? "").trim();
-            const jobNumber  = String(row[8]  ?? "").trim();
-            const nationalId = String(row[9]  ?? "").trim();
-            const motherName = String(row[10] ?? "").trim();
-            const gender     = String(row[11] ?? "").trim();
-
-            const birthDateRaw = row[12];
-            const hireDateRaw  = row[13];
+            const lastPromotionRaw = row[4];
+            const lastAnnualRaw    = row[5];
+            const jobTitle   = String(row[6]  ?? "").trim();
+            const status     = String(row[7]  ?? "").trim();
+            const notes      = String(row[8]  ?? "").trim();
+            const dept       = String(row[9]  ?? "").trim();
+            const jobNumber  = String(row[10] ?? "").trim();
+            const nationalId = String(row[11] ?? "").trim();
+            const motherName = String(row[12] ?? "").trim();
+            const gender     = String(row[13] ?? "").trim();
+            const birthDateRaw = row[14];
+            const hireDateRaw  = row[15];
 
             const birthDate = normalizeDateCell(birthDateRaw);
             const hireDate  = normalizeDateCell(hireDateRaw);
+            const lastPromotion = normalizeDateCell(lastPromotionRaw);
+            const lastAnnualBonus = normalizeDateCell(lastAnnualRaw);
 
             if (!firstName && !jobTitle && !jobNumber) continue;
 
@@ -1584,6 +1731,8 @@
                 secondName,
                 thirdName,
                 fourthName,
+                lastPromotion,
+                lastAnnualBonus,
                 jobTitle,
                 status,
                 department: dept,
@@ -1594,7 +1743,10 @@
                 birthDate,
                 hireDate,
                 notes,
-                extra: {}
+                extra: {},
+                fileName: null,
+                fileType: null,
+                fileData: null
             });
         }
 
@@ -1652,6 +1804,8 @@
         importJsonFileInput.click();
     });
 
+    btnImportJson;
+
     importJsonFileInput.addEventListener("change", e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1676,6 +1830,8 @@
                         secondName,
                         thirdName,
                         fourthName,
+                        lastPromotion: item.lastPromotion || "",
+                        lastAnnualBonus: item.lastAnnualBonus || "",
                         jobTitle: item.jobTitle || "",
                         status: item.status || "مستمر بالخدمة",
                         department: item.department || "",
@@ -1686,7 +1842,10 @@
                         birthDate: item.birthDate || "",
                         hireDate: item.hireDate || "",
                         notes: item.notes || "",
-                        extra: item.extra || {}
+                        extra: item.extra || {},
+                        fileName: item.fileName || null,
+                        fileType: item.fileType || null,
+                        fileData: item.fileData || null
                     };
                 });
                 if (!newEmployees.length) {
@@ -1704,7 +1863,7 @@
         reader.readAsText(file, "utf-8");
     });
 
-    // تعديل / حذف موظف
+    // تعديل / حذف / ملف موظف
     window.editEmployee = id => {
         const emp = employees.find(e => e.id === id);
         if (!emp) { alert("لم يتم العثور على الموظف."); return; }
@@ -1726,6 +1885,40 @@
         if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
         else renderEmployees(currentView);
         alert("تم حذف الموظف.");
+    };
+
+    function dataURLToBlob(dataURL) {
+        const parts = dataURL.split(",");
+        const meta = parts[0];
+        const base64 = parts[1];
+        const mime = meta.match(/data:(.*);base64/)[1] || "application/octet-stream";
+        const binary = atob(base64);
+        const len = binary.length;
+        const u8 = new Uint8Array(len);
+        for (let i = 0; i < len; i++) u8[i] = binary.charCodeAt(i);
+        return new Blob([u8], { type: mime });
+    }
+
+    window.downloadEmployeeFile = id => {
+        const emp = employees.find(e => e.id === id);
+        if (!emp || !emp.fileData) {
+            alert("لا يوجد ملف محفوظ لهذا الموظف.");
+            return;
+        }
+        try {
+            const blob = dataURLToBlob(emp.fileData);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = emp.fileName || "employee_file";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error(e);
+            alert("تعذر تحميل الملف.");
+        }
     };
 
     // التنقل بين الأقسام
