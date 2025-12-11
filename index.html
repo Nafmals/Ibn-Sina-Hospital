@@ -266,9 +266,6 @@
                     <a class="nav-link active" href="#employees">الموظفون</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#leaves">الإجازات</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="#reports">التقارير</a>
                 </li>
                 <li class="nav-item mt-4">
@@ -283,7 +280,7 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                 <div>
                     <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التدريبي</h2>
-                    <p class="text-muted mb-0">لوحة تحكم، موظفون، إجازات، وتقارير في منصة واحدة.</p>
+                    <p class="text-muted mb-0">لوحة تحكم، موظفون، وتقارير في منصة واحدة.</p>
                 </div>
                 <div class="d-flex	align-items-center gap-2">
                     <span class="text-muted small">ثيم الواجهة:</span>
@@ -303,7 +300,7 @@
             <!-- لوحة التحكم -->
             <section id="dashboard">
                 <h4 class="section-title">لوحة التحكم</h4>
-                <p class="text-muted">نظرة سريعة على أعداد الموظفين والإجازات.</p>
+                <p class="text-muted">نظرة سريعة على أعداد الموظفين.</p>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-3">
@@ -328,27 +325,6 @@
                         <div class="card p-3">
                             <p class="text-muted mb-1">الإناث</p>
                             <h3 id="dashFemaleEmployees" class="mb-0">0</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجمالي الإجازات</p>
-                            <h4 id="dashTotalLeaves" class="mb-0">0</h4>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات مقبولة</p>
-                            <h4 id="dashAcceptedLeaves" class="mb-0">0</h4>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card p-3">
-                            <p class="text-muted mb-1">إجازات قيد الانتظار</p>
-                            <h4 id="dashPendingLeaves" class="mb-0">0</h4>
                         </div>
                     </div>
                 </div>
@@ -585,89 +561,6 @@
                 </div>
             </div>
 
-            <!-- الإجازات -->
-            <section id="leaves">
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h4 class="section-title mb-1">الإجازات</h4>
-                        <p class="text-muted mb-0">متابعة طلبات الإجازة وحالتها.</p>
-                    </div>
-                <button id="btnAddLeave" class="btn btn-primary btn-sm">
-                        + طلب إجازة جديد
-                    </button>
-                </div>
-
-                <div class="d-flex justify-content-start align-items-center mb-3 flex-wrap gap-2">
-                    <span class="filter-chip">
-                        إجمالي الإجازات: <span id="totalLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        قيد الانتظار: <span id="pendingLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مقبولة: <span id="acceptedLeaves">0</span>
-                    </span>
-                    <span class="filter-chip">
-                        مرفوضة: <span id="rejectedLeaves">0</span>
-                    </span>
-                </div>
-
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <form id="filterLeaveForm" class="row g-2">
-                            <div class="col-md-4">
-                                <label class="form-label">اسم الموظف</label>
-                                <input type="text" id="filterLeaveName" class="form-control" placeholder="بحث بالاسم">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">نوع الإجازة</label>
-                                <select id="filterLeaveType" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="اعتيادية">اعتيادية</option>
-                                    <option value="مرضية">مرضية</option>
-                                    <option value="طارئة">طارئة</option>
-                                    <option value="دراسية">دراسية</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">حالة الطلب</label>
-                                <select id="filterLeaveStatus" class="form-select">
-                                    <option value="">الكل</option>
-                                    <option value="مقدمة">مقدمة</option>
-                                    <option value="مقبولة">مقبولة</option>
-                                    <option value="مرفوضة">مرفوضة</option>
-                                    <option value="منتهية">منتهية</option>
-                                </select>
-                            </div>
-                            <div class="col-12 d-flex justify-content-end	align-items-end pt-2 gap-2">
-                                <button type="submit" class="btn btn-secondary">بحث</button>
-                                <button type="button" id="btnResetLeaves" class="btn btn-outline-secondary">مسح</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الموظف</th>
-                                <th>نوع الإجازة</th>
-                                <th>من تاريخ</th>
-                                <th>إلى تاريخ</th>
-                                <th>الحالة</th>
-                                <th>المعتمد</th>
-                                <th class="text-center">إجراءات</th>
-                            </tr>
-                            </thead>
-                            <tbody id="leavesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
             <!-- التقارير -->
             <section id="reports">
                 <h4 class="section-title">التقارير والإحصائيات</h4>
@@ -740,9 +633,6 @@
                             <ul class="mb-0 small">
                                 <li>إجمالي الموظفين: <span id="reportTotalEmployees">0</span></li>
                                 <li>الموظفون على رأس الخدمة: <span id="reportActiveEmployees">0</span></li>
-                                <li>إجمالي الإجازات: <span id="reportTotalLeaves">0</span></li>
-                                <li>إجازات مقبولة: <span id="reportAcceptedLeaves">0</span></li>
-                                <li>إجازات قيد الانتظار: <span id="reportPendingLeaves">0</span></li>
                             </ul>
                         </div>
                     </div>
@@ -758,7 +648,6 @@
 <script>
     const STORAGE_KEYS = {
         employees: "hr_employees_v1",
-        leaves: "hr_leaves_v1",
         section: "hr_current_section_v1"
     };
 
@@ -822,17 +711,10 @@
         }
     ];
 
-    const leaves = [
-        { id: 1, employeeId: 3, employeeName: "سعاد محمد مبارك", type: "مرضية",   startDate: "2025-01-05", endDate: "2025-01-10", status: "مقبولة", approvedBy: "رئيس قسم التمريض" },
-        { id: 2, employeeId: 4, employeeName: "حسن فليح إسماعيل", type: "اعتيادية", startDate: "2025-02-01", endDate: "2025-02-07", status: "مقدمة", approvedBy: "" },
-        { id: 3, employeeId: 2, employeeName: "احمد ابراهيم سلمان",    type: "اعتيادية", startDate: "2024-12-01", endDate: "2024-12-10", status: "منتهية", approvedBy: "مدير المستشفى" }
-    ];
-
     // تخزين محلي
     function saveDataToStorage() {
         try {
             localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees));
-            localStorage.setItem(STORAGE_KEYS.leaves, JSON.stringify(leaves));
         } catch (e) {
             console.error("localStorage error:", e);
         }
@@ -848,14 +730,6 @@
                     arr.forEach(e => employees.push(e));
                 }
             }
-            const lvStr = localStorage.getItem(STORAGE_KEYS.leaves);
-            if (lvStr) {
-                const arr = JSON.parse(lvStr);
-                if (Array.isArray(arr)) {
-                    leaves.length = 0;
-                    arr.forEach(l => leaves.push(l));
-                }
-            }
         } catch (e) {
             console.error("load storage error", e);
         }
@@ -864,7 +738,6 @@
     loadDataFromStorage();
 
     let currentView = [...employees];
-    let currentLeavesView = [...leaves];
     let editingEmployeeId = null;
     let currentSort = { key: null, dir: "asc" };
 
@@ -901,21 +774,6 @@
     const dashActiveEmployees = document.getElementById("dashActiveEmployees");
     const dashMaleEmployees = document.getElementById("dashMaleEmployees");
     const dashFemaleEmployees = document.getElementById("dashFemaleEmployees");
-    const dashTotalLeaves = document.getElementById("dashTotalLeaves");
-    const dashAcceptedLeaves = document.getElementById("dashAcceptedLeaves");
-    const dashPendingLeaves = document.getElementById("dashPendingLeaves");
-
-    const leavesTableBody = document.getElementById("leavesTableBody");
-    const totalLeavesSpan = document.getElementById("totalLeaves");
-    const pendingLeavesSpan = document.getElementById("pendingLeaves");
-    const acceptedLeavesSpan = document.getElementById("acceptedLeaves");
-    const rejectedLeavesSpan = document.getElementById("rejectedLeaves");
-    const btnAddLeave = document.getElementById("btnAddLeave");
-    const filterLeaveForm = document.getElementById("filterLeaveForm");
-    const filterLeaveName = document.getElementById("filterLeaveName");
-    const filterLeaveType = document.getElementById("filterLeaveType");
-    const filterLeaveStatus = document.getElementById("filterLeaveStatus");
-    const btnResetLeaves = document.getElementById("btnResetLeaves");
 
     const deptReportBody = document.getElementById("deptReportBody");
     const statusReportBody = document.getElementById("statusReportBody");
@@ -924,9 +782,6 @@
     const genderOtherReport = document.getElementById("genderOtherReport");
     const reportTotalEmployees = document.getElementById("reportTotalEmployees");
     const reportActiveEmployees = document.getElementById("reportActiveEmployees");
-    const reportTotalLeaves = document.getElementById("reportTotalLeaves");
-    const reportAcceptedLeaves = document.getElementById("reportAcceptedLeaves");
-    const reportPendingLeaves = document.getElementById("reportPendingLeaves");
 
     const employeeFormSection = document.getElementById("employeeFormSection");
     const employeeFormTitle = document.getElementById("employeeFormTitle");
@@ -1359,7 +1214,7 @@
     // زر حفظ يدوي
     btnSave.addEventListener("click", () => {
         saveDataToStorage();
-        alert("تم حفظ بيانات الموظفين والإجازات في هذا الجهاز.");
+        alert("تم حفظ بيانات الموظفين في هذا الجهاز.");
     });
 
     // تصدير Excel (CSV)
@@ -1753,149 +1608,10 @@
         alert("تم حذف الموظف.");
     };
 
-    // إجازات
-    function calculateLeaveStats(list) {
-        const s = { total: list.length, pending: 0, accepted: 0, rejected: 0 };
-        list.forEach(l => {
-            if (l.status === "مقدمة") s.pending++;
-            else if (l.status === "مقبولة") s.accepted++;
-            else if (l.status === "مرفوضة") s.rejected++;
-        });
-        return s;
-    }
-
-    function renderLeaveStats(list) {
-        const s = calculateLeaveStats(list);
-
-        totalLeavesSpan.textContent = s.total;
-        pendingLeavesSpan.textContent = s.pending;
-        acceptedLeavesSpan.textContent = s.accepted;
-        rejectedLeavesSpan.textContent = s.rejected;
-
-        dashTotalLeaves.textContent = s.total;
-        dashAcceptedLeaves.textContent = s.accepted;
-        dashPendingLeaves.textContent = s.pending;
-
-        reportTotalLeaves.textContent = s.total;
-        reportAcceptedLeaves.textContent = s.accepted;
-        reportPendingLeaves.textContent = s.pending;
-    }
-
-    function renderLeaves(list) {
-        leavesTableBody.innerHTML = "";
-        list.forEach((lv, i) => {
-            const statusClass =
-                lv.status === "مقبولة" ? "bg-success" :
-                lv.status === "مقدمة" ? "bg-warning" :
-                lv.status === "مرفوضة" ? "bg-danger" : "bg-secondary";
-
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td class="text-center">${i + 1}</td>
-              <td>${lv.employeeName}</td>
-              <td>${lv.type}</td>
-              <td class="text-center">${formatDate(lv.startDate)}</td>
-              <td class="text-center">${formatDate(lv.endDate)}</td>
-              <td class="text-center"><span class="badge ${statusClass} badge-status">${lv.status}</span></td>
-              <td>${lv.approvedBy || "-"}</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewLeave(${lv.id})">عرض</button>
-                <button class="btn btn-sm btn-outline-secondary me-1" onclick="editLeaveStatus(${lv.id})">تحديث الحالة</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteLeave(${lv.id})">حذف</button>
-              </td>`;
-            leavesTableBody.appendChild(tr);
-        });
-
-        renderLeaveStats(list);
-    }
-
-    filterLeaveForm.addEventListener("submit", e => {
-        e.preventDefault();
-        const nameVal = filterLeaveName.value.trim();
-        const typeVal = filterLeaveType.value;
-        const statusVal = filterLeaveStatus.value;
-
-        currentLeavesView = leaves.filter(lv => {
-            const mName = !nameVal || lv.employeeName.includes(nameVal);
-            const mType = !typeVal || lv.type === typeVal;
-            const mStatus = !statusVal || lv.status === statusVal;
-            return mName && mType && mStatus;
-        });
-        renderLeaves(currentLeavesView);
-    });
-
-    btnResetLeaves.addEventListener("click", () => {
-        filterLeaveName.value = "";
-        filterLeaveType.value = "";
-        filterLeaveStatus.value = "";
-        currentLeavesView = [...leaves];
-        renderLeaves(currentLeavesView);
-    });
-
-    btnAddLeave.addEventListener("click", () => {
-        const employeeName = prompt("أدخل اسم الموظف:"); if (!employeeName) return;
-        const type = prompt("نوع الإجازة:", "اعتيادية");
-        const startDate = prompt("تاريخ البدء (YYYY-MM-DD):", "2025-01-01");
-        const endDate = prompt("تاريخ النهاية (YYYY-MM-DD):", "2025-01-07");
-        const status = prompt("حالة الطلب:", "مقدمة");
-        const approvedBy = prompt("اسم المعتمد:", "");
-        const newId = leaves.length ? Math.max(...leaves.map(l => l.id)) + 1 : 1;
-        leaves.push({
-            id: newId,
-            employeeId: null,
-            employeeName,
-            type: type || "اعتيادية",
-            startDate: startDate || "",
-            endDate: endDate || "",
-            status: status || "مقدمة",
-            approvedBy: approvedBy || ""
-        });
-        saveDataToStorage();
-        currentLeavesView = [...leaves];
-        renderLeaves(currentLeavesView);
-        alert("تمت إضافة طلب الإجازة.");
-    });
-
-    window.viewLeave = id => {
-        const lv = leaves.find(l => l.id === id);
-        if (!lv) { alert("لم يتم العثور على الإجازة."); return; }
-        alert(
-            "معلومات الإجازة:\n\n" +
-            `الموظف: ${lv.employeeName}\n` +
-            `نوع الإجازة: ${lv.type}\n` +
-            `من: ${formatDate(lv.startDate)}\n` +
-            `إلى: ${formatDate(lv.endDate)}\n` +
-            `الحالة: ${lv.status}\n` +
-            `المعتمد: ${lv.approvedBy || "-"}` );
-    };
-
-    window.editLeaveStatus = id => {
-        const lv = leaves.find(l => l.id === id);
-        if (!lv) { alert("لم يتم العثور على الإجازة."); return; }
-        const status = prompt("تحديث حالة الإجازة:", lv.status); if (!status) return;
-        const approvedBy = prompt("اسم المعتمد:", lv.approvedBy || "");
-        lv.status = status;
-        lv.approvedBy = approvedBy || lv.approvedBy;
-        saveDataToStorage();
-        renderLeaves(currentLeavesView);
-        alert("تم تحديث حالة الإجازة.");
-    };
-
-    window.deleteLeave = id => {
-        if (!confirm("هل أنت متأكد من حذف هذه الإجازة؟")) return;
-        const idx = leaves.findIndex(l => l.id === id);
-        if (idx === -1) { alert("لم يتم العثور على الإجازة."); return; }
-        leaves.splice(idx, 1);
-        saveDataToStorage();
-        currentLeavesView = [...leaves];
-        renderLeaves(currentLeavesView);
-        alert("تم حذف الإجازة.");
-    };
-
     // التنقل بين الأقسام
     const navLinks = document.querySelectorAll(".sidebar .nav-link");
     function showSection(sectionId) {
-        const ids = ["dashboard","employees","leaves","reports"];
+        const ids = ["dashboard","employees","reports"];
         ids.forEach(id => {
             const sec = document.getElementById(id);
             if (!sec) return;
@@ -1915,7 +1631,7 @@
         const href = link.getAttribute("href") || "";
         if (!href.startsWith("#")) return;
         const targetId = href.substring(1);
-        if (["dashboard","employees","leaves","reports"].includes(targetId)) {
+        if (["dashboard","employees","reports"].includes(targetId)) {
             link.addEventListener("click", e => {
                 e.preventDefault();
                 showSection(targetId);
@@ -1949,9 +1665,7 @@
 
     // أول تحميل
     currentView = [...employees];
-    currentLeavesView = [...leaves];
     renderEmployees(currentView);
-    renderLeaves(currentLeavesView);
     updateSortIndicators();
 
     // حفظ أولي
