@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>نظام إدارة الموظفين - ابن سينا التعليمي</title>
-    <link rel="icon" type="image/png" href="ibn-sina-logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS RTL -->
@@ -318,20 +317,11 @@
         <!-- المحتوى -->
         <main class="col-md-10 col-lg-10 ms-auto p-4">
 
-            <!-- البانر العلوي بالشعار الطويل + الوكو -->
-            <div class="app-header-banner d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                    <img src="ibn-sina-logo.png" alt="شعار ابن سينا"
-                         style="width:48px;height:48px;border-radius:50%;background:#fff;object-fit:cover;">
-                    <div>
-                        <strong>وزارة الصحة العراقية</strong><br>
-                        <span class="text-muted small">مديرية مستشفى ابن سينا التعليمي</span>
-                    </div>
-                </div>
+            <!-- البانر العلوي بالشعار الطويل -->
+            <div class="app-header-banner">
                 <!-- غيّر مسار الصورة حسب اسم ملف البانر -->
                 <img src="ibn-sina-banner.png"
-                     alt="وزارة الصحة العراقية - مديرية مستشفى ابن سينا التعليمي"
-                     style="max-height:80px;object-fit:contain;">
+                     alt="وزارة الصحة العراقية - مديرية مستشفى ابن سينا التعليمي">
             </div>
 
             <!-- شريط علوي -->
@@ -2014,7 +2004,7 @@
         });
     }
 
-    // أول تحميل
+    // أول تحميلِ
     rebuildStatusSetFromEmployees();
     rebuildExtraColumnsFromEmployees();
     renderStatusOptions();
