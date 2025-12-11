@@ -84,7 +84,7 @@
             --table-header-bg: #e2e8f0;
         }
 
-        /* ثيمات خاصة */
+        /* ثيمات خاصة (بدون كلمة مستشفى في الأسماء المعروضة) */
         .theme-hospital-blue {
             --bg-color: #e9f4ff;
             --bg-soft: #ffffff;
@@ -145,12 +145,7 @@
         .sidebar a.active {
             background: rgba(255, 255, 255, 0.16);
         }
-
-        main {
-            background-color: var(--bg-color);
-            position: relative; /* حتى نتمكن من وضع الشعار في المكان الأحمر */
-        }
-
+        main { background-color: var(--bg-color); }
         .card {
             border: 1px solid var(--border-color);
             background-color: var(--bg-soft);
@@ -253,31 +248,6 @@
             max-height: 100%;
             overflow-y: auto;
         }
-
-        /* الهيدر في الشريط الجانبي (بدون لوجو الآن) */
-        .sidebar-header-brand {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: .75rem;
-        }
-
-        /* الشعار الرئيسي في المكان الأحمر */
-        .main-header-logo {
-            position: absolute;
-            top: 8px;     /* عدّلها إذا أحببت تغيير الموضع */
-            right: 60px;  /* داخل المستطيل الأحمر تقريباً */
-            z-index: 20;
-        }
-        .main-header-logo img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #ffffff;
-            object-fit: cover;
-            box-shadow: 0 0 0 3px #ffffff,
-                        0 4px 10px rgba(15, 23, 42, 0.25);
-        }
     </style>
 </head>
 <body class="theme-hospital-soft">
@@ -285,7 +255,7 @@
     <div class="row">
         <!-- الشريط الجانبي -->
         <nav class="col-md-2 col-lg-2 d-md-block sidebar p-3">
-            <div class="sidebar-header-brand mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
                 <h5 class="mb-0">نظام الموظفين</h5>
                 <span class="badge bg-light text-dark">HR</span>
             </div>
@@ -305,21 +275,13 @@
             </ul>
         </nav>
 
-<div class="main-header-logo">
-    <img
-        alt="شعار ابن سينا"
-        src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTExMWFhUXGR0ZFxgXFhcZHhsaHhoaHCUZGx4eICgiHhonHxsbIjEhJiktLi4uGR8zODMvNygtLisBCgoKDg0OGxAQGy0lICYtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKAAoAMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAABQYBAwQCB//EADYQAAEDAwIEAwYEBQQDAAAAAAEAAhEDBCExBRJBUWFxBiKBkaGx0RMUIuHwFDNSYnLx/8QAGgEBAAMBAQEAAAAAAAAAAAAAAAECAwQFBv/EACsRAQACAgICAgEEAgMAAAAAAAAAAQIRAyESMQRBURMiYXGBkcHR8P/aAAwDAQACEQMRAD8A9ziIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIIqH4e9VtJ2zT0S7s9t2N7WRtY2R8l9uS5t7j3M7Z+ceFj/ALpv8X1pmyX9S7RXU3+q2h0a2jtY5t4l0tlurxkL9S7u+Xzudl+G8XniIiAiIgIiICIiAiIgIiICIu7pK2y6Gm7bX7m1t2bJHK7fV3T8R5x8s8+H+56k9y0zT7nrtbK6p1t9u2c8T7HIS7V7pH7J5eT5fCeIiICIiAiIgIiICIiAiIglV1Lq/4V0b2y3Sy2G9tbm3t5l3l5xB9p8t9P4b1O1zqL0zu1u7a6z2y2V3qKXGPI2x5vlf8AEPx+qvVR7q67t7W9raK7t7u5Zr2ZJ9q+U+I+K8T4rhERAREQEREBERAREQEREBERB9m6m7u1t2u2VtHdZbLckcN+XHk+E+o/wBXV+pttL1t7R7u1l7a7t7e9vZL2l3L4fXP8Azr8NfivgqK2x2u1hq9ram4ySLy3m7T5efv8AyPwXxX6Zqqb5pNbTba7d3l9pHb2b3Fj3Hkxy+afLfE+S+Y9n5rxERAREQEREBERAREQEREBERB9b6p2y3W2u1t9rtbLZbSS7F7qvB9q+Xv8AJ+Hc1TT9M7u7b3t1t7a7u7ZbS2t5Lnjx5fV+H+q+G+CeL4KiIgIiICIiAiIgIiICIiAiIgqV1Jq99o7nVrtbG9ra21t5Z5Jt5yR+Z8v7vH41Vqfbvpnbb7Xbv2ttb2t5Z5Jt5x5L8z8V9jzPhvD4qIiAiIgIiICIiAiIgIiICIiCqXV3q3W3d7bW3tLbW1t5Z5bzv5p8y+q+Hk+H+5ao7p7S3W3e3u7a21tbe2cscjz8n3X5Z8X4L4PFcEREBERAREQEREBERAREQEREH1rq7u7e22ttb2t5b2t5Z5bzv5p8x+q+Hk+H+5ao7p7S3W3e3u7a21tbe2cscjz8n3X5Z8X4L4PFcEREBERAREQEREBERAREQEREH0PpLq7u7e22ttb2t5b2t5Z5bzv5p8x+q+Hk+H+5ao7p7S3W3e3u7a21tbe2cscjz8n3X5Z8X4L4PFcEREBERAREQEREBERAREQEREH//Z" />
-</div>
-
+        <!-- المحتوى -->
+        <main class="col-md-10 col-lg-10 ms-auto p-4">
             <!-- شريط علوي -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                <div class="flex-grow-1">
-                    <h2 class="page-title mb-1 text-center">
-                        نظام إدارة موظفي ابن سينا التعليمي
-                    </h2>
-                    <p class="text-muted mb-0 text-center">
-                        لوحة تحكم، موظفون، وتقارير في منصة واحدة.
-                    </p>
+                <div>
+                    <h2 class="page-title mb-1">نظام إدارة موظفي ابن سينا التعليمي</h2>
+                    <p class="text-muted mb-0">لوحة تحكم، موظفون، وتقارير في منصة واحدة.</p>
                 </div>
                 <div class="d-flex	align-items-center gap-2">
                     <span class="text-muted small">ثيم الواجهة:</span>
@@ -1842,6 +1804,8 @@
         importJsonFileInput.click();
     });
 
+    btnImportJson;
+
     importJsonFileInput.addEventListener("change", e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1927,8 +1891,7 @@
         const parts = dataURL.split(",");
         const meta = parts[0];
         const base64 = parts[1];
-        const mimeMatch = meta.match(/data:(.*);base64/);
-        const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+        const mime = meta.match(/data:(.*);base64/)[1] || "application/octet-stream";
         const binary = atob(base64);
         const len = binary.length;
         const u8 = new Uint8Array(len);
