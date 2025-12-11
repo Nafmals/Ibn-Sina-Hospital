@@ -84,7 +84,7 @@
             --table-header-bg: #e2e8f0;
         }
 
-        /* ثيمات خاصة (بدون كلمة مستشفى في أسماء الخيارات) */
+        /* ثيمات خاصة */
         .theme-hospital-blue {
             --bg-color: #e9f4ff;
             --bg-soft: #ffffff;
@@ -145,7 +145,12 @@
         .sidebar a.active {
             background: rgba(255, 255, 255, 0.16);
         }
-        main { background-color: var(--bg-color); }
+
+        main {
+            background-color: var(--bg-color);
+            position: relative; /* حتى نتمكن من وضع الشعار في المكان الأحمر */
+        }
+
         .card {
             border: 1px solid var(--border-color);
             background-color: var(--bg-soft);
@@ -249,39 +254,29 @@
             overflow-y: auto;
         }
 
-        /* الشعار في الشريط الجانبي */
+        /* الهيدر في الشريط الجانبي (بدون لوجو الآن) */
         .sidebar-header-brand {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: .75rem;
         }
-        .sidebar-logo-box {
-            display: flex;
-            align-items: center;
-            gap: .5rem;
+
+        /* الشعار الرئيسي في المكان الأحمر */
+        .main-header-logo {
+            position: absolute;
+            top: 8px;     /* عدّلها إذا أحببت تغيير الموضع */
+            right: 60px;  /* داخل المستطيل الأحمر تقريباً */
+            z-index: 20;
         }
-        .sidebar-logo-box img {
-            width: 44px;
-            height: 44px;
+        .main-header-logo img {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: #ffffff;
             object-fit: cover;
-        }
-
-        /* البانر العلوي داخل المحتوى */
-        .app-header-banner {
-            background-color: var(--bg-soft);
-            border-radius: 1rem;
-            padding: .5rem 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-soft);
-        }
-        .app-header-banner img {
-            width: 100%;
-            max-height: 110px;
-            object-fit: contain;
+            box-shadow: 0 0 0 3px #ffffff,
+                        0 4px 10px rgba(15, 23, 42, 0.25);
         }
     </style>
 </head>
@@ -291,11 +286,7 @@
         <!-- الشريط الجانبي -->
         <nav class="col-md-2 col-lg-2 d-md-block sidebar p-3">
             <div class="sidebar-header-brand mb-4">
-                <div class="sidebar-logo-box">
-                    <!-- غيّر مسار الصورة حسب اسم ملف الشعار الدائري -->
-                    <img src="ibn-sina-logo.png" alt="شعار ابن سينا">
-                    <h5 class="mb-0">نظام الموظفين</h5>
-                </div>
+                <h5 class="mb-0">نظام الموظفين</h5>
                 <span class="badge bg-light text-dark">HR</span>
             </div>
             <ul class="nav flex-column gap-1">
@@ -317,18 +308,21 @@
         <!-- المحتوى -->
         <main class="col-md-10 col-lg-10 ms-auto p-4">
 
-            <!-- البانر العلوي بالشعار الطويل -->
-            <div class="app-header-banner">
-                <!-- غيّر مسار الصورة حسب اسم ملف البانر -->
-                <img src="ibn-sina-banner.png"
-                     alt="وزارة الصحة العراقية - مديرية مستشفى ابن سينا التعليمي">
+            <!-- الشعار في المكان الأحمر -->
+            <div class="main-header-logo">
+                <!-- غيّر مسار الصورة إذا كان مختلفاً عندك -->
+                <img src="ibn-sina-logo.png" alt="شعار ابن سينا">
             </div>
 
             <!-- شريط علوي -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                <div>
-                    <h2 class="page-title mb-1">نظام إدارة موظفي ابن سينا التعليمي</h2>
-                    <p class="text-muted mb-0">لوحة تحكم، موظفون، وتقارير في منصة واحدة.</p>
+                <div class="flex-grow-1">
+                    <h2 class="page-title mb-1 text-center">
+                        نظام إدارة موظفي ابن سينا التعليمي
+                    </h2>
+                    <p class="text-muted mb-0 text-center">
+                        لوحة تحكم، موظفون، وتقارير في منصة واحدة.
+                    </p>
                 </div>
                 <div class="d-flex	align-items-center gap-2">
                     <span class="text-muted small">ثيم الواجهة:</span>
@@ -983,9 +977,9 @@
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return dateStr;
         const day = String(d.getDate()).padStart(2, "0");
-        theMonth = String(d.getMonth() + 1).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
         const year = d.getFullYear();
-        return `${day}/${theMonth}/${year}`;
+        return `${day}/${month}/${year}`;
     }
 
     function ensureNameParts(emp) {
@@ -1936,7 +1930,8 @@
         const parts = dataURL.split(",");
         const meta = parts[0];
         const base64 = parts[1];
-        const mime = meta.match(/data:(.*);base64/)[1] || "application/octet-stream";
+        const mimeMatch = meta.match(/data:(.*);base64/);
+        const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
         const binary = atob(base64);
         const len = binary.length;
         const u8 = new Uint8Array(len);
