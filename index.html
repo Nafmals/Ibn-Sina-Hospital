@@ -84,7 +84,7 @@
             --table-header-bg: #e2e8f0;
         }
 
-        /* ثيمات خاصة (بدون كلمة مستشفى في الأسماء المعروضة) */
+        /* ثيمات خاصة (بدون كلمة مستشفى في أسماء الخيارات) */
         .theme-hospital-blue {
             --bg-color: #e9f4ff;
             --bg-soft: #ffffff;
@@ -248,6 +248,41 @@
             max-height: 100%;
             overflow-y: auto;
         }
+
+        /* الشعار في الشريط الجانبي */
+        .sidebar-header-brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+        }
+        .sidebar-logo-box {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .sidebar-logo-box img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #ffffff;
+            object-fit: cover;
+        }
+
+        /* البانر العلوي داخل المحتوى */
+        .app-header-banner {
+            background-color: var(--bg-soft);
+            border-radius: 1rem;
+            padding: .5rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+        }
+        .app-header-banner img {
+            width: 100%;
+            max-height: 110px;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body class="theme-hospital-soft">
@@ -255,8 +290,12 @@
     <div class="row">
         <!-- الشريط الجانبي -->
         <nav class="col-md-2 col-lg-2 d-md-block sidebar p-3">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h5 class="mb-0">نظام الموظفين</h5>
+            <div class="sidebar-header-brand mb-4">
+                <div class="sidebar-logo-box">
+                    <!-- غيّر مسار الصورة حسب اسم ملف الشعار الدائري -->
+                    <img src="ibn-sina-logo.png" alt="شعار ابن سينا">
+                    <h5 class="mb-0">نظام الموظفين</h5>
+                </div>
                 <span class="badge bg-light text-dark">HR</span>
             </div>
             <ul class="nav flex-column gap-1">
@@ -277,6 +316,14 @@
 
         <!-- المحتوى -->
         <main class="col-md-10 col-lg-10 ms-auto p-4">
+
+            <!-- البانر العلوي بالشعار الطويل -->
+            <div class="app-header-banner">
+                <!-- غيّر مسار الصورة حسب اسم ملف البانر -->
+                <img src="ibn-sina-banner.png"
+                     alt="وزارة الصحة العراقية - مديرية مستشفى ابن سينا التعليمي">
+            </div>
+
             <!-- شريط علوي -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                 <div>
@@ -936,9 +983,9 @@
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return dateStr;
         const day = String(d.getDate()).padStart(2, "0");
-        const month = String(d.getMonth() + 1).padStart(2, "0");
+        theMonth = String(d.getMonth() + 1).padStart(2, "0");
         const year = d.getFullYear();
-        return `${day}/${month}/${year}`;
+        return `${day}/${theMonth}/${year}`;
     }
 
     function ensureNameParts(emp) {
@@ -1803,8 +1850,6 @@
     btnImportJson.addEventListener("click", () => {
         importJsonFileInput.click();
     });
-
-    btnImportJson;
 
     importJsonFileInput.addEventListener("change", e => {
         const file = e.target.files[0];
