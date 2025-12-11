@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام إدارة الموظفين - مستشفى ابن سينا التعليمي</title>
+    <title>نظام إدارة الموظفين - ابن سينا التعليمي</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS RTL -->
@@ -53,7 +53,7 @@
             --text-color: #e5e7eb;
             --muted-text: #9ca3af;
             --accent: #38bdf8;
-            --accent-soft: rgba(56, 189, 248, 0.14);
+            --accent-soft: rgba(38, 198, 249, 0.14);
             --border-color: #1e293b;
             --sidebar-bg: #020617;
             --sidebar-text: #e5e7eb;
@@ -84,7 +84,7 @@
             --table-header-bg: #e2e8f0;
         }
 
-        /* ثيمات خاصة بالمستشفى */
+        /* ثيمات خاصة (بدون كلمة مستشفى في الأسماء المعروضة) */
         .theme-hospital-blue {
             --bg-color: #e9f4ff;
             --bg-soft: #ffffff;
@@ -173,9 +173,9 @@
         section { margin-bottom: 1.5rem; }
         .section-title { margin-bottom: .5rem; }
 
-        /* جدول الموظفين (تصميم + فرز يدوي) */
+        /* جدول الموظفين (يستغل الفراغ السفلي) */
         .employee-table-wrapper {
-            height: calc(100vh - 330px); /* استغلال الفراغ السفلي */
+            height: calc(100vh - 330px); /* هنا يتم التحكم بارتفاع الجدول */
             min-height: 350px;
             overflow-y: auto;
             border-radius: .9rem;
@@ -280,15 +280,15 @@
             <!-- شريط علوي -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                 <div>
-                    <h2 class="page-title mb-1">نظام إدارة موظفي مستشفى ابن سينا التدريبي</h2>
+                    <h2 class="page-title mb-1">نظام إدارة موظفي ابن سينا التعليمي</h2>
                     <p class="text-muted mb-0">لوحة تحكم، موظفون، وتقارير في منصة واحدة.</p>
                 </div>
                 <div class="d-flex	align-items-center gap-2">
                     <span class="text-muted small">ثيم الواجهة:</span>
                     <select id="themeSelect" class="form-select form-select-sm theme-selector">
-                        <option value="theme-hospital-soft">مستشفى – ناعم (افتراضي)</option>
-                        <option value="theme-hospital-blue">مستشفى – أزرق</option>
-                        <option value="theme-hospital-dark">مستشفى – داكن</option>
+                        <option value="theme-hospital-soft">واجهة ناعمة (افتراضي)</option>
+                        <option value="theme-hospital-blue">واجهة زرقاء</option>
+                        <option value="theme-hospital-dark">واجهة داكنة</option>
                         <option value="theme-comfort">مريح</option>
                         <option value="theme-light">فاتح</option>
                         <option value="theme-dark">داكن</option>
@@ -421,24 +421,7 @@
                         <div class="employee-table-wrapper">
                             <table class="employee-table table table-sm table-hover align-middle mb-0">
                                 <thead>
-                                <tr>
-                                    <th data-sort-key="index" class="sortable">#</th>
-                                    <th data-sort-key="firstName" class="sortable">الأسم الاول</th>
-                                    <th data-sort-key="secondName" class="sortable">الأسم الثاني</th>
-                                    <th data-sort-key="thirdName" class="sortable">الأسم الثالث</th>
-                                    <th data-sort-key="fourthName" class="sortable">الأسم الرابع</th>
-                                    <th data-sort-key="jobTitle" class="sortable">العنوان الوظيفي</th>
-                                    <th data-sort-key="status" class="sortable">الحالة الوظيفية</th>
-                                    <th data-sort-key="notes" class="sortable">الملاحظات</th>
-                                    <th data-sort-key="department" class="sortable">أسم الدائرة / مبنى الوزارة</th>
-                                    <th data-sort-key="jobNumber" class="sortable">الرقم الوظيفي</th>
-                                    <th data-sort-key="nationalId" class="sortable">الرقم الوطني</th>
-                                    <th data-sort-key="motherName" class="sortable">أسم الأم الثلاثي</th>
-                                    <th data-sort-key="gender" class="sortable">الجنس</th>
-                                    <th data-sort-key="birthDate" class="sortable">تاريخ التولد</th>
-                                    <th data-sort-key="hireDate" class="sortable">تاريخ التعيين</th>
-                                    <th class="text-center">إجراءات</th>
-                                </tr>
+                                <tr id="employeesHeaderRow"></tr>
                                 </thead>
                                 <tbody id="employeesTableBody"></tbody>
                             </table>
@@ -626,7 +609,7 @@
         section: "hr_current_section_v1"
     };
 
-    // بيانات أولية (تستخدم أول مرة فقط إذا لا يوجد تخزين سابق)
+    // بيانات أولية
     const employees = [
         {
             id: 1,
@@ -716,10 +699,43 @@
     let editingEmployeeId = null;
     let currentSort = { key: null, dir: "asc" };
 
+    // أعمدة أساسية
+    const baseColumns = [
+        { key: "index",      label: "#",                         sortable: true },
+        { key: "firstName",  label: "الأسم الاول",               sortable: true },
+        { key: "secondName", label: "الأسم الثاني",              sortable: true },
+        { key: "thirdName",  label: "الأسم الثالث",              sortable: true },
+        { key: "fourthName", label: "الأسم الرابع",              sortable: true },
+        { key: "jobTitle",   label: "العنوان الوظيفي",           sortable: true },
+        { key: "status",     label: "الحالة الوظيفية",           sortable: true },
+        { key: "notes",      label: "الملاحظات",                sortable: true },
+        { key: "department", label: "أسم الدائرة / مبنى الوزارة", sortable: true },
+        { key: "jobNumber",  label: "الرقم الوظيفي",             sortable: true },
+        { key: "nationalId", label: "الرقم الوطني",              sortable: true },
+        { key: "motherName", label: "أسم الأم الثلاثي",          sortable: true },
+        { key: "gender",     label: "الجنس",                    sortable: true },
+        { key: "birthDate",  label: "تاريخ التولد",              sortable: true },
+        { key: "hireDate",   label: "تاريخ التعيين",             sortable: true }
+    ];
+
+    // أعمدة إضافية قادمة من الإكسل
+    let extraColumns = [];
+
+    function rebuildExtraColumnsFromEmployees() {
+        const set = new Set(extraColumns);
+        employees.forEach(emp => {
+            if (emp.extra && typeof emp.extra === "object") {
+                Object.keys(emp.extra).forEach(k => set.add(k));
+            }
+        });
+        extraColumns = Array.from(set);
+    }
+
     // DOM
     const bodyEl = document.body;
     const themeSelect = document.getElementById("themeSelect");
 
+    const employeesHeaderRow = document.getElementById("employeesHeaderRow");
     const tableBody = document.getElementById("employeesTableBody");
     const totalCountSpan = document.getElementById("totalCount");
     const activeCountSpan = document.getElementById("activeCount");
@@ -779,7 +795,27 @@
     const empHireDateInput = document.getElementById("empHireDate");
     const empNotesInput = document.getElementById("empNotes");
 
-    // حالات افتراضية + تجميع من الإكسل
+    // ثيم
+    function applyTheme(themeClass) {
+        bodyEl.classList.remove(
+            "theme-light",
+            "theme-dark",
+            "theme-ocean",
+            "theme-sepia",
+            "theme-comfort",
+            "theme-hospital-blue",
+            "theme-hospital-soft",
+            "theme-hospital-dark"
+        );
+        bodyEl.classList.add(themeClass);
+        localStorage.setItem("hr_theme", themeClass);
+    }
+    themeSelect.addEventListener("change", e => applyTheme(e.target.value));
+    const savedTheme = localStorage.getItem("hr_theme") || "theme-hospital-soft";
+    applyTheme(savedTheme);
+    themeSelect.value = savedTheme;
+
+    // حالات افتراضية + ديناميكية من الموظفين
     const defaultStatuses = [
         "مستمر بالخدمة",
         "إجازة",
@@ -841,26 +877,6 @@
             empStatusInput.value = "مستمر بالخدمة";
         }
     }
-
-    // ثيم
-    function applyTheme(themeClass) {
-        bodyEl.classList.remove(
-            "theme-light",
-            "theme-dark",
-            "theme-ocean",
-            "theme-sepia",
-            "theme-comfort",
-            "theme-hospital-blue",
-            "theme-hospital-soft",
-            "theme-hospital-dark"
-        );
-        bodyEl.classList.add(themeClass);
-        localStorage.setItem("hr_theme", themeClass);
-    }
-    themeSelect.addEventListener("change", e => applyTheme(e.target.value));
-    const savedTheme = localStorage.getItem("hr_theme") || "theme-hospital-soft";
-    applyTheme(savedTheme);
-    themeSelect.value = savedTheme;
 
     // توابع مساعدة
     function formatDate(dateStr) {
@@ -987,6 +1003,37 @@
         genderOtherReport.textContent = s.other;
     }
 
+    // بناء الهيدر الديناميكي (الأعمدة الأساسية + الإضافية)
+    function renderEmployeeHeader() {
+        employeesHeaderRow.innerHTML = "";
+
+        baseColumns.forEach(col => {
+            const th = document.createElement("th");
+            th.textContent = col.label;
+            if (col.sortable) {
+                th.classList.add("sortable");
+                th.dataset.sortKey = col.key;
+            }
+            employeesHeaderRow.appendChild(th);
+        });
+
+        extraColumns.forEach(colName => {
+            const th = document.createElement("th");
+            th.textContent = colName;
+            th.classList.add("sortable");
+            th.dataset.sortKey = "extra:" + colName;
+            employeesHeaderRow.appendChild(th);
+        });
+
+        const actionsTh = document.createElement("th");
+        actionsTh.className = "text-center";
+        actionsTh.textContent = "إجراءات";
+        employeesHeaderRow.appendChild(actionsTh);
+
+        setupSortHandlers();
+        updateSortIndicators();
+    }
+
     // عرض جدول الموظفين
     function renderEmployees(list) {
         tableBody.innerHTML = "";
@@ -1002,7 +1049,7 @@
                 emp.status === "منقول" ? "bg-warning" :
                 "bg-primary";
 
-            tr.innerHTML = `
+            let rowHtml = `
               <td class="text-center">${i + 1}</td>
               <td>${emp.firstName || ""}</td>
               <td>${emp.secondName || ""}</td>
@@ -1018,12 +1065,24 @@
               <td class="text-center">${emp.gender || ""}</td>
               <td class="text-center">${formatDate(emp.birthDate)}</td>
               <td class="text-center">${formatDate(emp.hireDate)}</td>
+            `;
+
+            // أعمدة إضافية
+            const extra = emp.extra || {};
+            extraColumns.forEach(colName => {
+                const val = extra[colName] != null ? extra[colName] : "";
+                rowHtml += `<td>${val}</td>`;
+            });
+
+            // عمود الإجراءات
+            rowHtml += `
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-secondary me-1" onclick="editEmployee(${emp.id})">تعديل</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee(${emp.id})">حذف</button>
               </td>
             `;
 
+            tr.innerHTML = rowHtml;
             tableBody.appendChild(tr);
         });
 
@@ -1047,6 +1106,10 @@
 
     function getSortValue(emp, key) {
         ensureNameParts(emp);
+        if (key.startsWith("extra:")) {
+            const colName = key.slice(6);
+            return (emp.extra && emp.extra[colName]) || "";
+        }
         switch (key) {
             case "index":     return emp.id;
             case "firstName": return emp.firstName || "";
@@ -1098,6 +1161,24 @@
             if (key && key === currentSort.key) {
                 th.classList.add(currentSort.dir === "asc" ? "sort-asc" : "sort-desc");
             }
+        });
+    }
+
+    function setupSortHandlers() {
+        const headerCells = document.querySelectorAll(".employee-table thead th.sortable");
+        headerCells.forEach(th => {
+            th.onclick = () => {
+                const key = th.getAttribute("data-sort-key");
+                if (!key) return;
+                if (currentSort.key === key) {
+                    currentSort.dir = currentSort.dir === "asc" ? "desc" : "asc";
+                } else {
+                    currentSort.key = key;
+                    currentSort.dir = "asc";
+                }
+                sortEmployees(currentSort.key, currentSort.dir);
+                updateSortIndicators();
+            };
         });
     }
 
@@ -1243,7 +1324,9 @@
 
         saveDataToStorage();
         rebuildStatusSetFromEmployees();
+        rebuildExtraColumnsFromEmployees();
         renderStatusOptions();
+        renderEmployeeHeader();
         currentView = [...employees];
         if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
         else renderEmployees(currentView);
@@ -1256,7 +1339,7 @@
         alert("تم حفظ بيانات الموظفين في هذا الجهاز.");
     });
 
-    // تصدير Excel (CSV)
+    // تصدير Excel (CSV) مع الأعمدة الإضافية
     btnExportExcel.addEventListener("click", () => {
         const list = currentView;
         if (!list.length) {
@@ -1278,11 +1361,13 @@
             "أسم الأم الثلاثي",
             "الجنس",
             "تاريخ التولد",
-            "تاريخ التعيين"
+            "تاريخ التعيين",
+            ...extraColumns
         ];
 
         const rows = list.map(emp => {
             ensureNameParts(emp);
+            const extra = emp.extra || {};
             return [
                 emp.firstName || "",
                 emp.secondName || "",
@@ -1297,7 +1382,8 @@
                 emp.motherName || "",
                 emp.gender || "",
                 emp.birthDate || "",
-                emp.hireDate || ""
+                emp.hireDate || "",
+                ...extraColumns.map(colName => extra[colName] != null ? extra[colName] : "")
             ];
         });
 
@@ -1390,15 +1476,6 @@
             return;
         }
 
-        const missing = Object.entries(indices)
-            .filter(([, i]) => i === -1)
-            .map(([key]) => colNames[key]);
-
-        if (missing.length) {
-            alert("لا يمكن قراءة الملف. الأعمدة التالية مفقودة:\n" + missing.join(" ، "));
-            return;
-        }
-
         const newEmployees = [];
 
         for (let i = 1; i < rows.length; i++) {
@@ -1429,6 +1506,18 @@
 
             const fullName = [firstName, secondName, thirdName, fourthName].filter(Boolean).join(" ");
 
+            // أعمدة إضافية (أي عمود غير الأعمدة المعروفة)
+            const usedIndices = new Set(Object.values(indices).filter(i => i !== -1));
+            const extra = {};
+            header.forEach((colTitle, colIndex) => {
+                if (usedIndices.has(colIndex)) return;
+                const val = row[colIndex];
+                if (val === null || val === undefined) return;
+                const strVal = String(val).trim();
+                if (!strVal) return;
+                extra[colTitle] = strVal;
+            });
+
             newEmployees.push({
                 id: 0,
                 fullName,
@@ -1445,7 +1534,8 @@
                 gender,
                 birthDate,
                 hireDate,
-                notes
+                notes,
+                extra
             });
         }
 
@@ -1503,7 +1593,8 @@
                 gender,
                 birthDate,
                 hireDate,
-                notes
+                notes,
+                extra: {}
             });
         }
 
@@ -1529,7 +1620,9 @@
 
         saveDataToStorage();
         rebuildStatusSetFromEmployees();
+        rebuildExtraColumnsFromEmployees();
         renderStatusOptions();
+        renderEmployeeHeader();
         currentView = [...employees];
         if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
         else renderEmployees(currentView);
@@ -1592,7 +1685,8 @@
                         gender: item.gender || "",
                         birthDate: item.birthDate || "",
                         hireDate: item.hireDate || "",
-                        notes: item.notes || ""
+                        notes: item.notes || "",
+                        extra: item.extra || {}
                     };
                 });
                 if (!newEmployees.length) {
@@ -1610,26 +1704,7 @@
         reader.readAsText(file, "utf-8");
     });
 
-    // عرض / تعديل / حذف موظف
-    window.viewEmployee = id => {
-        const emp = employees.find(e => e.id === id);
-        if (!emp) { alert("لم يتم العثور على الموظف."); return; }
-        const info =
-            "معلومات الموظف:\n\n" +
-            `الاسم الكامل: ${getEmployeeFullName(emp)}\n` +
-            `الرقم الوظيفي: ${emp.jobNumber || ""}\n` +
-            `الرقم الوطني: ${emp.nationalId || ""}\n` +
-            `العنوان الوظيفي: ${emp.jobTitle || ""}\n` +
-            `أسم الدائرة / مبنى الوزارة: ${emp.department || ""}\n` +
-            `الحالة الوظيفية: ${emp.status || ""}\n` +
-            `الجنس: ${emp.gender || "غير محدد"}\n` +
-            `أسم الأم الثلاثي: ${emp.motherName || ""}\n` +
-            `تاريخ التولد: ${emp.birthDate || ""}\n` +
-            `تاريخ التعيين: ${emp.hireDate || ""}\n` +
-            `الملاحظات: ${emp.notes || ""}`;
-        alert(info);
-    };
-
+    // تعديل / حذف موظف
     window.editEmployee = id => {
         const emp = employees.find(e => e.id === id);
         if (!emp) { alert("لم يتم العثور على الموظف."); return; }
@@ -1644,7 +1719,9 @@
         if (editingEmployeeId === id) editingEmployeeId = null;
         saveDataToStorage();
         rebuildStatusSetFromEmployees();
+        rebuildExtraColumnsFromEmployees();
         renderStatusOptions();
+        renderEmployeeHeader();
         currentView = [...employees];
         if (currentSort.key) sortEmployees(currentSort.key, currentSort.dir);
         else renderEmployees(currentView);
@@ -1689,26 +1766,11 @@
         });
     }
 
-    // تفعيل فرز الأعمدة عند الضغط على العناوين
-    const headerCells = document.querySelectorAll(".employee-table thead th.sortable");
-    headerCells.forEach(th => {
-        th.addEventListener("click", () => {
-            const key = th.getAttribute("data-sort-key");
-            if (!key) return;
-            if (currentSort.key === key) {
-                currentSort.dir = currentSort.dir === "asc" ? "desc" : "asc";
-            } else {
-                currentSort.key = key;
-                currentSort.dir = "asc";
-            }
-            sortEmployees(currentSort.key, currentSort.dir);
-            updateSortIndicators();
-        });
-    });
-
     // أول تحميل
     rebuildStatusSetFromEmployees();
+    rebuildExtraColumnsFromEmployees();
     renderStatusOptions();
+    renderEmployeeHeader();
     currentView = [...employees];
     renderEmployees(currentView);
     updateSortIndicators();
